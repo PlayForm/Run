@@ -1,12 +1,12 @@
 [package]
 name = "innkeeper"
 version = "0.0.1"
-authors = ["Nikola Hristov <nikola@playform.cloud>"]
+authors = ["Nikola Hristov <nikola@lightrix.dev>"]
 edition = "2021"
 description = "Inn is shell script to execute commmands in multiple directories."
 documentation = "https://docs.rs/innkeeper"
 readme = "README.md"
-repository = "https://github.com/Playform/inn"
+repository = "https://github.com/lightrix/inn"
 license-file = "LICENSE"
 keywords = ["inn"]
 categories = ["command-line-interface"]
