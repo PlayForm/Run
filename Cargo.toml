@@ -1,14 +1,14 @@
 [package]
 name = "innkeeper"
 version = "0.0.1"
-authors = ["Nikola Hristov <nikola@lightrix.dev>"]
+authors = ["NIKOLAHRISTOV"]
 edition = "2021"
 description = "Inn is shell script to execute commmands in multiple directories."
 documentation = "https://docs.rs/innkeeper"
 readme = "README.md"
 repository = "https://github.com/NikolaRHristov/innkeeper"
 license-file = "LICENSE"
-keywords = ["inn"]
+keywords = ["inn", "innkeeper"]
 categories = ["command-line-interface"]
 
 [dependencies]
