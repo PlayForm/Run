@@ -1,8 +1,13 @@
 [package]
 name = "innkeeper"
 version = "0.0.2"
-description = "Inn is a shell script to execute commmands in multiple directories."
+description = "Inn is a shell script that allows you to execute commmands in different directories."
 license = "MIT"
 
 [dependencies]
-clap = { version = "4.1.6", features = ["derive"] }
+clap = { version = "4.1.8", features = ["derive"] }
+walkdir = { version = "2.3.2" }
+
+[[bin]]
+name = "inn"
+path = "src/main.rs"
