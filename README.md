@@ -30,6 +30,13 @@ directory to a different folder.
 inn -r D:\Developer .git git fetch upstream
 ```
 
+Specify a `--parallel` argument or `-p` if you would like to run functions in
+parallel.
+
+```sh
+inn -p -r D:\Developer .git git fetch upstream
+```
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for a history of changes to this CLI.
