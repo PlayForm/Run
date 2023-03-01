@@ -1,6 +1,7 @@
 # [inn] 🍺
 
-Inn is a shell script to execute commmands in multiple directories.
+Inn is a little Rust utility designed to execute commmands for multiple
+directories in parallel.
 
 [inn]: https://crates.io/crates/innkeeper
 
