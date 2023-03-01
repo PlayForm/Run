@@ -62,7 +62,7 @@ fn main() {
 			if last == folder {
 				let working_directory = &paths[0..paths.len() - 1].join(&ds.to_string());
 
-				println!("Executing {} in every {} in {}", command, last, directory);
+				println!("Executing {} for every {} in {}", command, last, directory);
 
 				let output = match cfg!(target_os = "windows") {
 					true => Command::new("cmd")

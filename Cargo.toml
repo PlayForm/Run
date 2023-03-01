@@ -1,6 +1,6 @@
 [package]
 name = "innkeeper"
-version = "0.0.2"
+version = "0.0.3"
 description = "Inn is a shell script that allows you to execute commmands in different directories."
 license = "MIT"
 
