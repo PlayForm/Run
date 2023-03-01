@@ -8,11 +8,12 @@ use walkdir::WalkDir;
 
 fn main() {
 	let matches = ClapCommand::new("Innkeeper")
-		.version("0.0.2")
+		.version("0.0.4")
 		.about("Runs a command in all directories having a certain folder.")
 		.arg(
 			Arg::new("root")
 				.short('r')
+				.long("root")
 				.display_order(1)
 				.value_name("ROOT")
 				.required(false)
@@ -39,6 +40,7 @@ fn main() {
 		)
 		.get_matches();
 
+	let root = matches.get_one::<String>("root").unwrap();
 	let folder = matches.get_one::<String>("folder").unwrap();
 	let command = &matches
 		.get_many::<String>("command")
@@ -46,11 +48,10 @@ fn main() {
 		.map(|v| v.as_str())
 		.collect::<Vec<_>>()
 		.join(" ");
-	let directory = matches.get_one::<String>("root").unwrap();
 
 	let ds = std::path::MAIN_SEPARATOR;
 
-	for entry in WalkDir::new(directory).into_iter().filter_entry(|e| {
+	for entry in WalkDir::new(root).into_iter().filter_entry(|e| {
 		fs::metadata(e.path().display().to_string().clone()).unwrap().is_dir()
 			&& (!e.path().display().to_string().contains("node_modules")
 				|| !folder.contains("node_modules"))
@@ -62,7 +63,7 @@ fn main() {
 			if last == folder {
 				let working_directory = &paths[0..paths.len() - 1].join(&ds.to_string());
 
-				println!("Executing {} for every {} in {}", command, last, directory);
+				println!("Executing {} for every {} in {}.", command, last, root);
 
 				let output = match cfg!(target_os = "windows") {
 					true => Command::new("cmd")
