@@ -1,7 +1,6 @@
 # [inn] 🍺
 
-Inn is a little Rust utility designed to execute commmands for multiple
-directories in parallel.
+Inn is a CLI that allows you to execute commmands in different directories.
 
 [inn]: https://crates.io/crates/innkeeper
 
@@ -17,22 +16,29 @@ cargo install innkeeper
 inn .git git fetch upstream
 ```
 
-This will fetch from upstream for all the .git repositories inside the current
+This will fetch from upstream for all the `.git` repositories inside the current
 directory. Basically it replaces:
 
 ```sh
 find -iname .git -type d -execdir git fetch upstream \;
 ```
 
+Specify a `--file` argument or `-f` if you would like to search for file instead
+of a directory. Default is `false` or no flag at all.
+
+```sh
+inn -f astro.config.ts npx astro add astro-compress
+```
+
 You can also provide a `--root` argument or `-r` which sets the current working
-directory to a different folder.
+directory to a different folder. Default is `.`.
 
 ```sh
 inn -r D:\Developer .git git fetch upstream
 ```
 
 Specify a `--parallel` argument or `-p` if you would like to run functions in
-parallel.
+parallel. Default is sequential.
 
 ```sh
 inn -p -r D:\Developer .git git fetch upstream

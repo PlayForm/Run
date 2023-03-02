@@ -9,16 +9,26 @@ use rayon::prelude::*;
 use std::{fs, process::Command};
 use walkdir::WalkDir;
 
-fn main() {
+pub fn run() {
 	let matches = ClapCommand::new("Innkeeper")
-		.version("0.0.4")
-		.about("Runs a command in all directories having a certain folder.")
+		.version("0.0.5")
+		.about("Runs a command in all directories having a certain pattern.")
+		.arg(
+			Arg::new("file")
+				.short('f')
+				.long("file")
+				.action(ArgAction::SetTrue)
+				.display_order(1)
+				.value_name("FILE")
+				.required(false)
+				.help("Search file."),
+		)
 		.arg(
 			Arg::new("parallel")
 				.short('p')
 				.long("parallel")
 				.action(ArgAction::SetTrue)
-				.display_order(1)
+				.display_order(2)
 				.value_name("PARALLEL")
 				.required(false)
 				.help("Execute code in parallel."),
@@ -27,24 +37,24 @@ fn main() {
 			Arg::new("root")
 				.short('r')
 				.long("root")
-				.display_order(2)
+				.display_order(3)
 				.value_name("ROOT")
 				.required(false)
 				.help("Current working directory.")
 				.default_value("."),
 		)
 		.arg(
-			Arg::new("folder")
-				.display_order(3)
-				.value_name("FOLDER")
+			Arg::new("pattern")
+				.display_order(4)
+				.value_name("PATTERN")
 				.required(true)
-				.help("Search folder.")
+				.help("Search pattern.")
 				.default_value("."),
 		)
 		.arg(
 			Arg::new("command")
 				.num_args(0..=10)
-				.display_order(4)
+				.display_order(5)
 				.value_name("COMMAND")
 				.required(true)
 				.allow_hyphen_values(true)
@@ -53,9 +63,10 @@ fn main() {
 		)
 		.get_matches();
 
+	let file = matches.get_flag("file");
 	let parallel = matches.get_flag("parallel");
 	let root = matches.get_one::<String>("root").unwrap();
-	let folder = matches.get_one::<String>("folder").unwrap();
+	let pattern = matches.get_one::<String>("pattern").unwrap();
 	let command = &matches
 		.get_many::<String>("command")
 		.unwrap_or_default()
@@ -66,9 +77,14 @@ fn main() {
 	let ds = std::path::MAIN_SEPARATOR;
 
 	let entries = WalkDir::new(root).into_iter().filter_entry(|e| {
-		fs::metadata(e.path().display().to_string().clone()).unwrap().is_dir()
-			&& (!e.path().display().to_string().contains("node_modules")
-				|| !folder.contains("node_modules"))
+		let is_node = !e.path().display().to_string().contains("node_modules")
+			|| !pattern.contains("node_modules");
+
+		if !file {
+			fs::metadata(e.path().display().to_string().clone()).unwrap().is_dir() && is_node
+		} else {
+			is_node
+		}
 	});
 
 	if parallel {
@@ -82,7 +98,7 @@ fn main() {
 
 				match paths.last() {
 					Some(last) => {
-						if last == folder {
+						if last == pattern {
 							let working_directory =
 								&paths[0..paths.len() - 1].join(&ds.to_string());
 							Some(working_directory.to_owned())
@@ -129,7 +145,7 @@ fn main() {
 			let paths: Vec<&str> = entry_dir.split(ds).collect();
 
 			if let Some(last) = paths.last() {
-				if last == folder {
+				if last == pattern {
 					let working_directory = &paths[0..paths.len() - 1].join(&ds.to_string());
 
 					println!("Executing {} for every {} in {}", command, last, root);

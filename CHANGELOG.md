@@ -1,3 +1,7 @@
+## 0.0.5
+
+-   Adds a file option
+
 ## 0.0.4
 
 -   Adds parallelism

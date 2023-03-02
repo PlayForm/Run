@@ -1,7 +1,7 @@
 [package]
 name = "innkeeper"
-version = "0.0.4"
-description = "Inn is a shell script that allows you to execute commmands in different directories."
+version = "0.0.5"
+description = "Inn is a CLI that allows you to execute commmands in different directories."
 license = "MIT"
 
 [dependencies]
@@ -10,6 +10,14 @@ walkdir = { version = "2.3.2" }
 rayon = { version = "1.6.1" }
 crossbeam = { version = "0.8.2" }
 
+[lib]
+name = "inn"
+path = "src/lib/main.rs"
+
 [[bin]]
 name = "inn"
-path = "src/main.rs"
+path = "src/bin/inn.rs"
+
+[[bin]]
+name = "innkeeper"
+path = "src/bin/innkeeper.rs"
