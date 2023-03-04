@@ -7,7 +7,7 @@ license = "MIT"
 [dependencies]
 clap = { version = "4.1.8", features = ["derive"] }
 walkdir = { version = "2.3.2" }
-rayon = { version = "1.6.1" }
+rayon = { version = "1.7.0" }
 crossbeam = { version = "0.8.2" }
 
 [lib]
