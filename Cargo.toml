@@ -1,6 +1,6 @@
 [package]
 name = "innkeeper"
-version = "0.0.5"
+version = "0.0.6"
 description = "Inn is a CLI that allows you to execute commmands in different directories."
 license = "MIT"
 

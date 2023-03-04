@@ -6,12 +6,16 @@ extern crate walkdir;
 use clap::{Arg, ArgAction, Command as ClapCommand};
 use crossbeam::scope;
 use rayon::prelude::*;
-use std::{fs, process::Command};
+use std::{
+	fs,
+	io::Read,
+	process::{Command, Stdio},
+};
 use walkdir::WalkDir;
 
 pub fn run() {
 	let matches = ClapCommand::new("Innkeeper")
-		.version("0.0.5")
+		.version("0.0.6")
 		.about("Runs a command in all directories having a certain pattern.")
 		.arg(
 			Arg::new("file")
@@ -150,21 +154,39 @@ pub fn run() {
 
 					println!("Executing {} for every {} in {}", command, last, root);
 
-					let output = match cfg!(target_os = "windows") {
+					let child = match cfg!(target_os = "windows") {
 						true => Command::new("cmd")
 							.args(["/C", command])
 							.current_dir(working_directory)
-							.output()
+							.stdout(Stdio::piped())
+							.spawn()
 							.expect("Failed to execute process."),
 						false => Command::new("sh")
 							.arg("-c")
 							.current_dir(working_directory)
 							.arg(command)
-							.output()
+							.stdout(Stdio::piped())
+							.spawn()
 							.expect("Failed to execute process."),
 					};
 
-					println!("{}", String::from_utf8_lossy(&output.stdout));
+					let mut stdout = child.stdout.expect("Failed to get stdout handle");
+
+					let mut output = String::new();
+
+					loop {
+						let mut buffer = [0; 512];
+						let bytes_read =
+							stdout.read(&mut buffer).expect("Failed to read from pipe");
+
+						if bytes_read == 0 {
+							break;
+						}
+
+						output.push_str(&String::from_utf8_lossy(&buffer[..bytes_read]));
+					}
+
+					println!("{}", output);
 				}
 			}
 		}

@@ -1,3 +1,7 @@
+## 0.0.6
+
+-   Wait for input
+
 ## 0.0.5
 
 -   Adds a file option
