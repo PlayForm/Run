@@ -5,8 +5,8 @@ description = "🍺 Inn is a little Rust utility that lets execute commands in m
 license = "MIT"
 
 [dependencies]
-clap = { version = "4.1.8", features = ["derive"] }
-walkdir = { version = "2.3.2" }
+clap = { version = "4.1.10", features = ["derive"] }
+walkdir = { version = "2.3.3" }
 rayon = { version = "1.7.0" }
 crossbeam = { version = "0.8.2" }
 
