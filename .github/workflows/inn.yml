@@ -27,6 +27,7 @@ jobs:
               with:
                   profile: minimal
                   toolchain: ${{ matrix.toolchain }}
+
             - uses: actions/cache@v3.3.1
               with:
                   path: |
@@ -47,3 +48,11 @@ jobs:
               with:
                   name: .-inn-${{ matrix.platform }}-target
                   path: ./target
+
+            - run: |
+                  git add bench/
+                  git add 
+                  git config --global user.name 'Bench'
+                  git config --global user.email 'bench@nikolahristov.tech'
+                  git commit -m "Auto Bench $(git log -1 --pretty=%h) $(git log -1 --pretty=%B)"
+                  git push
