@@ -37,13 +37,11 @@ jobs:
                       ~/.cargo/registry/cache/
                       ~/.cargo/git/db/
                       target/
-                  key:
-                      ${{ runner.os }}-cargo-${{ hashFiles('./Cargo.toml') }}
+                  key: ${{ runner.os }}-cargo-${{ hashFiles('./Cargo.toml') }}
             - uses: actions-rs/cargo@v1.0.3
               with:
                   command: build
-                  args:
-                      --release --all-features --manifest-path ./Cargo.toml
+                  args: --release --all-features --manifest-path ./Cargo.toml
 
             - uses: actions/upload-artifact@v3.1.2
               with:
