@@ -50,9 +50,8 @@ jobs:
                   path: ./target
 
             - run: |
-                  git add bench/
-                  git add 
-                  git config --global user.name 'Bench'
-                  git config --global user.email 'bench@nikolahristov.tech'
-                  git commit -m "Auto Bench $(git log -1 --pretty=%h) $(git log -1 --pretty=%B)"
+                  git add target
+                  git config --global user.name 'Inn'
+                  git config --global user.email 'inn@lightrix.help'
+                  git commit -m "Inn Release $(git log -1 --pretty=%h) $(git log -1 --pretty=%B)"
                   git push
