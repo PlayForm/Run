@@ -1,0 +1,56 @@
+name: Inn
+
+concurrency:
+    group: inn-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+on:
+    workflow_dispatch:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_call:
+
+jobs:
+    prepare:
+        uses: roundedcorners/app/.github/workflows/node.yml@main
+
+    build:
+        needs: prepare
+
+        strategy:
+            matrix:
+                toolchain: [stable, nightly]
+                platform: [windows-latest, ubuntu-latest, macos-latest]
+
+        runs-on: ${{ matrix.platform }}
+
+        steps:
+            - uses: actions/checkout@v3.5.0
+            - uses: actions-rs/toolchain@v1.0.7
+              with:
+                  profile: minimal
+                  toolchain: ${{ matrix.toolchain }}
+            - uses: actions/cache@v3.3.1
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key:
+                      ${{ runner.os }}-cargo-${{ hashFiles('./src-tauri/Cargo.toml')
+                      }}
+            - uses: actions-rs/cargo@v1.0.3
+              with:
+                  command: build
+                  args:
+                      --release --all-features --manifest-path
+                      ./src-tauri/Cargo.toml
+
+            - uses: actions/upload-artifact@v3.1.2
+              with:
+                  name: .-inn-${{ matrix.platform }}-target
+                  path: ./target
