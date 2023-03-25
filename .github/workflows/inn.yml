@@ -54,4 +54,4 @@ jobs:
                   git config --global user.name 'Inn'
                   git config --global user.email 'inn@lightrix.help'
                   git commit -m "Inn Release $(git log -1 --pretty=%h) $(git log -1 --pretty=%B)"
-                  git push
+                  git pull && git push
