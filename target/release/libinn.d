@@ -1,1 +1,1 @@
-/Users/runner/work/inn/inn/target/release/libinn.rlib: /Users/runner/work/inn/inn/src/lib/main.rs
+D:\a\inn\inn\target\release\libinn.rlib: D:\a\inn\inn\src\lib\main.rs
