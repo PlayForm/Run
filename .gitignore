@@ -3,7 +3,7 @@ Cargo.lock
 /target/*
 !/target/release
 /target/release/*
+!/target/release/*.deb
 !/target/release/*.exe
 !/target/release/inn
 !/target/release/innkeeper
-!/target/release/*.deb
