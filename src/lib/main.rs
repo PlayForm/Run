@@ -81,13 +81,15 @@ pub fn run() {
 	let ds = std::path::MAIN_SEPARATOR;
 
 	let entries = WalkDir::new(root).into_iter().filter_entry(|e| {
-		let is_node = !e.path().display().to_string().contains("node_modules")
-			|| !pattern.contains("node_modules");
+		if !pattern.contains("node_modules") {
+			return e.path().display().to_string().contains("node_modules");
+		}
 
 		if !file {
-			fs::metadata(e.path().display().to_string().clone()).unwrap().is_dir() && is_node
+			println!("{:?}", e.path().display().to_string().contains("node_modules"));
+			return fs::metadata(e.path().display().to_string().clone()).unwrap().is_dir();
 		} else {
-			is_node
+			return true;
 		}
 	});
 

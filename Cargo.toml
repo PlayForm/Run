@@ -3,6 +3,7 @@ name = "innkeeper"
 version = "0.0.6"
 description = "🍺 Inn is a little Rust utility that lets execute commands in multiple directories."
 license = "MIT"
+default-run = "inn"
 
 [dependencies]
 clap = { version = "4.2.0", features = ["derive"] }
