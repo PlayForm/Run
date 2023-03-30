@@ -1,7 +1,6 @@
 # [inn] 🍺
 
-Inn is a tiny Rust utlity that lets execute commmands in multiple
-directories.
+Inn is a tiny Rust utlity that lets execute commmands in multiple directories.
 
 [inn]: https://crates.io/crates/innkeeper
 
