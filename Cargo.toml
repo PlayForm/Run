@@ -6,7 +6,7 @@ license = "MIT"
 default-run = "inn"
 
 [dependencies]
-clap = { version = "4.2.5", features = ["derive"] }
+clap = { version = "4.2.7", features = ["derive"] }
 walkdir = { version = "2.3.3" }
 rayon = { version = "1.7.0" }
 crossbeam = { version = "0.8.2" }
