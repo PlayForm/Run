@@ -7,7 +7,7 @@ default-run = "inn"
 repository = "https://github.com/Lightrix/innkeeper.git"
 
 [dependencies]
-clap = { version = "4.3.17", features = ["derive"] }
+clap = { version = "4.3.19", features = ["derive"] }
 walkdir = { version = "2.3.3" }
 rayon = { version = "1.7.0" }
 crossbeam = { version = "0.8.2" }
