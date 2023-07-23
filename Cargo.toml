@@ -1,6 +1,6 @@
 [package]
 name = "innkeeper"
-version = "0.0.7"
+version = "0.0.8"
 description = "🍺 Inn is a little Rust utility that lets execute commands in multiple directories."
 license = "MIT"
 default-run = "inn"
@@ -11,6 +11,7 @@ clap = { version = "4.3.19", features = ["derive"] }
 walkdir = { version = "2.3.3" }
 rayon = { version = "1.7.0" }
 crossbeam = { version = "0.8.2" }
+toml = "0.7.6"
 
 [lib]
 name = "inn"
