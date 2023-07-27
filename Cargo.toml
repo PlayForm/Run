@@ -1,6 +1,6 @@
 [package]
 name = "innkeeper"
-version = "0.0.8"
+version = "0.0.9"
 description = "🍺 Inn is a little Rust utility that lets execute commands in multiple directories."
 license = "MIT"
 default-run = "inn"
