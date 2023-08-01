@@ -34,14 +34,14 @@ You can also provide a `--root` argument or `-r` which sets the current working
 directory to a different folder. Default is `.`.
 
 ```sh
-inn -r F:\Developer .git git fetch upstream
+inn -r D:\Developer .git git fetch upstream
 ```
 
 Specify a `--parallel` argument or `-p` if you would like to run functions in
 parallel. Default is sequential.
 
 ```sh
-inn -p -r F:\Developer .git git fetch upstream
+inn -p -r D:\Developer .git git fetch upstream
 ```
 
 ## Changelog
