@@ -46,7 +46,7 @@ jobs:
             - uses: actions/upload-artifact@v3.1.2
               with:
                   name: .-inn-${{ matrix.platform }}-target
-                  path: ./target
+                  path: ./Target
 
             - run: |
                   git add target
