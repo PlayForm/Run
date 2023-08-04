@@ -22,8 +22,8 @@ path = "Source/Library/main.rs"
 
 [[bin]]
 name = "inn"
-path = "Source/bin/inn.rs"
+path = "Source/Binary/inn.rs"
 
 [[bin]]
 name = "innkeeper"
-path = "Source/bin/innkeeper.rs"
+path = "Source/Binary/innkeeper.rs"
