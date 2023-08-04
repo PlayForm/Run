@@ -18,12 +18,12 @@ toml = "0.7.6"
 
 [lib]
 name = "inn"
-path = "Src/Lib/main.rs"
+path = "Source/Library/main.rs"
 
 [[bin]]
 name = "inn"
-path = "Src/bin/inn.rs"
+path = "Source/bin/inn.rs"
 
 [[bin]]
 name = "innkeeper"
-path = "Src/bin/innkeeper.rs"
+path = "Source/bin/innkeeper.rs"
