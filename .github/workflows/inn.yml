@@ -37,6 +37,7 @@ jobs:
                       ~/.cargo/registry/cache/
                       ~/.cargo/git/db/
                       target/
+                      Target/
                   key: ${{ runner.os }}-cargo-${{ hashFiles('./Cargo.toml') }}
             - uses: actions-rs/cargo@v1.0.3
               with:
@@ -49,7 +50,7 @@ jobs:
                   path: ./Target
 
             - run: |
-                  git add target
+                  git add Target
                   git config --global user.name 'Inn'
                   git config --global user.email 'inn@lightrix.help'
                   git commit -m "Inn Release $(git log -1 --pretty=%h) $(git log -1 --pretty=%B)"
