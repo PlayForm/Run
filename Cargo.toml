@@ -6,6 +6,9 @@ license = "MIT"
 default-run = "inn"
 repository = "https://github.com/Lightrix/innkeeper.git"
 
+[build]
+target-dir = "Target"
+
 [dependencies]
 clap = { version = "4.3.19", features = ["derive"] }
 walkdir = { version = "2.3.3" }
