@@ -1,6 +1,7 @@
 # [Inn] 🍺
 
-Inn is a tiny Rust utlity that lets execute commmands in different concurrently.
+Inn is a tiny Rust utility that lets execute commmands in different folders
+concurrently.
 
 [Inn]: https://crates.io/crates/innkeeper
 
