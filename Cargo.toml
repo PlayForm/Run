@@ -14,7 +14,7 @@ clap = { version = "4.4.2", features = ["derive"] }
 walkdir = { version = "2.4.0" }
 rayon = { version = "1.7.0" }
 crossbeam = { version = "0.8.2" }
-toml = "0.7.6"
+toml = "0.7.8"
 
 [lib]
 name = "inn"
