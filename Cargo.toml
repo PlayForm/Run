@@ -12,7 +12,7 @@ target-dir = "Target"
 [dependencies]
 clap = { version = "4.4.4", features = ["derive"] }
 walkdir = { version = "2.4.0" }
-rayon = { version = "1.7.0" }
+rayon = { version = "1.8.0" }
 crossbeam = { version = "0.8.2" }
 toml = "0.8.0"
 
