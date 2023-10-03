@@ -4,7 +4,7 @@ version = "0.0.9"
 description = "🍺 Inn is a little Rust utility that lets execute commands in different directories."
 license = "MIT"
 default-run = "inn"
-repository = "https://github.com/Lightrix/innkeeper.git"
+repository = "https://github.com/NikolaRHristov/Inn.git"
 
 [build]
 target-dir = "Target"
