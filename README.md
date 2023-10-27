@@ -38,7 +38,7 @@ directory to a different folder. Default is `.`.
 inn -r D:\Developer .git git fetch upstream
 ```
 
-Specify a `--parallel` argument or `-p` if you would like to run functions in
+Specify a `--parallel` argument or `-p` if you would like to run commands in
 parallel. Default is sequential.
 
 ```sh
