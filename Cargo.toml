@@ -6,9 +6,6 @@ license = "MIT"
 default-run = "inn"
 repository = "https://github.com/NikolaRHristov/Inn.git"
 
-[build]
-target-dir = "Target"
-
 [dependencies]
 clap = { version = "4.4.7", features = ["derive"] }
 walkdir = { version = "2.4.0" }
