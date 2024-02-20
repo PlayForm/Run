@@ -15,7 +15,8 @@ use walkdir::WalkDir;
 
 pub fn run() {
 	let matches = ClapCommand::new("Innkeeper")
-		.version("0.0.8")
+		.version(env!("CARGO_PKG_VERSION"))
+		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 		.about("Runs a command in all directories having a certain pattern.")
 		.arg(
 			Arg::new("file")
