@@ -23,9 +23,9 @@ pub fn run() {
 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 		.about("Run a command in all directories having a certain pattern.")
 		.arg(
-			Arg::new("file")
-				.short('f')
-				.long("file")
+			Arg::new("File")
+				.short('F')
+				.long("File")
 				.action(ArgAction::SetTrue)
 				.display_order(1)
 				.value_name("FILE")
@@ -33,9 +33,9 @@ pub fn run() {
 				.help("Search file."),
 		)
 		.arg(
-			Arg::new("parallel")
-				.short('p')
-				.long("parallel")
+			Arg::new("Parallel")
+				.short('P')
+				.long("Parallel")
 				.action(ArgAction::SetTrue)
 				.display_order(2)
 				.value_name("PARALLEL")
@@ -43,9 +43,9 @@ pub fn run() {
 				.help("Execute code in parallel."),
 		)
 		.arg(
-			Arg::new("root")
-				.short('r')
-				.long("root")
+			Arg::new("Root")
+				.short('R')
+				.long("Root")
 				.display_order(3)
 				.value_name("ROOT")
 				.required(false)
@@ -53,7 +53,7 @@ pub fn run() {
 				.default_value("."),
 		)
 		.arg(
-			Arg::new("pattern")
+			Arg::new("Pattern")
 				.display_order(4)
 				.value_name("PATTERN")
 				.required(true)
@@ -61,7 +61,7 @@ pub fn run() {
 				.default_value("."),
 		)
 		.arg(
-			Arg::new("command")
+			Arg::new("Command")
 				.num_args(0..=10)
 				.display_order(5)
 				.value_name("COMMAND")
@@ -72,14 +72,14 @@ pub fn run() {
 		)
 		.get_matches();
 
-	let File = Match.get_flag("file");
-	let Parallel = Match.get_flag("parallel");
-	let Root = Match.get_one::<String>("root").unwrap();
-	let Pattern = Match.get_one::<String>("pattern").unwrap();
+	let File = Match.get_flag("File");
+	let Parallel = Match.get_flag("Parallel");
+	let Root = Match.get_one::<String>("Root").unwrap();
+	let Pattern = Match.get_one::<String>("Pattern").unwrap();
 	let Command = &Match
-		.get_many::<String>("command")
+		.get_many::<String>("Command")
 		.unwrap_or_default()
-		.map(|v| v.as_str())
+		.map(|Command| Command.as_str())
 		.collect::<Vec<_>>()
 		.join(" ");
 
@@ -103,18 +103,16 @@ pub fn run() {
 		println!("Executing code in parallel.");
 
 		// Execution: Parallel
-		scope(|s| {
+		scope(|Scope| {
 			Entry
 				.map(|Entry| {
-					let entry_dir = Entry.unwrap().path().display().to_string();
-					let paths: Vec<&str> = entry_dir.split(Separator).collect();
+					let Directory = Entry.unwrap().path().display().to_string();
+					let Path: Vec<&str> = Directory.split(Separator).collect();
 
-					match paths.last() {
-						Some(last) => {
-							if last == Pattern {
-								let working_directory =
-									&paths[0..paths.len() - 1].join(&Separator.to_string());
-								Some(working_directory.to_owned())
+					match Path.last() {
+						Some(Last) => {
+							if Last == Pattern {
+								Some(Path[0..Path.len() - 1].join(&Separator.to_string()))
 							} else {
 								None
 							}
@@ -125,9 +123,9 @@ pub fn run() {
 				.filter_map(|x| x)
 				.collect::<Vec<String>>()
 				.into_par_iter()
-				.for_each_with(s, |scope, dir| {
-					scope.spawn(move |_| {
-						println!("Executing {} for every {} in {}", Command, dir, Root);
+				.for_each_with(Scope, |Scope, Directory| {
+					Scope.spawn(move |_Scope| {
+						println!("Executing {} for every {} in {}", Command, Directory, Root);
 
 						println!(
 							"{}",
@@ -135,12 +133,12 @@ pub fn run() {
 								&match cfg!(target_os = "windows") {
 									true => Command::new("cmd")
 										.args(["/C", Command.as_str()])
-										.current_dir(dir)
+										.current_dir(Directory)
 										.output()
 										.expect("Failed to execute process."),
 									false => Command::new("sh")
 										.arg("-c")
-										.current_dir(dir)
+										.current_dir(Directory)
 										.arg(Command)
 										.output()
 										.expect("Failed to execute process."),
@@ -157,48 +155,47 @@ pub fn run() {
 
 		// Execution: Sequential
 		for Entry in Entry {
-			let entry_dir = Entry.unwrap().path().display().to_string();
-			let paths: Vec<&str> = entry_dir.split(Separator).collect();
+			let Directory = Entry.unwrap().path().display().to_string();
+			let Path: Vec<&str> = Directory.split(Separator).collect();
 
-			if let Some(last) = paths.last() {
-				if last == Pattern {
-					let working_directory = &paths[0..paths.len() - 1].join(&Separator.to_string());
+			if let Some(Last) = Path.last() {
+				if Last == Pattern {
+					let Directory = &Path[0..Path.len() - 1].join(&Separator.to_string());
 
-					println!("Executing {} for every {} in {}", Command, last, Root);
+					println!("Executing {} for every {} in {}", Command, Last, Root);
 
-					let child = match cfg!(target_os = "windows") {
+					let Command = match cfg!(target_os = "windows") {
 						true => Command::new("cmd")
 							.args(["/C", Command])
-							.current_dir(working_directory)
+							.current_dir(Directory)
 							.stdout(Stdio::piped())
 							.spawn()
 							.expect("Failed to execute process."),
 						false => Command::new("sh")
 							.arg("-c")
-							.current_dir(working_directory)
+							.current_dir(Directory)
 							.arg(Command)
 							.stdout(Stdio::piped())
 							.spawn()
 							.expect("Failed to execute process."),
 					};
 
-					let mut stdout = child.stdout.expect("Failed to get stdout handle");
+					let mut Out = Command.stdout.expect("Failed to get stdout handle");
 
-					let mut output = String::new();
+					let mut Output = String::new();
 
 					loop {
-						let mut buffer = [0; 512];
-						let bytes_read =
-							stdout.read(&mut buffer).expect("Failed to read from pipe");
+						let mut Buffer = [0; 512];
+						let Byte = Out.read(&mut Buffer).expect("Failed to read from pipe");
 
-						if bytes_read == 0 {
+						if Byte == 0 {
 							break;
 						}
 
-						output.push_str(&String::from_utf8_lossy(&buffer[..bytes_read]));
+						Output.push_str(&String::from_utf8_lossy(&Buffer[..Byte]));
 					}
 
-					println!("{}", output);
+					println!("{}", Output);
 				}
 			}
 		}

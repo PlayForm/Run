@@ -14,7 +14,7 @@ cargo install innkeeper
 ## Usage
 
 ```sh
-inn .git git fetch upstream
+Inn .git git fetch upstream
 ```
 
 This will fetch from upstream for all the `.git` repositories inside the current
@@ -24,25 +24,25 @@ directory. Basically it replaces:
 find -iname .git -type d -execdir git fetch upstream \;
 ```
 
-Specify a `--file` argument or `-f` if you would like to search for file instead
+Specify a `--File` argument or `-F` if you would like to search for file instead
 of a directory. Default is `false` or no flag at all.
 
 ```sh
-inn -f astro.config.ts npx astro add astro-compress
+Inn -F astro.config.ts npx astro add astro-compress
 ```
 
-You can also provide a `--root` argument or `-r` which sets the current working
+You can also provide a `--Root` argument or `-R` which sets the current working
 directory to a different folder. Default is `.`.
 
 ```sh
-inn -r D:\Developer .git git fetch upstream
+Inn -R D:\Developer .git git fetch upstream
 ```
 
-Specify a `--parallel` argument or `-p` if you would like to run commands in
+Specify a `--Parallel` argument or `-P` if you would like to run commands in
 parallel. Default is sequential.
 
 ```sh
-inn -p -r D:\Developer .git git fetch upstream
+Inn -P -R D:\Developer .git git fetch upstream
 ```
 
 ## Changelog

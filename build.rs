@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use std::fs;
 
 fn main() {
@@ -7,7 +9,7 @@ fn main() {
 		fs::read_to_string("Cargo.toml")
 			.expect("Failed to read Cargo.toml.")
 			.lines()
-			.find(|line| line.starts_with("version"))
+			.find(|Line| Line.starts_with("version"))
 			.unwrap()
 			.split('=')
 			.nth(1)
