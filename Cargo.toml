@@ -1,14 +1,6 @@
-[package]
-name = "innkeeper"
-version = "0.0.14"
-description = "🍺 Innkeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
-license = "MIT"
-default-run = "Inn"
-repository = "https://github.com/NikolaRHristov/Inn.git"
-autobins = false
-autobenches = false
-autotests = false
-autoexamples = false
+[[bin]]
+name = "Glob"
+path = "Source/Function/Binary/Glob.rs"
 
 [[bin]]
 name = "Inn"
@@ -19,7 +11,22 @@ name = "Innkeeper"
 path = "Source/Function/Binary/Innkeeper.rs"
 
 [dependencies]
-clap = { version = "4.5.1", features = ["derive"] }
+clap = { features = ["derive"], version = "4.5.1" }
 crossbeam = { version = "0.8.4" }
+glob = "0.3.1"
+globset = "0.4.14"
+ignore = "0.4.22"
 rayon = { version = "1.9.0" }
-walkdir = { version = "2.4.0" }
+walkdir = "2.4.0"
+
+[package]
+autobenches = false
+autobins = false
+autoexamples = false
+autotests = false
+default-run = "Inn"
+description = "🍺 Innkeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
+license = "MIT"
+name = "innkeeper"
+repository = "https://github.com/NikolaRHristov/Inn.git"
+version = "0.0.14"

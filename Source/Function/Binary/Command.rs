@@ -11,6 +11,7 @@ use self::{
 };
 
 use std::{
+	collections::btree_map::Entry,
 	fs,
 	io::Read,
 	process::{Command, Stdio},
@@ -85,7 +86,7 @@ pub fn run() {
 	let File = Match.get_flag("File");
 	let Parallel = Match.get_flag("Parallel");
 	let Root = Match.get_one::<String>("Root").unwrap();
-	let Exclude = Match.get_one::<String>("Exclude").unwrap();
+	let Exclude = Match.get_one::<String>("Exclude").unwrap().split(" ");
 	let Pattern = Match.get_one::<String>("Pattern").unwrap();
 	let Command = &Match
 		.get_many::<String>("Command")
@@ -96,9 +97,13 @@ pub fn run() {
 
 	let Separator = std::path::MAIN_SEPARATOR;
 
+	Exclude.for_each(|f| {
+		println!("{:?}", f);
+	});
+
 	let Entry = WalkDir::new(Root).into_iter().filter_entry(|Entry| {
-		println!("{:?}", Entry);
-		println!("{:?}", Exclude);
+		// println!("{:?}", Entry);
+		// println!("{:?}", Exclude);
 
 		return !Entry.path().display().to_string().contains("node_modules");
 
