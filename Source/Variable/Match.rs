@@ -1,8 +1,3 @@
-extern crate clap;
-extern crate crossbeam;
-extern crate rayon;
-extern crate walkdir;
-
 use clap::{Arg, ArgAction, Command as ClapCommand};
 use crossbeam::scope;
 use rayon::prelude::*;
@@ -88,9 +83,10 @@ pub fn run() {
 
 		if !file {
 			println!("{:?}", e.path().display().to_string().contains("node_modules"));
-			return fs::metadata(e.path().display().to_string().clone()).unwrap().is_dir();
+
+			fs::metadata(e.path().display().to_string().clone()).unwrap().is_dir()
 		} else {
-			return true;
+			true
 		}
 	});
 

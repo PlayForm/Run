@@ -3,7 +3,7 @@ name = "innkeeper"
 version = "0.0.11"
 description = "🍺 Inn is a tiny Rust utility that lets execute commands in different directories."
 license = "MIT"
-default-run = "inn"
+default-run = "Inn"
 repository = "https://github.com/NikolaRHristov/Inn.git"
 
 [dependencies]

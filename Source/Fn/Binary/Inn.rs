@@ -1,3 +1,5 @@
+use crate::Variable::Match;
+
 fn main() {
-	inn::run()
+	Match::run()
 }
