@@ -4,7 +4,7 @@ extern crate rayon;
 extern crate walkdir;
 
 use self::{
-	clap::{Arg, ArgAction, Command as ClapCommand},
+	clap::{Arg, ArgAction::SetTrue, Command as ClapCommand},
 	crossbeam::scope,
 	rayon::prelude::*,
 	walkdir::WalkDir,
@@ -26,7 +26,7 @@ pub fn run() {
 			Arg::new("File")
 				.short('F')
 				.long("File")
-				.action(ArgAction::SetTrue)
+				.action(SetTrue)
 				.display_order(1)
 				.value_name("FILE")
 				.required(false)
@@ -36,7 +36,7 @@ pub fn run() {
 			Arg::new("Parallel")
 				.short('P')
 				.long("Parallel")
-				.action(ArgAction::SetTrue)
+				.action(SetTrue)
 				.display_order(2)
 				.value_name("PARALLEL")
 				.required(false)
