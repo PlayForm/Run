@@ -47,7 +47,7 @@ parallel. Default is sequential.
 Inn -P -R D:\Developer .git git fetch upstream
 ```
 
-## Dependencies:
+## Dependencies
 
 The code imports several crates:
 
