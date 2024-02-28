@@ -1,1 +1,1 @@
-mod function;
+pub mod function;

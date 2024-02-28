@@ -1,1 +1,1 @@
-mod Inn;
+pub mod inn;

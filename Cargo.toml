@@ -3,7 +3,7 @@ name = "innkeeper"
 version = "0.0.11"
 description = "🍺 Inn is a tiny Rust utility that lets execute commands in different directories."
 license = "MIT"
-default-run = "Inn"
+default-run = "inn"
 repository = "https://github.com/NikolaRHristov/Inn.git"
 autobins = false
 autobenches = false
@@ -18,9 +18,9 @@ crossbeam = { version = "0.8.4" }
 toml = "0.8.10"
 
 [[bin]]
-name = "Inn"
-path = "src/function/Binary/Inn.rs"
+name = "inn"
+path = "src/function/binary/inn.rs"
 
 [[bin]]
-name = "Innkeeper"
-path = "src/function/Binary/Innkeeper.rs"
+name = "innkeeper"
+path = "src/function/binary/innkeeper.rs"

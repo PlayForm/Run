@@ -1,2 +1,2 @@
-mod Binary;
-mod Command;
+pub mod binary;
+pub mod command;

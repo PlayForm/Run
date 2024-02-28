@@ -1,2 +1,2 @@
-mod Inn;
-mod Innkeeper;
+pub mod inn;
+pub mod innkeeper;
