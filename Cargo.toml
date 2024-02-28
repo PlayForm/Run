@@ -17,12 +17,10 @@ rayon = { version = "1.8.1" }
 crossbeam = { version = "0.8.4" }
 toml = "0.8.10"
 
-#[allow(non_snake_case)]
 [[bin]]
 name = "Inn"
 path = "Source/Function/Binary/Inn.rs"
 
-#[allow(non_snake_case)]
 [[bin]]
 name = "Innkeeper"
 path = "Source/Function/Binary/Innkeeper.rs"
