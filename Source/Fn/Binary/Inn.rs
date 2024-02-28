@@ -1,5 +1,6 @@
-use crate::Variable::Match;
+use crate::Fn::Command::Inn;
 
+#[allow(dead_code)]
 fn main() {
-	Match::run()
+	Inn::run()
 }

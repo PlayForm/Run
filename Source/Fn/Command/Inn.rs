@@ -1,18 +1,25 @@
-use clap::{Arg, ArgAction, Command as ClapCommand};
-use crossbeam::scope;
-use rayon::prelude::*;
+extern crate clap;
+extern crate crossbeam;
+extern crate rayon;
+extern crate walkdir;
+
+use self::{
+	clap::{Arg, ArgAction, Command as ClapCommand},
+	crossbeam::scope,
+	rayon::prelude::*,
+	walkdir::WalkDir,
+};
 use std::{
 	fs,
 	io::Read,
 	process::{Command, Stdio},
 };
-use walkdir::WalkDir;
 
 pub fn run() {
 	let matches = ClapCommand::new("Innkeeper")
 		.version(env!("CARGO_PKG_VERSION"))
 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
-		.about("Runs a command in all directories having a certain pattern.")
+		.about("Run a command in all directories having a certain pattern.")
 		.arg(
 			Arg::new("file")
 				.short('f')
@@ -93,56 +100,60 @@ pub fn run() {
 	if parallel {
 		println!("Executing code in parallel.");
 
-		// Parallel
-		let dirs = entries
-			.map(|entry| {
-				let entry_dir = entry.unwrap().path().display().to_string();
-				let paths: Vec<&str> = entry_dir.split(ds).collect();
-
-				match paths.last() {
-					Some(last) => {
-						if last == pattern {
-							let working_directory =
-								&paths[0..paths.len() - 1].join(&ds.to_string());
-							Some(working_directory.to_owned())
-						} else {
-							None
-						}
-					}
-					None => None,
-				}
-			})
-			.filter_map(|x| x)
-			.collect::<Vec<String>>();
-
+		// Execution: Parallel
 		scope(|s| {
-			dirs.into_par_iter().for_each_with(s, |scope, dir| {
-				scope.spawn(move |_| {
-					println!("Executing {} for every {} in {}", command, dir, root);
+			entries
+				.map(|entry| {
+					let entry_dir = entry.unwrap().path().display().to_string();
+					let paths: Vec<&str> = entry_dir.split(ds).collect();
 
-					let output = match cfg!(target_os = "windows") {
-						true => Command::new("cmd")
-							.args(["/C", command.as_str()])
-							.current_dir(dir)
-							.output()
-							.expect("Failed to execute process."),
-						false => Command::new("sh")
-							.arg("-c")
-							.current_dir(dir)
-							.arg(command)
-							.output()
-							.expect("Failed to execute process."),
-					};
+					match paths.last() {
+						Some(last) => {
+							if last == pattern {
+								let working_directory =
+									&paths[0..paths.len() - 1].join(&ds.to_string());
+								Some(working_directory.to_owned())
+							} else {
+								None
+							}
+						}
+						None => None,
+					}
+				})
+				.filter_map(|x| x)
+				.collect::<Vec<String>>()
+				.into_par_iter()
+				.for_each_with(s, |scope, dir| {
+					scope.spawn(move |_| {
+						println!("Executing {} for every {} in {}", command, dir, root);
 
-					println!("{}", String::from_utf8_lossy(&output.stdout));
+						println!(
+							"{}",
+							String::from_utf8_lossy(
+								&match cfg!(target_os = "windows") {
+									true => Command::new("cmd")
+										.args(["/C", command.as_str()])
+										.current_dir(dir)
+										.output()
+										.expect("Failed to execute process."),
+									false => Command::new("sh")
+										.arg("-c")
+										.current_dir(dir)
+										.arg(command)
+										.output()
+										.expect("Failed to execute process."),
+								}
+								.stdout
+							)
+						);
+					});
 				});
-			});
 		})
 		.unwrap();
 	} else {
 		println!("Executing code in sequential.");
 
-		// Sequential
+		// Execution: Sequential
 		for entry in entries {
 			let entry_dir = entry.unwrap().path().display().to_string();
 			let paths: Vec<&str> = entry_dir.split(ds).collect();
