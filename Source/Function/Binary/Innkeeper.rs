@@ -1,4 +1,4 @@
 #[allow(dead_code)]
 pub fn main() {
-	run()
+	crate::Function::Command::Inn::run()
 }
