@@ -1,2 +1,2 @@
-pub(crate) mod Inn;
-pub(crate) mod Innkeeper;
+pub mod Inn;
+pub mod Innkeeper;

@@ -1,1 +1,1 @@
-pub(crate) mod Inn;
+pub mod Inn;

@@ -15,6 +15,7 @@ use std::{
 	process::{Command, Stdio},
 };
 
+#[allow(dead_code)]
 pub fn run() {
 	let matches = ClapCommand::new("Innkeeper")
 		.version(env!("CARGO_PKG_VERSION"))
