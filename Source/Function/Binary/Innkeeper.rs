@@ -1,4 +1,4 @@
-use crate::Fn::Command::Inn;
+use Function::Command::Inn;
 
 #[allow(dead_code)]
 fn main() {
