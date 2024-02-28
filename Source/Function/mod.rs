@@ -1,2 +1,2 @@
-pub mod Binary;
-pub mod Command;
+pub(crate) mod Binary;
+pub(crate) mod Command;

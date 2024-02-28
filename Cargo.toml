@@ -14,13 +14,14 @@ crossbeam = { version = "0.8.4" }
 toml = "0.8.10"
 
 [lib]
+
 name = "Library"
 path = "Source/Library.rs"
 
 [[bin]]
 name = "Inn"
-path = "Source/Function/Binary/Inn.rs"
+path = "Source/HAHA/Binary/Inn.rs"
 
 [[bin]]
 name = "Innkeeper"
-path = "Source/Function/Binary/Innkeeper.rs"
+path = "Source/HAHA/Binary/Innkeeper.rs"
