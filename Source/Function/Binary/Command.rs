@@ -97,19 +97,18 @@ pub fn run() {
 	let Separator = std::path::MAIN_SEPARATOR;
 
 	let Entry = WalkDir::new(Root).into_iter().filter_entry(|Entry| {
+		println!("{:?}", Entry);
 		println!("{:?}", Exclude);
 
-		if !Pattern.contains("node_modules") {
-			return !Entry.path().display().to_string().contains("node_modules");
-		}
+		return !Entry.path().display().to_string().contains("node_modules");
 
-		if !File {
-			println!("{:?}", Entry.path().display().to_string().contains("node_modules"));
+		// if !File {
+		// 	println!("{:?}", Entry.path().display().to_string().contains("node_modules"));
 
-			fs::metadata(Entry.path().display().to_string().clone()).unwrap().is_dir()
-		} else {
-			true
-		}
+		// 	fs::metadata(Entry.path().display().to_string().clone()).unwrap().is_dir()
+		// } else {
+		// 	true
+		// }
 	});
 
 	if Parallel {
