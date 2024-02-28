@@ -17,7 +17,7 @@ use std::{
 
 #[allow(dead_code)]
 pub fn run() {
-	let matches = ClapCommand::new("Innkeeper")
+	let Match = ClapCommand::new("Innkeeper")
 		.version(env!("CARGO_PKG_VERSION"))
 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 		.about("Run a command in all directories having a certain pattern.")
@@ -71,48 +71,48 @@ pub fn run() {
 		)
 		.get_matches();
 
-	let file = matches.get_flag("file");
-	let parallel = matches.get_flag("parallel");
-	let root = matches.get_one::<String>("root").unwrap();
-	let pattern = matches.get_one::<String>("pattern").unwrap();
-	let command = &matches
+	let File = Match.get_flag("file");
+	let Parallel = Match.get_flag("parallel");
+	let Root = Match.get_one::<String>("root").unwrap();
+	let Pattern = Match.get_one::<String>("pattern").unwrap();
+	let Command = &Match
 		.get_many::<String>("command")
 		.unwrap_or_default()
 		.map(|v| v.as_str())
 		.collect::<Vec<_>>()
 		.join(" ");
 
-	let ds = std::path::MAIN_SEPARATOR;
+	let Separator = std::path::MAIN_SEPARATOR;
 
-	let entries = WalkDir::new(root).into_iter().filter_entry(|e| {
-		if !pattern.contains("node_modules") {
-			return e.path().display().to_string().contains("node_modules");
+	let Entry = WalkDir::new(Root).into_iter().filter_entry(|Entry| {
+		if !Pattern.contains("node_modules") {
+			return !Entry.path().display().to_string().contains("node_modules");
 		}
 
-		if !file {
-			println!("{:?}", e.path().display().to_string().contains("node_modules"));
+		if !File {
+			println!("{:?}", Entry.path().display().to_string().contains("node_modules"));
 
-			fs::metadata(e.path().display().to_string().clone()).unwrap().is_dir()
+			fs::metadata(Entry.path().display().to_string().clone()).unwrap().is_dir()
 		} else {
 			true
 		}
 	});
 
-	if parallel {
+	if Parallel {
 		println!("Executing code in parallel.");
 
 		// Execution: Parallel
 		scope(|s| {
-			entries
-				.map(|entry| {
-					let entry_dir = entry.unwrap().path().display().to_string();
-					let paths: Vec<&str> = entry_dir.split(ds).collect();
+			Entry
+				.map(|Entry| {
+					let entry_dir = Entry.unwrap().path().display().to_string();
+					let paths: Vec<&str> = entry_dir.split(Separator).collect();
 
 					match paths.last() {
 						Some(last) => {
-							if last == pattern {
+							if last == Pattern {
 								let working_directory =
-									&paths[0..paths.len() - 1].join(&ds.to_string());
+									&paths[0..paths.len() - 1].join(&Separator.to_string());
 								Some(working_directory.to_owned())
 							} else {
 								None
@@ -126,21 +126,21 @@ pub fn run() {
 				.into_par_iter()
 				.for_each_with(s, |scope, dir| {
 					scope.spawn(move |_| {
-						println!("Executing {} for every {} in {}", command, dir, root);
+						println!("Executing {} for every {} in {}", Command, dir, Root);
 
 						println!(
 							"{}",
 							String::from_utf8_lossy(
 								&match cfg!(target_os = "windows") {
 									true => Command::new("cmd")
-										.args(["/C", command.as_str()])
+										.args(["/C", Command.as_str()])
 										.current_dir(dir)
 										.output()
 										.expect("Failed to execute process."),
 									false => Command::new("sh")
 										.arg("-c")
 										.current_dir(dir)
-										.arg(command)
+										.arg(Command)
 										.output()
 										.expect("Failed to execute process."),
 								}
@@ -155,19 +155,19 @@ pub fn run() {
 		println!("Executing code in sequential.");
 
 		// Execution: Sequential
-		for entry in entries {
-			let entry_dir = entry.unwrap().path().display().to_string();
-			let paths: Vec<&str> = entry_dir.split(ds).collect();
+		for Entry in Entry {
+			let entry_dir = Entry.unwrap().path().display().to_string();
+			let paths: Vec<&str> = entry_dir.split(Separator).collect();
 
 			if let Some(last) = paths.last() {
-				if last == pattern {
-					let working_directory = &paths[0..paths.len() - 1].join(&ds.to_string());
+				if last == Pattern {
+					let working_directory = &paths[0..paths.len() - 1].join(&Separator.to_string());
 
-					println!("Executing {} for every {} in {}", command, last, root);
+					println!("Executing {} for every {} in {}", Command, last, Root);
 
 					let child = match cfg!(target_os = "windows") {
 						true => Command::new("cmd")
-							.args(["/C", command])
+							.args(["/C", Command])
 							.current_dir(working_directory)
 							.stdout(Stdio::piped())
 							.spawn()
@@ -175,7 +175,7 @@ pub fn run() {
 						false => Command::new("sh")
 							.arg("-c")
 							.current_dir(working_directory)
-							.arg(command)
+							.arg(Command)
 							.stdout(Stdio::piped())
 							.spawn()
 							.expect("Failed to execute process."),
