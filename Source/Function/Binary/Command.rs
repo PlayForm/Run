@@ -9,6 +9,7 @@ use self::{
 	rayon::prelude::*,
 	walkdir::WalkDir,
 };
+
 use std::{
 	fs,
 	io::Read,
