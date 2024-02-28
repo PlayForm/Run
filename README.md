@@ -1,4 +1,4 @@
-# [Inn] 🍺
+# 🍺 [Inn]
 
 Inn is a tiny Rust utility that lets execute commmands in different directories
 concurrently.
