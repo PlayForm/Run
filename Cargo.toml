@@ -1,7 +1,7 @@
 [package]
 name = "innkeeper"
 version = "0.0.14"
-description = "🍺 Inn is a tiny Rust utility that lets execute commands in different directories."
+description = "🍺 Innkeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
 license = "MIT"
 default-run = "Inn"
 repository = "https://github.com/NikolaRHristov/Inn.git"
