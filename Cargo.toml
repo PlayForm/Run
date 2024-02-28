@@ -19,8 +19,8 @@ path = "Source/Library.rs"
 
 [[bin]]
 name = "Inn"
-path = "Source/Functon/Binary/Inn.rs"
+path = "Source/Function/Binary/Inn.rs"
 
 [[bin]]
 name = "Innkeeper"
-path = "Source/Functon/Binary/Innkeeper.rs"
+path = "Source/Function/Binary/Innkeeper.rs"

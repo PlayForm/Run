@@ -1,6 +1,6 @@
-use crate::Function::Command::Inn;
+use crate::Function::Command::Inn::run;
 
 #[allow(dead_code)]
-fn main() {
-	Inn::run()
+pub fn main() {
+	run()
 }
