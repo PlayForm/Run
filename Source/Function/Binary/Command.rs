@@ -53,8 +53,18 @@ pub fn run() {
 				.default_value("."),
 		)
 		.arg(
-			Arg::new("Pattern")
+			Arg::new("Exclude")
+				.short('E')
+				.long("Exclude")
 				.display_order(4)
+				.value_name("EXCLUDE")
+				.required(false)
+				.help("Exclude pattern.")
+				.default_value("node_modules .git target dist vendor"),
+		)
+		.arg(
+			Arg::new("Pattern")
+				.display_order(5)
 				.value_name("PATTERN")
 				.required(true)
 				.help("Search pattern.")
@@ -63,7 +73,7 @@ pub fn run() {
 		.arg(
 			Arg::new("Command")
 				.num_args(0..=10)
-				.display_order(5)
+				.display_order(6)
 				.value_name("COMMAND")
 				.required(true)
 				.allow_hyphen_values(true)
@@ -75,6 +85,7 @@ pub fn run() {
 	let File = Match.get_flag("File");
 	let Parallel = Match.get_flag("Parallel");
 	let Root = Match.get_one::<String>("Root").unwrap();
+	let Exclude = Match.get_one::<String>("Exclude").unwrap();
 	let Pattern = Match.get_one::<String>("Pattern").unwrap();
 	let Command = &Match
 		.get_many::<String>("Command")
@@ -86,6 +97,8 @@ pub fn run() {
 	let Separator = std::path::MAIN_SEPARATOR;
 
 	let Entry = WalkDir::new(Root).into_iter().filter_entry(|Entry| {
+		println!("{:?}", Exclude);
+
 		if !Pattern.contains("node_modules") {
 			return !Entry.path().display().to_string().contains("node_modules");
 		}
