@@ -1,6 +1,6 @@
 [package]
 name = "innkeeper"
-version = "0.0.12"
+version = "0.0.13"
 description = "🍺 Inn is a tiny Rust utility that lets execute commands in different directories."
 license = "MIT"
 default-run = "Inn"
@@ -10,12 +10,6 @@ autobenches = false
 autotests = false
 autoexamples = false
 
-[dependencies]
-clap = { version = "4.5.1", features = ["derive"] }
-walkdir = { version = "2.4.0" }
-rayon = { version = "1.9.0" }
-crossbeam = { version = "0.8.4" }
-
 [[bin]]
 name = "Inn"
 path = "Source/Function/Binary/Inn.rs"
@@ -23,3 +17,9 @@ path = "Source/Function/Binary/Inn.rs"
 [[bin]]
 name = "Innkeeper"
 path = "Source/Function/Binary/Innkeeper.rs"
+
+[dependencies]
+clap = { version = "4.5.1", features = ["derive"] }
+crossbeam = { version = "0.8.4" }
+rayon = { version = "1.9.0" }
+walkdir = { version = "2.4.0" }

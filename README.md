@@ -1,7 +1,9 @@
 # 🍺 [Inn]
 
-Inn is a tiny Rust utility that lets execute commmands in different directories
-concurrently.
+Innkeeper is a command-line tool designed to execute a specified command in all
+directories that match a certain pattern within a given root directory. It
+provides flexibility and efficiency in running commands across multiple
+directories with customizable patterns.
 
 [Inn]: https://crates.io/crates/innkeeper
 
@@ -44,6 +46,15 @@ parallel. Default is sequential.
 ```sh
 Inn -P -R D:\Developer .git git fetch upstream
 ```
+
+## Dependencies:
+
+The code imports several crates:
+
+-   `clap` - For parsing command-line arguments.
+-   `crossbeam` - Used for creating scoped threads.
+-   `rayon` - Enables parallel execution of tasks.
+-   `walkdir` - Facilitates filesystem traversal.
 
 ## Changelog
 
