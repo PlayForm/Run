@@ -17,14 +17,10 @@ rayon = { version = "1.8.1" }
 crossbeam = { version = "0.8.4" }
 toml = "0.8.10"
 
-[lib]
-name = "Library"
-path = "Source/Library.rs"
-
 [[bin]]
 name = "Inn"
-path = "Source/Function_/Binary/Inn.rs"
+path = "src/function/Binary/Inn.rs"
 
 [[bin]]
 name = "Innkeeper"
-path = "Source/Function_/Binary/Innkeeper.rs"
+path = "src/function/Binary/Innkeeper.rs"
