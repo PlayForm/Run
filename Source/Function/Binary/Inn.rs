@@ -1,6 +1,6 @@
-mod run;
+mod Command;
 
-use run::run;
+use Command::run;
 
 fn main() {
 	run()
