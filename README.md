@@ -29,9 +29,29 @@ sys 0m0.046s</pre>
 			<pre>time find -iname .git -type d -execdir ls \;</pre>
 		</td>
 		<td>
-			<pre>real 0m14.293s
+			<pre>real 0m14.293s +5s
 user 0m4.645s
 sys 0m8.937s</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>time Inn -P .git git status</pre>
+		</td>
+		<td>
+			<pre>real 0m24.146s
+user 0m0.030s
+sys 0m0.062s</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>time find -iname .git -type d -execdir ls \;</pre>
+		</td>
+		<td>
+			<pre>real 0m28.584s +4s
+user 0m4.695s
+sys 0m8.354s</pre>
 		</td>
 	</tr>
 </table>
