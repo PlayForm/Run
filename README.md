@@ -12,10 +12,13 @@ directories with customizable patterns.
 <table>
 	<tr>
 		<td>
-			<code>time Inn -P .git ls<code>
+			<code>sh
+				time Inn -P .git ls
+			<code>
 		</td>
 		<td>
-			<code>real 0m9.441s
+			<code>sh
+				real 0m9.441s
 				user 0m0.030s
 				sys 0m0.046s
 			<code>
@@ -23,10 +26,13 @@ directories with customizable patterns.
 	</tr>
 	<tr>
 		<td>
-			<code>time find -iname .git -type d -execdir ls \;<code>
+			<code>sh
+				time find -iname .git -type d -execdir ls \;
+			<code>
 		</td>
 		<td>
-			<code>real 0m9.441s
+			<code>sh
+				real 0m9.441s
 				user 0m0.030s
 				sys 0m0.046s
 			<code>
