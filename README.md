@@ -16,42 +16,62 @@ directories with customizable patterns.
 	</tr>
 	<tr>
 		<td>
-			<pre>time Inn -P .git ls</pre>
+			<pre>Inn -P .git ls</pre>
 		</td>
 		<td>
-			<pre>real 0m9.441s
-user 0m0.030s
-sys 0m0.046s</pre>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<pre>time find -iname .git -type d -execdir ls \;</pre>
-		</td>
-		<td>
-			<pre>real 0m14.293s +5s
-user 0m4.645s
-sys 0m8.937s</pre>
+			<pre>real    0m9.441s
+user    0m0.030s
+sys     0m0.046s</pre>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<pre>time Inn -P .git git status</pre>
+			<pre>find -iname .git -type d -execdir ls \;</pre>
 		</td>
 		<td>
-			<pre>real 0m24.146s
-user 0m0.030s
-sys 0m0.062s</pre>
+			<pre>real    0m14.293s +5s
+user    0m4.645s
+sys     0m8.937s</pre>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<pre>time find -iname .git -type d -execdir ls \;</pre>
+			<pre>Inn -P .git git status</pre>
 		</td>
 		<td>
-			<pre>real 0m28.584s +4s
-user 0m4.695s
-sys 0m8.354s</pre>
+			<pre>real    0m24.146s
+user    0m0.030s
+sys     0m0.062s</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>find -iname .git -type d -execdir ls \;</pre>
+		</td>
+		<td>
+			<pre>real    0m28.584s +4s
+user    0m4.695s
+sys     0m8.354s</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>Inn -P .git 'git add . && git commit -m "squash!" && git sync'</pre>
+		</td>
+		<td>
+			<pre>real    0m33.813s
+user    0m0.015s
+sys     0m0.060s</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>find -iname .git -type d -execdir bash -c 'git add . && git commit -m "squash!" && git sync' \;</pre>
+		</td>
+		<td>
+			<pre>real    0m53.122s
+user    0m9.449s
+sys     0m14.442s</pre>
 		</td>
 	</tr>
 </table>
