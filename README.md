@@ -12,29 +12,29 @@ directories with customizable patterns.
 <table>
 	<tr>
 		<td>
-			<code>sh
-				time Inn -P .git ls
+			<code>
+time Inn -P .git ls
 			<code>
 		</td>
 		<td>
-			<code>sh
-				real 0m9.441s
-				user 0m0.030s
-				sys 0m0.046s
+			<code>
+real 0m9.441s
+user 0m0.030s
+sys 0m0.046s
 			<code>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<code>sh
-				time find -iname .git -type d -execdir ls \;
+			<code>
+time find -iname .git -type d -execdir ls \;
 			<code>
 		</td>
 		<td>
-			<code>sh
-				real 0m9.441s
-				user 0m0.030s
-				sys 0m0.046s
+			<code>
+real 0m9.441s
+user 0m0.030s
+sys 0m0.046s
 			<code>
 		</td>
 	</tr>
