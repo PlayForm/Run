@@ -16,30 +16,22 @@ directories with customizable patterns.
 	</tr>
 	<tr>
 		<td>
-			<pre>
-time Inn -P .git ls
-			<pre>
+			<pre>time Inn -P .git ls<pre>
 		</td>
 		<td>
-			<pre>
-real 0m9.441s
+			<pre>real 0m9.441s
 user 0m0.030s
-sys 0m0.046s
-			<pre>
+sys 0m0.046s<pre>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<pre>
-time find -iname .git -type d -execdir ls \;
-			<pre>
+			<pre>time find -iname .git -type d -execdir ls \;<pre>
 		</td>
 		<td>
-			<pre>
-real 0m9.441s
+			<pre>real 0m9.441s
 user 0m0.030s
-sys 0m0.046s
-			<pre>
+sys 0m0.046s<pre>
 		</td>
 	</tr>
 </table>
