@@ -1,12 +1,7 @@
 use clap::{Arg, ArgAction::SetTrue, Command as CommandClap};
+use std::process::{Command, Stdio};
 use tokio::process::Command as CommandTokio;
 use walkdir::WalkDir;
-
-use std::{
-	fs,
-	io::Read,
-	process::{Command, Stdio},
-};
 
 #[allow(dead_code)]
 pub fn run() {
@@ -93,7 +88,7 @@ pub fn run() {
 
 		!Exclude.clone().into_iter().filter(|Exclude| Pattern != Exclude).any(|Exclude| {
 			if File {
-				fs::metadata(Path.clone()).unwrap().is_dir() && Path.contains(Exclude)
+				std::fs::metadata(Path.clone()).unwrap().is_dir() && Path.contains(Exclude)
 			} else {
 				Path.contains(Exclude)
 			}
@@ -192,7 +187,7 @@ pub fn run() {
 
 					loop {
 						let mut Buffer = [0; 512];
-						let Byte = Out.read(&mut Buffer).expect("Failed to read from pipe");
+						let Byte = std::io::Read::read(&mut Out, &mut Buffer).expect("Failed to read from pipe");
 
 						if Byte == 0 {
 							break;

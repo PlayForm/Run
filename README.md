@@ -7,6 +7,14 @@ directories with customizable patterns.
 
 [Inn]: https://crates.io/crates/innkeeper
 
+## Benchmark
+
+
+```sh
+time Inn -P .git ls
+```
+
+
 ## Installation
 
 ```sh
