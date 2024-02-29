@@ -12,24 +12,24 @@ directories with customizable patterns.
 <table>
 	<tr>
 		<td>
-			<pre>time Inn -P .git ls<pre>
+			<code>time Inn -P .git ls<code>
 		</td>
 		<td>
-			<pre>real 0m9.441s
+			<code>real 0m9.441s
 				user 0m0.030s
 				sys 0m0.046s
-			<pre>
+			<code>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<pre>time find -iname .git -type d -execdir ls \;<pre>
+			<code>time find -iname .git -type d -execdir ls \;<code>
 		</td>
 		<td>
-			<pre>real 0m9.441s
+			<code>real 0m9.441s
 				user 0m0.030s
 				sys 0m0.046s
-			<pre>
+			<code>
 		</td>
 	</tr>
 </table>
