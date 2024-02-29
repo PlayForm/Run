@@ -12,15 +12,15 @@ directories with customizable patterns.
 <table>
 	<tr>
 		<td>
-```sh
+<pre>
 time Inn -P .git ls
-```</td>
+<pre></td>
 		<td>
-		```sh
+		<pre>
 real 0m9.441s
 user 0m0.030s
 sys 0m0.046s
-```
+<pre>
 </td>
 	</tr>
 </table>
