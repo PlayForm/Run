@@ -10,6 +10,7 @@ path = "Source/Function/Binary/Innkeeper.rs"
 clap = { features = ["derive"], version = "4.5.1" }
 crossbeam = { version = "0.8.4" }
 rayon = { version = "1.9.0" }
+tokio = { features = ["full"], version = "1.36.0" }
 walkdir = "2.4.0"
 
 [package]
@@ -23,3 +24,4 @@ license = "MIT"
 name = "innkeeper"
 repository = "https://github.com/NikolaRHristov/Inn.git"
 version = "0.0.16"
+edition = "2021"

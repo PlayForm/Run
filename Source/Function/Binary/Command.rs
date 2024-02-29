@@ -5,10 +5,9 @@ extern crate walkdir;
 
 use self::{
 	clap::{Arg, ArgAction::SetTrue, Command as ClapCommand},
-	crossbeam::scope,
-	rayon::prelude::*,
 	walkdir::WalkDir,
 };
+use tokio::process::Command as CommandTokio;
 
 use std::{
 	fs,
@@ -112,53 +111,49 @@ pub fn run() {
 		println!("Executing code in parallel.");
 
 		// Execution: Parallel
-		scope(|Scope| {
-			Entry
-				.map(|Entry| {
-					let Path = Entry.unwrap().path().display().to_string();
-					let Path: Vec<&str> = Path.split(Separator).collect();
+		let mut Task = Vec::new();
 
-					match Path.last() {
-						Some(Last) => {
-							if Last == Pattern {
-								Some(Path[0..Path.len() - 1].join(&Separator.to_string()))
-							} else {
-								None
-							}
+		Entry
+			.map(|Entry| {
+				let Path = Entry.unwrap().path().display().to_string();
+				let Path: Vec<&str> = Path.split(Separator).collect();
+
+				match Path.last() {
+					Some(Last) => {
+						if Last == Pattern {
+							Some(Path[0..Path.len() - 1].join(&Separator.to_string()))
+						} else {
+							None
 						}
-						None => None,
 					}
-				})
-				.filter_map(|Entry| Entry)
-				.collect::<Vec<String>>()
-				.into_par_iter()
-				.for_each_with(Scope, |Scope, Directory| {
-					Scope.spawn(move |_| {
-						println!("Executing {} for every {} in {}", Command, Directory, Root);
+					None => None,
+				}
+			})
+			.filter_map(|Entry| Entry)
+			.for_each(|Directory| {
+				let command = CommandTokio::new("sh")
+					.arg("-c")
+					.current_dir(Directory.clone())
+					.arg(Command)
+					.output();
 
-						println!(
-							"{}",
-							String::from_utf8_lossy(
-								&match cfg!(target_os = "windows") {
-									true => Command::new("cmd")
-										.args(["/C", Command.as_str()])
-										.current_dir(Directory)
-										.output()
-										.expect("Failed to execute process."),
-									false => Command::new("sh")
-										.arg("-c")
-										.current_dir(Directory)
-										.arg(Command)
-										.output()
-										.expect("Failed to execute process."),
-								}
-								.stdout
-							)
-						);
-					});
+				Task.push(async move {
+					println!("Executing {} for every {} in {}", Command, Directory, Root);
+
+					println!(
+						"{}",
+						String::from_utf8_lossy(
+							&command.await.expect("Failed to execute process.").stdout
+						)
+					);
 				});
-		})
-		.unwrap();
+			});
+
+		tokio::runtime::Runtime::new().unwrap().block_on(async {
+			for Task in Task {
+				Task.await;
+			}
+		});
 	} else {
 		println!("Executing code in sequential.");
 
