@@ -66,7 +66,7 @@ sys     0m0.060s</pre>
 	</tr>
 	<tr>
 		<td>
-			<pre>find -iname .git -type d -execdir
+			<pre>find -iname .git -type d -execdir \
 bash -c 'git add . && git commit -m "squash!" && git sync' \;</pre>
 		</td>
 		<td>
