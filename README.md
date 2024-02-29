@@ -70,7 +70,7 @@ sys     0m0.060s</pre>
 bash -c 'git add . && git commit -m "squash!" && git sync' \;</pre>
 		</td>
 		<td>
-			<pre>real    0m53.122s
+			<pre>real    0m53.122s +20s
 user    0m9.449s
 sys     0m14.442s</pre>
 		</td>
