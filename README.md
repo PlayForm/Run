@@ -30,8 +30,8 @@ sys     0m0.046s</pre>
 		</td>
 		<td>
 			<pre>real    0m14.293s +5s
-user    0m4.645s
-sys     0m8.937s</pre>
+user    0m4.645s +4s
+sys     0m8.937s +8s</pre>
 		</td>
 	</tr>
 	<tr>
@@ -50,8 +50,8 @@ sys     0m0.062s</pre>
 		</td>
 		<td>
 			<pre>real    0m28.584s +4s
-user    0m4.695s
-sys     0m8.354s</pre>
+user    0m4.695s +4s
+sys     0m8.354s +8s</pre>
 		</td>
 	</tr>
 	<tr>
@@ -71,8 +71,8 @@ bash -c 'git add . && git commit -m "squash!" && git sync' \;</pre>
 		</td>
 		<td>
 			<pre>real    0m53.122s +20s
-user    0m9.449s
-sys     0m14.442s</pre>
+user    0m9.449s +9s
+sys     0m14.442s +14s</pre>
 		</td>
 	</tr>
 </table>
