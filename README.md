@@ -10,7 +10,7 @@ directories with customizable patterns.
 ## Benchmark
 
 <table>
-<tr>
+	<tr>
 		<th>Command:</th>
 		<th>Time:</th>
 	</tr>
