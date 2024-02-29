@@ -131,11 +131,20 @@ pub fn run() {
 			})
 			.filter_map(|Entry| Entry)
 			.for_each(|Directory| {
-				let command = CommandTokio::new("sh")
-					.arg("-c")
-					.current_dir(Directory.clone())
-					.arg(Command)
-					.output();
+				let mut command;
+
+				if cfg!(target_os = "windows") {
+					command = CommandTokio::new("cmd")
+						.args(["/C", Command.as_str()])
+						.current_dir(Directory)
+						.output();
+				} else {
+					command = CommandTokio::new("sh")
+						.arg("-c")
+						.current_dir(Directory)
+						.arg(Command)
+						.output();
+				}
 
 				Task.push(async move {
 					println!("Executing {} for every {} in {}", Command, Directory, Root);
