@@ -9,11 +9,21 @@ directories with customizable patterns.
 
 ## Benchmark
 
-
+<table>
+	<tr>
+		<td>
 ```sh
 time Inn -P .git ls
+```</td>
+		<td>
+		```sh
+real 0m9.441s
+user 0m0.030s
+sys 0m0.046s
 ```
-
+</td>
+	</tr>
+</table>
 
 ## Installation
 
