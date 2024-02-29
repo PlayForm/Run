@@ -104,7 +104,7 @@ pub fn run() {
 		println!("Executing code in parallel.");
 
 		// Execution: Parallel
-		let mut Task = Vec::new();
+		let mut Queue = Vec::new();
 
 		Entry
 			.map(|Entry| {
@@ -124,35 +124,35 @@ pub fn run() {
 			})
 			.filter_map(|Entry| Entry)
 			.for_each(|Directory| {
-				let command;
+				let Output;
 
 				if cfg!(target_os = "windows") {
-					command = CommandTokio::new("cmd")
+					Output = CommandTokio::new("cmd")
 						.args(["/C", Command.as_str()])
 						.current_dir(Directory.clone())
 						.output();
 				} else {
-					command = CommandTokio::new("sh")
+					Output = CommandTokio::new("sh")
 						.arg("-c")
 						.current_dir(Directory.clone())
 						.arg(Command)
 						.output();
 				}
 
-				Task.push(async move {
+				Queue.push(async move {
 					println!("Executing {} for every {} in {}", Command, Directory, Root);
 
 					println!(
 						"{}",
 						String::from_utf8_lossy(
-							&command.await.expect("Failed to execute process.").stdout
+							&Output.await.expect("Failed to execute process.").stdout
 						)
 					);
 				});
 			});
 
 		tokio::runtime::Runtime::new().unwrap().block_on(async {
-			for Task in Task {
+			for Task in Queue {
 				Task.await;
 			}
 		});
