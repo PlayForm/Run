@@ -99,11 +99,11 @@ pub fn run() {
 	let Entry = WalkDir::new(Root).into_iter().filter_entry(|Entry| {
 		let Path = Entry.path().display().to_string();
 
-		!Exclude.clone().into_iter().any(|Pattern| {
+		!Exclude.clone().into_iter().filter(|Exclude| Pattern != Exclude).any(|Exclude| {
 			if File {
-				fs::metadata(Path.clone()).unwrap().is_dir() && Path.contains(Pattern)
+				fs::metadata(Path.clone()).unwrap().is_dir() && Path.contains(Exclude)
 			} else {
-				Path.contains(Pattern)
+				Path.contains(Exclude)
 			}
 		})
 	});
@@ -129,11 +129,11 @@ pub fn run() {
 						None => None,
 					}
 				})
-				.filter_map(|x| x)
+				.filter_map(|Entry| Entry)
 				.collect::<Vec<String>>()
 				.into_par_iter()
 				.for_each_with(Scope, |Scope, Directory| {
-					Scope.spawn(move |_Scope| {
+					Scope.spawn(move |_| {
 						println!("Executing {} for every {} in {}", Command, Directory, Root);
 
 						println!(

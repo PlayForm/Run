@@ -22,4 +22,4 @@ description = "🍺 Innkeeper is a command-line tool designed to execute a speci
 license = "MIT"
 name = "innkeeper"
 repository = "https://github.com/NikolaRHristov/Inn.git"
-version = "0.0.15"
+version = "0.0.16"

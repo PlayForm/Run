@@ -1,3 +1,7 @@
+## 0.0.16
+
+-   Add exclude
+
 ## 0.0.15
 
 -   Add exclude
