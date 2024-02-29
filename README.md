@@ -10,32 +10,36 @@ directories with customizable patterns.
 ## Benchmark
 
 <table>
+<tr>
+		<th>Command:</th>
+		<th>Time:</th>
+	</tr>
 	<tr>
 		<td>
-			<code>
+			<pre>
 time Inn -P .git ls
-			<code>
+			<pre>
 		</td>
 		<td>
-			<code>
+			<pre>
 real 0m9.441s
 user 0m0.030s
 sys 0m0.046s
-			<code>
+			<pre>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<code>
+			<pre>
 time find -iname .git -type d -execdir ls \;
-			<code>
+			<pre>
 		</td>
 		<td>
-			<code>
+			<pre>
 real 0m9.441s
 user 0m0.030s
 sys 0m0.046s
-			<code>
+			<pre>
 		</td>
 	</tr>
 </table>
