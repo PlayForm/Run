@@ -152,8 +152,8 @@ pub fn run() {
 			});
 
 		tokio::runtime::Runtime::new().unwrap().block_on(async {
-			for Task in Queue {
-				Task.await;
+			for Queue in Queue {
+				Queue.await;
 			}
 		});
 	} else {
