@@ -1,6 +1,6 @@
 ## 0.0.16
 
--   Add exclude
+-   Add tokio
 
 ## 0.0.15
 

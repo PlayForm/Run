@@ -1,13 +1,6 @@
-extern crate clap;
-extern crate crossbeam;
-extern crate rayon;
-extern crate walkdir;
-
-use self::{
-	clap::{Arg, ArgAction::SetTrue, Command as ClapCommand},
-	walkdir::WalkDir,
-};
+use clap::{Arg, ArgAction::SetTrue, Command as CommandClap};
 use tokio::process::Command as CommandTokio;
+use walkdir::WalkDir;
 
 use std::{
 	fs,
@@ -17,7 +10,7 @@ use std::{
 
 #[allow(dead_code)]
 pub fn run() {
-	let Match = ClapCommand::new("Innkeeper")
+	let Match = CommandClap::new("Innkeeper")
 		.version(env!("CARGO_PKG_VERSION"))
 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 		.about("Run a command in all directories having a certain pattern.")
@@ -131,17 +124,17 @@ pub fn run() {
 			})
 			.filter_map(|Entry| Entry)
 			.for_each(|Directory| {
-				let mut command;
+				let command;
 
 				if cfg!(target_os = "windows") {
 					command = CommandTokio::new("cmd")
 						.args(["/C", Command.as_str()])
-						.current_dir(Directory)
+						.current_dir(Directory.clone())
 						.output();
 				} else {
 					command = CommandTokio::new("sh")
 						.arg("-c")
-						.current_dir(Directory)
+						.current_dir(Directory.clone())
 						.arg(Command)
 						.output();
 				}
@@ -177,7 +170,7 @@ pub fn run() {
 
 					println!("Executing {} for every {} in {}", Command, Last, Root);
 
-					let Command = match cfg!(target_os = "windows") {
+					let mut Out = match cfg!(target_os = "windows") {
 						true => Command::new("cmd")
 							.args(["/C", Command])
 							.current_dir(Directory)
@@ -191,9 +184,9 @@ pub fn run() {
 							.stdout(Stdio::piped())
 							.spawn()
 							.expect("Failed to execute process."),
-					};
-
-					let mut Out = Command.stdout.expect("Failed to get stdout handle");
+					}
+					.stdout
+					.expect("Failed to get stdout handle");
 
 					let mut Output = String::new();
 
