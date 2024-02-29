@@ -29,9 +29,9 @@ sys 0m0.046s<pre>
 			<pre>time find -iname .git -type d -execdir ls \;<pre>
 		</td>
 		<td>
-			<pre>real 0m9.441s
-user 0m0.030s
-sys 0m0.046s<pre>
+			<pre>real 0m14.293s
+user 0m4.645s
+sys 0m8.937s<pre>
 		</td>
 	</tr>
 </table>
