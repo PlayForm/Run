@@ -2,5 +2,5 @@
 mod Command;
 
 fn main() {
-	Command::run()
+	Command::Fn()
 }

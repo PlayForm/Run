@@ -1,7 +1,7 @@
-use clap::{Arg, ArgAction::SetTrue, Command};
+use clap::{Arg, ArgAction::SetTrue, ArgMatches, Command};
 
-pub fn Get() {
-	let Match = Command::new("Innkeeper")
+pub fn Fn() -> ArgMatches {
+	Command::new("Innkeeper")
 		.version(env!("CARGO_PKG_VERSION"))
 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 		.about("Run a command in all directories having a certain pattern.")
@@ -63,5 +63,5 @@ pub fn Get() {
 				.allow_negative_numbers(true)
 				.help("Command to run."),
 		)
-		.get_matches();
+		.get_matches()
 }

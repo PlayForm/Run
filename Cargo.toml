@@ -1,10 +1,10 @@
 [[bin]]
 name = "Inn"
-path = "Source/Function/Binary/Inn.rs"
+path = "Source/Fn/Binary/Inn.rs"
 
 [[bin]]
 name = "Innkeeper"
-path = "Source/Function/Binary/Innkeeper.rs"
+path = "Source/Fn/Binary/Innkeeper.rs"
 
 [dependencies]
 clap = { features = ["derive"], version = "4.5.1" }
