@@ -1,12 +1,16 @@
 use tokio::process::Command as CommandTokio;
 
-pub fn Fn(Separator) {
+use crate::Command::Execution::Struct;
+
+pub fn Fn(Option: Struct) {
 	println!("Executing code in parallel.");
+
+	let Struct { Entry, Separator, Pattern, Command, .. } = Option;
 
 	// Execution: Parallel
 	let mut Queue = Vec::new();
 
-	Entry
+	for Entry in Entry
 		.map(|Entry| {
 			let Path = Entry.unwrap().path().display().to_string();
 			let Path: Vec<&str> = Path.split(Separator).collect();
@@ -23,28 +27,23 @@ pub fn Fn(Separator) {
 			}
 		})
 		.filter_map(|Entry| Entry)
-		.for_each(|Directory| {
-			let Output;
+	{
+		let Output;
 
-			if cfg!(target_os = "windows") {
-				Output = CommandTokio::new("cmd")
-					.args(["/C", Command.as_str()])
-					.current_dir(Directory)
-					.output();
-			} else {
-				Output =
-					CommandTokio::new("sh").arg("-c").current_dir(Directory).arg(&Command).output();
-			}
+		if cfg!(target_os = "windows") {
+			Output =
+				CommandTokio::new("cmd").args(["/C", Command.as_str()]).current_dir(Entry).output();
+		} else {
+			Output = CommandTokio::new("sh").arg("-c").current_dir(Entry).arg(&Command).output();
+		}
 
-			Queue.push(async move {
-				println!(
-					"{}",
-					String::from_utf8_lossy(
-						&Output.await.expect("Failed to execute process.").stdout
-					)
-				);
-			});
+		Queue.push(async move {
+			println!(
+				"{}",
+				String::from_utf8_lossy(&Output.await.expect("Failed to execute process.").stdout)
+			);
 		});
+	}
 
 	tokio::runtime::Runtime::new().unwrap().block_on(async {
 		for Queue in Queue {

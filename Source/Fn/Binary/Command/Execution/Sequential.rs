@@ -3,17 +3,15 @@ use std::{
 	process::{Command, Stdio},
 };
 
-use super::super::Entry::Fn as Entry;
-use crate::Command::Parameter;
+use crate::Command::Execution::Struct;
 
-pub fn Fn() {
-	let Parameter::Struct { File, Parallel, Root, Exclude, Pattern, Command } =
-		Parameter::Struct::Fn();
-
+pub fn Fn(Option: Struct) {
 	println!("Executing code in sequential.");
 
+	let Struct { Entry, Separator, Pattern, Command, .. } = Option;
+
 	// Execution: Sequential
-	for Entry in Entry() {
+	for Entry in Entry {
 		let Path = Entry.unwrap().path().display().to_string();
 		let Path: Vec<&str> = Path.split(Separator).collect();
 

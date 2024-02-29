@@ -1,13 +1,18 @@
 mod Match;
 
+pub type Pattern = String;
+pub type Command = String;
+pub type Separator = char;
+
 #[derive(Debug)]
 pub struct Struct {
 	pub File: bool,
 	pub Parallel: bool,
 	pub Root: String,
 	pub Exclude: Vec<String>,
-	pub Pattern: String,
+	pub Pattern: Pattern,
 	pub Command: String,
+	pub Separator: Separator,
 }
 
 impl Struct {
