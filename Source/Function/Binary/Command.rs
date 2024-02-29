@@ -11,7 +11,6 @@ use self::{
 };
 
 use std::{
-	collections::btree_map::Entry,
 	fs,
 	io::Read,
 	process::{Command, Stdio},
@@ -97,23 +96,16 @@ pub fn run() {
 
 	let Separator = std::path::MAIN_SEPARATOR;
 
-	Exclude.for_each(|f| {
-		println!("{:?}", f);
-	});
-
 	let Entry = WalkDir::new(Root).into_iter().filter_entry(|Entry| {
-		// println!("{:?}", Entry);
-		// println!("{:?}", Exclude);
+		let Path = Entry.path().display().to_string();
 
-		return !Entry.path().display().to_string().contains("node_modules");
-
-		// if !File {
-		// 	println!("{:?}", Entry.path().display().to_string().contains("node_modules"));
-
-		// 	fs::metadata(Entry.path().display().to_string().clone()).unwrap().is_dir()
-		// } else {
-		// 	true
-		// }
+		!Exclude.clone().into_iter().any(|Pattern| {
+			if File {
+				fs::metadata(Path.clone()).unwrap().is_dir() && Path.contains(Pattern)
+			} else {
+				Path.contains(Pattern)
+			}
+		})
 	});
 
 	if Parallel {
@@ -123,8 +115,8 @@ pub fn run() {
 		scope(|Scope| {
 			Entry
 				.map(|Entry| {
-					let Directory = Entry.unwrap().path().display().to_string();
-					let Path: Vec<&str> = Directory.split(Separator).collect();
+					let Path = Entry.unwrap().path().display().to_string();
+					let Path: Vec<&str> = Path.split(Separator).collect();
 
 					match Path.last() {
 						Some(Last) => {
@@ -172,8 +164,8 @@ pub fn run() {
 
 		// Execution: Sequential
 		for Entry in Entry {
-			let Directory = Entry.unwrap().path().display().to_string();
-			let Path: Vec<&str> = Directory.split(Separator).collect();
+			let Path = Entry.unwrap().path().display().to_string();
+			let Path: Vec<&str> = Path.split(Separator).collect();
 
 			if let Some(Last) = Path.last() {
 				if Last == Pattern {

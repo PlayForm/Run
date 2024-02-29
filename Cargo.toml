@@ -13,9 +13,6 @@ path = "Source/Function/Binary/Innkeeper.rs"
 [dependencies]
 clap = { features = ["derive"], version = "4.5.1" }
 crossbeam = { version = "0.8.4" }
-glob = "0.3.1"
-globset = "0.4.14"
-ignore = "0.4.22"
 rayon = { version = "1.9.0" }
 walkdir = "2.4.0"
 
