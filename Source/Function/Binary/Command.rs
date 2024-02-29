@@ -1,5 +1,8 @@
 use clap::{Arg, ArgAction::SetTrue, Command as CommandClap};
-use std::process::{Command, Stdio};
+use std::{
+	io::Read,
+	process::{Command, Stdio},
+};
 use tokio::process::Command as CommandTokio;
 use walkdir::WalkDir;
 
@@ -187,7 +190,7 @@ pub fn run() {
 
 					loop {
 						let mut Buffer = [0; 512];
-						let Byte = std::io::Read::read(&mut Out, &mut Buffer).expect("Failed to read from pipe");
+						let Byte = Out.read(&mut Buffer).expect("Failed to read from pipe");
 
 						if Byte == 0 {
 							break;
