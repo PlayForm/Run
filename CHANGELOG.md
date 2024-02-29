@@ -1,3 +1,7 @@
+## 0.0.15
+
+-   Add exclude
+
 ## 0.0.14
 
 -   Cleanup

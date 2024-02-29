@@ -1,8 +1,4 @@
 [[bin]]
-name = "Glob"
-path = "Source/Function/Binary/Glob.rs"
-
-[[bin]]
 name = "Inn"
 path = "Source/Function/Binary/Inn.rs"
 
@@ -26,4 +22,4 @@ description = "🍺 Innkeeper is a command-line tool designed to execute a speci
 license = "MIT"
 name = "innkeeper"
 repository = "https://github.com/NikolaRHristov/Inn.git"
-version = "0.0.14"
+version = "0.0.15"
