@@ -52,8 +52,7 @@ Inn -P -R D:\Developer .git git fetch upstream
 The code imports several crates:
 
 -   `clap` - For parsing command-line arguments.
--   `crossbeam` - Used for creating scoped threads.
--   `rayon` - Enables parallel execution of tasks.
+-   `tokio` - Enables parallel execution of tasks.
 -   `walkdir` - Facilitates filesystem traversal.
 
 ## Changelog
