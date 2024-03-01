@@ -3,7 +3,7 @@ mod Parallel;
 mod Sequential;
 
 #[derive(Debug)]
-pub struct Struct {
+pub(crate) struct Struct {
 	pub Separator: Option::Separator,
 	pub Fn: fn(),
 }

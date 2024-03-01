@@ -1,4 +1,4 @@
-pub struct Struct {
+pub(crate) struct Struct {
 	pub Command: super::Option::Command,
 	pub Entry: todo!(),
 	pub Pattern: super::Option::Pattern,

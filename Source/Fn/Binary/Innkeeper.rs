@@ -1,6 +1,6 @@
-#![allow(non_snake_case)]
-mod Command;
+// #![allow(non_snake_case)]
+// mod Command;
 
 fn main() {
-	(Command::Struct::Fn().Fn)();
+	// (Command::Struct::Fn().Fn)();
 }
