@@ -1,1 +1,1 @@
-pub mod Command;
+pub mod Binary;

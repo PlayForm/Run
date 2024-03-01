@@ -1,6 +1,4 @@
-use crate::Command::Struct as Option;
-
-mod Match;
+use crate::{Fn::Binary::Command::Fn, Struct::Binary::Command::Struct as Option};
 
 pub type Command = String;
 pub type Parallel = bool;
@@ -21,17 +19,17 @@ pub struct Struct {
 impl Struct {
 	pub fn Fn(Option { Separator, .. }: Option) -> Self {
 		Self {
-			File: Match::Fn().get_flag("File"),
-			Parallel: Match::Fn().get_flag("Parallel"),
-			Root: Match::Fn().get_one::<String>("Root").expect("Cannot Root.").to_owned(),
-			Exclude: Match::Fn()
+			File: Fn().get_flag("File"),
+			Parallel: Fn().get_flag("Parallel"),
+			Root: Fn().get_one::<String>("Root").expect("Cannot Root.").to_owned(),
+			Exclude: Fn()
 				.get_one::<String>("Exclude")
 				.expect("Cannot Exclude.")
 				.split(" ")
 				.map(|Command| Command.to_string())
 				.collect::<Vec<_>>(),
-			Pattern: Match::Fn().get_one::<String>("Pattern").expect("Cannot Pattern").to_owned(),
-			Command: Match::Fn()
+			Pattern: Fn().get_one::<String>("Pattern").expect("Cannot Pattern").to_owned(),
+			Command: Fn()
 				.get_many::<String>("Command")
 				.expect("Cannot Command")
 				.map(|Command| Command.as_str())

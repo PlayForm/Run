@@ -2,5 +2,5 @@
 // mod Command;
 
 fn main() {
-	// (Command::Struct::Fn().Fn)();
+	(crate::Struct::Command::Struct::Fn().Fn)();
 }

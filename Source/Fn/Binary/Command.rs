@@ -1,3 +1,7 @@
+pub mod Entry;
+pub mod Parallel;
+pub mod Sequential;
+
 pub fn Fn() -> ArgMatches {
 	Command::new("Innkeeper")
 		.version(env!("CARGO_PKG_VERSION"))
