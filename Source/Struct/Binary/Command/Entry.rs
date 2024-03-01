@@ -1,6 +1,6 @@
 pub struct Struct {
 	pub Command: Command,
-	pub Entry: todo!("Implement this to have the same type as in Entry"),
+	pub Entry: todo!("Implement this to have the same type as the function return type Entry"),
 	pub Pattern: Pattern,
 	pub Separator: Separator,
 	pub Parallel: Parallel,
