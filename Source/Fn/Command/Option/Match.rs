@@ -1,5 +1,3 @@
-use clap::{Arg, ArgAction::SetTrue, ArgMatches, Command};
-
 pub fn Fn() -> ArgMatches {
 	Command::new("Innkeeper")
 		.version(env!("CARGO_PKG_VERSION"))
@@ -65,3 +63,5 @@ pub fn Fn() -> ArgMatches {
 		)
 		.get_matches()
 }
+
+use clap::{Arg, ArgAction::SetTrue, ArgMatches, Command};

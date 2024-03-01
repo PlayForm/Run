@@ -1,7 +1,3 @@
-use crate::Command::Option::Struct as Option;
-
-use walkdir::WalkDir;
-
 pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) {
 	WalkDir::new(Root)
 		// TODO: BENCH THIS
@@ -26,3 +22,7 @@ pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) {
 		})
 		.collect::<Vec<_>>();
 }
+
+use crate::Command::Option::Struct as Option;
+
+use walkdir::WalkDir;
