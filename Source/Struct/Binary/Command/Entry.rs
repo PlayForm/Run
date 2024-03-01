@@ -9,12 +9,12 @@ pub struct Struct {
 }
 
 impl Struct {
-	pub fn Fn(Option: Option) -> Self {
+	pub fn Fn(Option: &Option) -> Self {
 		Self {
-			Command: Option.Command,
+			Command: Option.Command.clone(),
 			Entry: crate::Fn::Binary::Command::Entry::Fn(Option),
 			Parallel: Option.Parallel,
-			Pattern: Option.Pattern,
+			Pattern: Option.Pattern.clone(),
 			Separator: Option.Separator,
 		}
 	}

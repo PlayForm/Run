@@ -3,7 +3,6 @@ pub type Parallel = bool;
 pub type Pattern = String;
 pub type Separator = char;
 
-#[derive(Debug)]
 pub struct Struct {
 	pub Command: String,
 	pub Exclude: Vec<String>,

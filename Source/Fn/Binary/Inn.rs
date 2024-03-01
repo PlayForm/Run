@@ -1,6 +1,3 @@
-// #![allow(non_snake_case)]
-// mod Command;
-
 fn main() {
-	// (Command::Struct::Fn().Fn)();
+	(crate::Struct::Binary::Command::Struct::Fn().Fn)();
 }

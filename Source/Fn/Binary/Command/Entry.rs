@@ -1,4 +1,4 @@
-pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) -> Return {
+pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: &Option) -> Return {
 	WalkDir::new(Root)
 		// TODO: BENCH THIS
 		.max_open(60)
@@ -6,7 +6,7 @@ pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) -> Ret
 		.filter_entry(move |Entry| {
 			let Path = Entry.path().display().to_string();
 
-			!Exclude.clone().into_iter().filter(|Exclude| Pattern != *Exclude).any(
+			!Exclude.clone().into_iter().filter(|Exclude| *Pattern != *Exclude).any(
 				|Exclude| {
 					match File {
 						true => {
@@ -18,7 +18,7 @@ pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) -> Ret
 			)
 		})
 		.map(|Entry| {
-			Entry.unwrap().path().display().to_string().split(Separator).collect::<Vec<_>>()
+			Entry.unwrap().path().display().to_string().split(*Separator).collect::<Vec<_>>()
 		})
 		.collect::<Vec<_>>()
 }

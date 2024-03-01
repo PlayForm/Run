@@ -14,11 +14,7 @@ impl Struct {
 		Self {
 			Separator: std::path::MAIN_SEPARATOR,
 			Fn: || {
-				let Option = Entry::Struct::Fn(
-					Option::Struct::Fn(
-							Struct::Fn()
-						)
-				);
+				let Option = Entry::Struct::Fn(&Option::Struct::Fn(Struct::Fn()));
 
 				match Option.Parallel {
 					true => {
