@@ -26,5 +26,5 @@ description = "🍺 Inn lets you execute parallel commands in multiple directori
 license = "MIT"
 name = "innkeeper"
 repository = "https://github.com/NikolaRHristov/Inn.git"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"

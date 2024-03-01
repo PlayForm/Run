@@ -1,8 +1,8 @@
-pub type Entry = Vec<Vec<String>>;
+pub type Type = Vec<Vec<String>>;
 
 pub struct Struct {
 	pub Command: Command,
-	pub Entry: Entry,
+	pub Entry: Type,
 	pub Parallel: Parallel,
 	pub Pattern: Pattern,
 	pub Separator: Separator,

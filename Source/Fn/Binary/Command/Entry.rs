@@ -3,10 +3,10 @@ pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: &Option) -> Re
 		// TODO: BENCH THIS
 		.max_open(60)
 		.into_iter()
-		.filter_entry( |Entry| {
-			let Path = Entry.path().display().to_string();
+		.filter_map( |Entry| {
+			let Path = Entry.expect("Cannot Entry.").path().display().to_string();
 
-			!Exclude.clone().into_iter().filter(|Exclude| *Pattern != *Exclude).any(
+			if !Exclude.clone().into_iter().filter(|Exclude| *Pattern != *Exclude).any(
 				|Exclude| {
 					match File {
 						true => {
@@ -15,14 +15,15 @@ pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: &Option) -> Re
 						false => Path.contains(&Exclude),
 					}
 				},
-			)
-
+			) {
+				Some(Path.split(*Separator).map(|Entry| Entry.to_string()).collect())
+			} else {
+				None
+			}
 		})
-		.filter_map(|Entry| Entry.ok())		
-		.map(|Entry| Entry.path().display().to_string().split(*Separator).map(|Entry| Entry.to_string()).collect())
 		.collect::<Vec<_>>()
 }
 
-use crate::Struct::Binary::Command::{Entry::Entry as Return, Option::Struct as Option};
+use crate::Struct::Binary::Command::{Entry::Type as Return, Option::Struct as Option};
 
 use walkdir::WalkDir;

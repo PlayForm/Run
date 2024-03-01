@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
-pub mod Fn;
-pub mod Struct;
+mod Fn;
+mod Struct;
 
 #[allow(dead_code)]
 fn main() {
