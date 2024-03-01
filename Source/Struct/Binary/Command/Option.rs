@@ -1,5 +1,3 @@
-use crate::{Fn::Binary::Command::Fn, Struct::Binary::Command::Struct as Option};
-
 pub type Command = String;
 pub type Parallel = bool;
 pub type Pattern = String;
@@ -39,3 +37,5 @@ impl Struct {
 		}
 	}
 }
+
+use crate::{Fn::Binary::Command::Fn, Struct::Binary::Command::Struct as Option};

@@ -1,19 +1,23 @@
-pub(crate) struct Struct {
-	// pub Command: super::Option::Command,
-	// pub Entry: todo!(),
-	// pub Pattern: super::Option::Pattern,
-	// pub Separator: super::Option::Separator,
-	// pub Parallel: super::Option::Parallel,
+pub struct Struct {
+	pub Command: Command,
+	pub Entry: todo!("Implement this to have the same type as in Entry"),
+	pub Pattern: Pattern,
+	pub Separator: Separator,
+	pub Parallel: Parallel,
 }
 
 impl Struct {
-	// pub fn Fn(Option: Option) -> Self {
-		// Self {
-			// Command: Option.Command,
-			// Entry: super::Entry::Fn(Option),
-			// Pattern: Option.Pattern,
-			// Separator: Option.Separator,
-			// Parallel: Option.Parallel,
-		// }
-	// }
+	pub fn Fn(Option: Option) -> Self {
+		Self {
+			Command: Option.Command,
+			Entry: crate::Fn::Binary::Command::Entry::Fn(Option),
+			Pattern: Option.Pattern,
+			Separator: Option.Separator,
+			Parallel: Option.Parallel,
+		}
+	}
 }
+
+use crate::Struct::Binary::Command::Option::{
+	Command, Parallel, Pattern, Separator, Struct as Option,
+};

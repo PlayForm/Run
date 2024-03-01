@@ -23,6 +23,6 @@ pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) {
 		.collect::<Vec<_>>();
 }
 
-use crate::Command::Option::Struct as Option;
+use crate::Struct::Binary::Command::Option::Struct as Option;
 
 use walkdir::WalkDir;

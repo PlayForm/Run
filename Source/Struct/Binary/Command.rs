@@ -1,7 +1,5 @@
-mod Entry;
-mod Option;
-// mod Parallel;
-// mod Sequential;
+pub mod Entry;
+pub mod Option;
 
 use crate::Fn::Binary::Command::{Parallel, Sequential};
 
@@ -16,7 +14,11 @@ impl Struct {
 		Self {
 			Separator: std::path::MAIN_SEPARATOR,
 			Fn: || {
-				let Option = Entry::Struct::Fn(Option::Struct::Fn(Struct::Fn()));
+				let Option = Entry::Struct::Fn(
+					Option::Struct::Fn(
+							Struct::Fn()
+						)
+				);
 
 				match Option.Parallel {
 					true => {
