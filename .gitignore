@@ -5,7 +5,5 @@ Cargo.lock
 /Target/release/*
 !/Target/release/*.deb
 !/Target/release/*.exe
-!/Target/release/inn
-!/Target/release/innkeeper
 !/Target/release/Inn
 !/Target/release/Innkeeper
