@@ -1,7 +1,4 @@
 pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
-	println!("Executing code in parallel.");
-
-	// Execution: Parallel
 	let mut Queue = Vec::new();
 
 	for Entry in Entry
@@ -35,7 +32,7 @@ pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 		});
 	}
 
-	tokio::runtime::Runtime::new().unwrap().block_on(async {
+	tokio::runtime::Runtime::new().expect("Cannot Runtime.").block_on(async {
 		for Queue in Queue {
 			Queue.await;
 		}

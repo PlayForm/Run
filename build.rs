@@ -10,7 +10,7 @@ fn main() {
 			.expect("Failed to read Cargo.toml.")
 			.lines()
 			.find(|Line| Line.starts_with("version"))
-			.unwrap()
+			.expect("Cannot version.")
 			.split('=')
 			.nth(1)
 			.expect("Invalid version line format.")

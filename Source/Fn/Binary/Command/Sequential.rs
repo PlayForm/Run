@@ -1,7 +1,4 @@
-pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
-	println!("Executing code in sequential.");
-
-	// Execution: Sequential
+pub fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
 	for Entry in Entry {
 		if let Some(Last) = Entry.last() {
 			if *Last == Pattern {
