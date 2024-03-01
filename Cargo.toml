@@ -1,15 +1,15 @@
 [[bin]]
 name = "Inn"
-path = "Source/Fn/Binary/Inn.rs"
+path = "Source/Library.rs"
 
 [[bin]]
 name = "Innkeeper"
-path = "Source/Fn/Binary/Innkeeper.rs"
+path = "Source/Library.rs"
 
 [dependencies]
 clap = { features = ["derive"], version = "4.5.1" }
 tokio = { features = ["full"], version = "1.36.0" }
-walkdir = "2.4.0"
+walkdir = "2.5.0"
 
 [lib]
 crate-type = ["staticlib", "cdylib", "rlib"]

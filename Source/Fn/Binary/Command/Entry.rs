@@ -16,10 +16,10 @@ pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: &Option) -> Re
 					}
 				},
 			)
+
 		})
-		.map( |Entry| {
-			Entry.unwrap().path().display().to_string().split(*Separator).collect::<Vec<_>>()
-		})
+		.filter_map(|Entry| Entry.ok())		
+		.map(|Entry| Entry.path().display().to_string().split(*Separator).map(|Entry| Entry.to_string()).collect())
 		.collect::<Vec<_>>()
 }
 

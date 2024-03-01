@@ -1,4 +1,4 @@
-pub type Entry = Vec<Vec<&'static str>>;
+pub type Entry = Vec<Vec<String>>;
 
 pub struct Struct {
 	pub Command: Command,
