@@ -1,9 +1,11 @@
+pub type Entry = Vec<Vec<&'static str>>;
+
 pub struct Struct {
 	pub Command: Command,
-	pub Entry: todo!("Implement this to have the same type as the function return type Entry"),
+	pub Entry: Entry,
+	pub Parallel: Parallel,
 	pub Pattern: Pattern,
 	pub Separator: Separator,
-	pub Parallel: Parallel,
 }
 
 impl Struct {
@@ -11,9 +13,9 @@ impl Struct {
 		Self {
 			Command: Option.Command,
 			Entry: crate::Fn::Binary::Command::Entry::Fn(Option),
+			Parallel: Option.Parallel,
 			Pattern: Option.Pattern,
 			Separator: Option.Separator,
-			Parallel: Option.Parallel,
 		}
 	}
 }

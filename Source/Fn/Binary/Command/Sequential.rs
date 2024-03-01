@@ -1,7 +1,5 @@
-pub fn Fn(Option: Option) {
+pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	println!("Executing code in sequential.");
-
-	let Option { Entry, Separator, Pattern, Command, .. } = Option;
 
 	// Execution: Sequential
 	for Entry in Entry {
@@ -46,7 +44,7 @@ pub fn Fn(Option: Option) {
 	}
 }
 
-use crate::Command::Entry::Struct as Option;
+use crate::Struct::Binary::Command::Entry::Struct as Option;
 
 use std::{
 	io::Read,

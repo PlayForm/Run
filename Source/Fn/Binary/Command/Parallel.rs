@@ -1,12 +1,11 @@
-pub fn Fn(Option: Option) {
+pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	println!("Executing code in parallel.");
-
-	let Option { Entry, Separator, Pattern, Command, .. } = Option;
 
 	// Execution: Parallel
 	let mut Queue = Vec::new();
 
 	for Entry in Entry
+		.into_iter()
 		.map(|Entry| match Entry.last() {
 			Some(Last) => {
 				if *Last == Pattern {
@@ -43,6 +42,6 @@ pub fn Fn(Option: Option) {
 	});
 }
 
-use crate::Command::Entry::Struct as Option;
+use crate::Struct::Binary::Command::Entry::Struct as Option;
 
 use tokio::process::Command as CommandTokio;

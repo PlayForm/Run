@@ -1,4 +1,4 @@
-pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) {
+pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) -> Return {
 	WalkDir::new(Root)
 		// TODO: BENCH THIS
 		.max_open(60)
@@ -20,9 +20,9 @@ pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) {
 		.map(|Entry| {
 			Entry.unwrap().path().display().to_string().split(Separator).collect::<Vec<_>>()
 		})
-		.collect::<Vec<_>>();
+		.collect::<Vec<_>>()
 }
 
-use crate::Struct::Binary::Command::Option::Struct as Option;
+use crate::Struct::Binary::Command::{Entry::Entry as Return, Option::Struct as Option};
 
 use walkdir::WalkDir;
