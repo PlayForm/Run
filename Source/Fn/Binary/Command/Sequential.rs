@@ -1,23 +1,13 @@
-use std::{
-	io::Read,
-	process::{Command, Stdio},
-};
-
-use crate::Command::Execution::Struct;
-
-pub fn Fn(Option: Struct) {
+pub fn Fn(Option: Option) {
 	println!("Executing code in sequential.");
 
-	let Struct { Entry, Separator, Pattern, Command, .. } = Option;
+	let Option { Entry, Separator, Pattern, Command, .. } = Option;
 
 	// Execution: Sequential
 	for Entry in Entry {
-		let Path = Entry.unwrap().path().display().to_string();
-		let Path: Vec<&str> = Path.split(Separator).collect();
-
-		if let Some(Last) = Path.last() {
+		if let Some(Last) = Entry.last() {
 			if *Last == Pattern {
-				let Directory = &Path[0..Path.len() - 1].join(&Separator.to_string());
+				let Directory = &Entry[0..Entry.len() - 1].join(&Separator.to_string());
 
 				let mut Out = match cfg!(target_os = "windows") {
 					true => Command::new("cmd")
@@ -55,3 +45,10 @@ pub fn Fn(Option: Struct) {
 		}
 	}
 }
+
+use crate::Command::Entry::Struct as Option;
+
+use std::{
+	io::Read,
+	process::{Command, Stdio},
+};

@@ -2,5 +2,5 @@
 mod Command;
 
 fn main() {
-	Command::Fn()
+	(Command::Struct::Fn().Fn)();
 }

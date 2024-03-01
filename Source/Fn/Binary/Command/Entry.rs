@@ -1,22 +1,28 @@
+use crate::Command::Option::Struct as Option;
+
 use walkdir::WalkDir;
 
-use crate::Command::Option::Struct;
-
-pub fn Fn(Option: Struct) {
-	let Struct { Root, Exclude, File, Pattern, Separator, .. } = Option;
-
+pub fn Fn(Option { File, Root, Exclude, Pattern, Separator, .. }: Option) {
 	WalkDir::new(Root)
+		// TODO: BENCH THIS
+		.max_open(60)
 		.into_iter()
 		.filter_entry(move |Entry| {
 			let Path = Entry.path().display().to_string();
 
-			!Exclude.clone().into_iter().filter(|Exclude| Pattern != *Exclude).any(|Exclude| {
-				if File {
-					std::fs::metadata(&Path).unwrap().is_dir() && Path.contains(&Exclude)
-				} else {
-					Path.contains(&Exclude)
-				}
-			})
+			!Exclude.clone().into_iter().filter(|Exclude| Pattern != *Exclude).any(
+				|Exclude| {
+					match File {
+						true => {
+							std::fs::metadata(&Path).unwrap().is_dir() && Path.contains(&Exclude)
+						}
+						false => Path.contains(&Exclude),
+					}
+				},
+			)
 		})
-		.map(|Entry| Entry.unwrap().path().display().to_string().split(Separator).collect())
+		.map(|Entry| {
+			Entry.unwrap().path().display().to_string().split(Separator).collect::<Vec<_>>()
+		})
+		.collect::<Vec<_>>();
 }
