@@ -29,6 +29,4 @@ pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 }
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
-
-// use crossbeam::deque;
 use tokio::process::Command as CommandTokio;
