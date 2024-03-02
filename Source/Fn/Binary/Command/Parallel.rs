@@ -3,7 +3,7 @@ pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	let Deque = std::sync::Arc::new(std::sync::Mutex::new(deque::Worker::new_fifo()));
 	let mut Stealer = Vec::new();
 
-	for _ in 0..6 {
+	for _ in 0..12 {
 		Stealer.push(Deque.lock().unwrap().stealer());
 	}
 
