@@ -1,11 +1,11 @@
-# 🍺 [Inn]
+# 🍺 [Inn2]
 
-Innkeeper is a command-line tool designed to execute a specified command in all
+Inn2 is a command-line tool designed to execute a specified command in all
 directories that match a certain pattern within a given root directory. It
 provides flexibility and efficiency in running commands across multiple
 directories with customizable patterns.
 
-[Inn]: https://crates.io/crates/innkeeper
+[Inn2]: https://crates.io/crates/inn2
 
 ## Benchmark
 
