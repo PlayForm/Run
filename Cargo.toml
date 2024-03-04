@@ -22,5 +22,5 @@ description = "🍺 INN2 lets you execute parallel commands in multiple director
 license = "MIT"
 name = "inn2"
 repository = "https://github.com/NikolaRHristov/INN2.git"
-version = "0.1.6"
+version = "0.0.1"
 edition = "2021"
