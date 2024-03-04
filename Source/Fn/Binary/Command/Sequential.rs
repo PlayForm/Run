@@ -14,23 +14,23 @@ pub fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
 					.current_dir(Entry)
 					.stdout(Stdio::piped())
 					.spawn()
-					.expect("Failed to execute process."),
+					.expect("Cannot spawn."),
 				false => Command::new("sh")
 					.arg("-c")
 					.current_dir(Entry)
 					.arg(Command.clone())
 					.stdout(Stdio::piped())
 					.spawn()
-					.expect("Failed to execute process."),
+					.expect("Cannot spawn."),
 			}
 			.stdout
-			.expect("Failed to get stdout handle");
+			.expect("Cannot stdout.");
 
 			let mut Output = String::new();
 
 			loop {
 				let mut Buffer = [0; 512];
-				let Byte = Out.read(&mut Buffer).expect("Failed to read from pipe");
+				let Byte = Out.read(&mut Buffer).expect("Cannot read.");
 
 				if Byte == 0 {
 					break;

@@ -7,13 +7,13 @@ fn main() {
 	println!(
 		"cargo:rustc-env=CARGO_PKG_VERSION={}",
 		fs::read_to_string("Cargo.toml")
-			.expect("Failed to read Cargo.toml.")
+			.expect("Cannot Cargo.toml.")
 			.lines()
 			.find(|Line| Line.starts_with("version"))
-			.expect("Cannot version.")
+			.expect("Cannot Version.")
 			.split('=')
 			.nth(1)
-			.expect("Invalid version line format.")
+			.expect("Cannot nth.")
 			.trim()
 			.trim_matches('"')
 	);
