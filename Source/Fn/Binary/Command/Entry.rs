@@ -4,11 +4,18 @@ pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }: &Option) -> Re
 		.filter_map(|Entry| {
 			let Path = Entry.expect("Cannot Entry.").path().display().to_string();
 
+			// TODO: Separate this into Entry/Exclude.rs
 			if !Exclude.clone().into_iter().filter(|Exclude| *Pattern != *Exclude).any(|Exclude| {
 				let Match = Path.contains(&Exclude);
 
+				println!("{:?}", Path);
+
 				match File {
-					true => std::fs::metadata(&Path).expect("Cannot Metadata.").is_dir() && Match,
+					true => {
+						std::fs::metadata(std::path::PathBuf::from(&Path))
+							.expect("Cannot Metadata.")
+							.is_dir() && Match
+					}
 					false => Match,
 				}
 			}) {
