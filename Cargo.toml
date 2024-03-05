@@ -1,5 +1,5 @@
 [[bin]]
-name = "INN2"
+name = "Innkeeper"
 path = "Source/Library.rs"
 
 [dependencies]
@@ -17,10 +17,10 @@ autobenches = false
 autobins = false
 autoexamples = false
 autotests = false
-default-run = "INN2"
-description = "🍺 INN2 lets you execute parallel commands in multiple directories."
+default-run = "Innkeeper"
+description = "🍺 Innkeeper lets you execute parallel commands in multiple directories."
 license = "MIT"
-name = "inn2"
-repository = "https://github.com/NikolaRHristov/INN2.git"
+name = "innkeeper"
+repository = "https://github.com/NikolaRHristov/Innkeeper.git"
 version = "0.0.2"
 edition = "2021"

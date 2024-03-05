@@ -1,11 +1,11 @@
-# 🍺 [INN2]
+# 🍺 [Innkeeper]
 
-INN2 is a command-line tool designed to execute a specified command in all
+Innkeeper is a command-line tool designed to execute a specified command in all
 directories that match a certain pattern within a given root directory. It
 provides flexibility and efficiency in running commands across multiple
 directories with customizable patterns.
 
-[INN2]: https://crates.io/crates/inn2
+[Innkeeper]: https://crates.io/crates/innkeeper
 
 ## Benchmark
 
@@ -16,7 +16,7 @@ directories with customizable patterns.
 	</tr>
 	<tr>
 		<td>
-			<pre>INN2 -P .git ls</pre>
+			<pre>Innkeeper -P .git ls</pre>
 		</td>
 		<td>
 			<pre>real    0m9.441s
@@ -36,7 +36,7 @@ sys     0m8.937s +8s</pre>
 	</tr>
 	<tr>
 		<td>
-			<pre>INN2 -P .git git status</pre>
+			<pre>Innkeeper -P .git git status</pre>
 		</td>
 		<td>
 			<pre>real    0m24.146s
@@ -56,7 +56,7 @@ sys     0m8.354s +8s</pre>
 	</tr>
 	<tr>
 		<td>
-			<pre>INN2 -P .git 'git add . && git commit -m "squash!" && git sync'</pre>
+			<pre>Innkeeper -P .git 'git add . && git commit -m "squash!" && git sync'</pre>
 		</td>
 		<td>
 			<pre>real    0m33.813s
@@ -80,17 +80,17 @@ sys     0m14.442s +14s</pre>
 ## Installation
 
 ```sh
-cargo install inn2
+cargo install innkeeper
 ```
 
 ## Usage
 
 ```sh
-INN2 .git git fetch upstream
+Innkeeper .git git fetch upstream
 ```
 
-This command will fetch from upstream for all the .git repositories inside the
-current directory. Essentially, it replaces the following shell command:
+This command will fetch from `upstream` for all the `.git` repositories inside
+the current directory. Basically, it replaces the following command:
 
 ```sh
 find -iname .git -type d -execdir git fetch upstream \;
@@ -100,21 +100,21 @@ To specify a `--File` argument or `-F`, if you would like to search for a file
 instead of a directory, use:
 
 ```sh
-INN2 -F astro.config.ts npx astro add astro-compress
+Innkeeper -F astro.config.ts npx astro add astro-compress
 ```
 
 Additionally, you can provide a `--Root` argument or `-R` to set the current
 working directory to a different folder. The default is `.`.
 
 ```sh
-INN2 -R D:\Developer .git git fetch upstream
+Innkeeper -R D:\Developer .git git fetch upstream
 ```
 
 Specify a `--Parallel` argument or `-P` if you would like to run commands in
 parallel. The default is sequential.
 
 ```sh
-INN2 -P -R D:\Developer .git git fetch upstream
+Innkeeper -P -R D:\Developer .git git fetch upstream
 ```
 
 ## Dependencies
