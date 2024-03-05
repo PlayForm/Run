@@ -1,4 +1,8 @@
 [[bin]]
+name = "Inn"
+path = "Source/Library.rs"
+
+[[bin]]
 name = "Innkeeper"
 path = "Source/Library.rs"
 
@@ -17,10 +21,10 @@ autobenches = false
 autobins = false
 autoexamples = false
 autotests = false
-default-run = "Innkeeper"
-description = "🍺 Innkeeper lets you execute parallel commands in multiple directories."
+default-run = "Inn"
+description = "🍺 Inn lets you execute parallel commands in multiple directories."
 license = "MIT"
 name = "innkeeper"
-repository = "https://github.com/NikolaRHristov/Innkeeper.git"
-version = "0.0.2"
+repository = "https://github.com/NikolaRHristov/Inn.git"
+version = "0.1.7"
 edition = "2021"

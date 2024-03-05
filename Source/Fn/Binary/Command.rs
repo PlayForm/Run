@@ -3,7 +3,7 @@ pub mod Parallel;
 pub mod Sequential;
 
 pub fn Fn() -> ArgMatches {
-	Command::new("Innkeeper")
+	Command::new("Inn")
 		.version(env!("CARGO_PKG_VERSION"))
 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 		.about("Run a command in all directories having a certain pattern.")
