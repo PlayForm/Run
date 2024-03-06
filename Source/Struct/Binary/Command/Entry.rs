@@ -1,6 +1,7 @@
 pub type Type = Vec<Vec<String>>;
 
 pub struct Struct {
+	pub Hide: Hide,
 	pub Command: Command,
 	pub Entry: Type,
 	pub Parallel: Parallel,
@@ -11,6 +12,7 @@ pub struct Struct {
 impl Struct {
 	pub fn Fn(Option: &Option) -> Self {
 		Self {
+			Hide: Option.Hide.clone(),
 			Command: Option.Command.clone(),
 			Entry: crate::Fn::Binary::Command::Entry::Fn(Option),
 			Parallel: Option.Parallel,
@@ -21,5 +23,5 @@ impl Struct {
 }
 
 use crate::Struct::Binary::Command::Option::{
-	Command, Parallel, Pattern, Separator, Struct as Option,
+	Command, Hide, Parallel, Pattern, Separator, Struct as Option,
 };

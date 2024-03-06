@@ -1,13 +1,15 @@
-pub type Command = String;
+pub type Command = Vec<String>;
+pub type Hide = bool;
 pub type Parallel = bool;
 pub type Pattern = String;
 pub type Separator = char;
 
 pub struct Struct {
-	pub Command: String,
+	pub Command: Command,
 	pub Exclude: Vec<String>,
+	pub Hide: Hide,
 	pub File: bool,
-	pub Parallel: bool,
+	pub Parallel: Parallel,
 	pub Pattern: Pattern,
 	pub Root: String,
 	pub Separator: Separator,
@@ -16,6 +18,7 @@ pub struct Struct {
 impl Struct {
 	pub fn Fn(Option { Separator, .. }: Option) -> Self {
 		Self {
+			Hide: Fn().get_flag("Hide"),
 			File: Fn().get_flag("File"),
 			Parallel: Fn().get_flag("Parallel"),
 			Root: Fn().get_one::<String>("Root").expect("Cannot Root.").to_owned(),
@@ -29,9 +32,8 @@ impl Struct {
 			Command: Fn()
 				.get_many::<String>("Command")
 				.expect("Cannot Command.")
-				.map(|Command| Command.as_str())
-				.collect::<Vec<_>>()
-				.join(" "),
+				.map(|Command| Command.to_string())
+				.collect::<Vec<_>>(),
 			Separator,
 		}
 	}

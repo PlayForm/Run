@@ -8,8 +8,6 @@ pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }: &Option) -> Re
 			if !Exclude.clone().into_iter().filter(|Exclude| *Pattern != *Exclude).any(|Exclude| {
 				let Match = Path.contains(&Exclude);
 
-				println!("{:?}", Path);
-
 				match File {
 					true => {
 						std::fs::metadata(std::path::PathBuf::from(&Path))

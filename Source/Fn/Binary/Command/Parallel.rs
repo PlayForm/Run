@@ -10,18 +10,12 @@ pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
 		})
 		.for_each(|Entry| {
-			let Output = if cfg!(target_os = "windows") {
-				Command::new("cmd").args(["/C", Command.as_str()]).current_dir(Entry).output()
-			} else {
-				Command::new("sh").arg("-c").current_dir(Entry).arg(&Command).output()
-			};
+			let Output = Command::new(Command.get(0).expect("Cannot Command."))
+				.args(&Command[1..])
+				.current_dir(Entry)
+				.output();
 
-			Queue.push(async move {
-				println!(
-					"{}",
-					String::from_utf8_lossy(&Output.await.expect("Cannot await.").stdout)
-				);
-			});
+			Queue.push(async move { Output.await.expect("Cannot await.").stdout });
 		});
 
 	tokio::runtime::Builder::new_multi_thread()
@@ -30,7 +24,7 @@ pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 		.expect("Cannot Runtime.")
 		.block_on(async {
 			for Queue in Queue {
-				Queue.await;
+				println!("{}", String::from_utf8_lossy(&Queue.await));
 			}
 		})
 }
