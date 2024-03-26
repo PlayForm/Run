@@ -5,7 +5,7 @@ directories that match a certain pattern within a given root directory. It
 provides flexibility and efficiency in running commands across multiple
 directories with customizable patterns.
 
-[Inn]: HTTPS://Crates.IO/crates/innkeeper
+[Inn]: https://Crates.IO/crates/innkeeper
 
 ## Benchmark
 
