@@ -1,11 +1,11 @@
-# 🍺 [Inn]
+# 🍺 [Inn]
 
 Inn is a command-line tool designed to execute a specified command in all
 directories that match a certain pattern within a given root directory. It
 provides flexibility and efficiency in running commands across multiple
 directories with customizable patterns.
 
-[Inn]: https://Crates.IO/crates/innkeeper
+[Inn]: https://crates.io/crates/innkeeper
 
 ## Benchmark
 
