@@ -106,7 +106,7 @@ To specify a `--File` argument or `-F`, if you would like to search for a file
 instead of a directory, use:
 
 ```sh
-Inn -F astro.config.ts npx astro add @playform/compress-astro
+Inn -F astro.config.ts npx astro add @playform/compress
 ```
 
 Additionally, you can provide a `--Root` argument or `-R` to set the current
