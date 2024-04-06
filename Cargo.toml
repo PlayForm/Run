@@ -1,9 +1,9 @@
 [[bin]]
-name = "Inn"
+name = "PRun"
 path = "Source/Library.rs"
 
 [[bin]]
-name = "Innkeeper"
+name = "Run"
 path = "Source/Library.rs"
 
 [dependencies]
@@ -21,10 +21,10 @@ autobenches = false
 autobins = false
 autoexamples = false
 autotests = false
-default-run = "Inn"
+default-run = "Run"
 description = "🍺 Run."
 license = "MIT"
-name = "innkeeper"
-repository = "https://github.com/NikolaRHristov/Inn.git"
-version = "0.1.9"
+name = "prun"
+repository = "https://github.com/Playform/Run.git"
+version = "0.0.1"
 edition = "2021"

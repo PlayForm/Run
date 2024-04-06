@@ -3,10 +3,10 @@ pub mod Parallel;
 pub mod Sequential;
 
 pub fn Fn() -> ArgMatches {
-	Command::new("Inn")
+	Command::new("Run")
 		.version(env!("CARGO_PKG_VERSION"))
-		.author("Nikola R. Hristov <nikola@playform.cloud>")
-		.about("Run a command in all directories having a certain pattern.")
+		.author("Playform <hello@playform.cloud>")
+		.about("🍺 Run.")
 		.arg(
 			Arg::new("File")
 				.short('F')

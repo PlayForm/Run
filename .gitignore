@@ -5,5 +5,5 @@ Cargo.lock
 /target/release/*
 !/target/release/*.deb
 !/target/release/*.exe
-!/target/release/Inn
-!/target/release/Innkeeper
+!/target/release/PRun
+!/target/release/Run
