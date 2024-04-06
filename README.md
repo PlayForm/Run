@@ -96,12 +96,6 @@ the current directory. Basically, it replaces the following command:
 find -iname .git -type d -execdir git fetch upstream \;
 ```
 
-You can hide the command output by specifying an `-H` or `--Hide` parameter:
-
-```sh
-Inn -H -F package.json ncu -u
-```
-
 To specify a `--File` argument or `-F`, if you would like to search for a file
 instead of a directory, use:
 

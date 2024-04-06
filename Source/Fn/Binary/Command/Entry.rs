@@ -4,6 +4,8 @@ pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }: &Option) -> Re
 		.filter_map(|Entry| {
 			let Path = Entry.expect("Cannot Entry.").path().display().to_string();
 
+			println!("{}", Path);
+
 			// TODO: Separate this into Entry/Exclude.rs
 			if !Exclude.clone().into_iter().filter(|Exclude| *Pattern != *Exclude).any(|Exclude| {
 				let Match = Path.contains(&Exclude);

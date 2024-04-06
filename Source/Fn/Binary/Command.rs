@@ -8,16 +8,6 @@ pub fn Fn() -> ArgMatches {
 		.author("Nikola R. Hristov <nikola@playform.cloud>")
 		.about("Run a command in all directories having a certain pattern.")
 		.arg(
-			Arg::new("Hide")
-				.short('H')
-				.long("Hide")
-				.action(SetTrue)
-				.display_order(1)
-				.value_name("HIDE")
-				.required(false)
-				.help("Hide output."),
-		)
-		.arg(
 			Arg::new("File")
 				.short('F')
 				.long("File")
