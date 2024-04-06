@@ -6,6 +6,14 @@ path = "Source/Library.rs"
 name = "Run"
 path = "Source/Library.rs"
 
+[[bin]]
+name = "Inn"
+path = "Source/Library.rs"
+
+[[bin]]
+name = "Innkeeper"
+path = "Source/Library.rs"
+
 [dependencies]
 clap = { features = ["derive"], version = "4.5.4" }
 tokio = { features = ["full"], version = "1.36.0" }
@@ -26,5 +34,5 @@ description = "🍺 Run."
 license = "MIT"
 name = "prun"
 repository = "https://github.com/Playform/Run.git"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
