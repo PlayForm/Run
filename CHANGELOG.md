@@ -1,6 +1,10 @@
+## 0.0.3
+
+-   Cleanup
+
 ## 0.0.2
 
--   Initial version
+-   Cleanup
 
 ## 0.0.1
 
