@@ -1,4 +1,7 @@
-pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }: &Option) -> Return {
+pub fn Fn(Option { Directory, Exclude, File, Pattern, Root, Separator, .. }: &Option) -> Return {
+	println!("{:?}", Directory);
+	println!("-----------");
+
 	WalkDir::new(Root)
 		.follow_links(false)
 		.into_iter()
