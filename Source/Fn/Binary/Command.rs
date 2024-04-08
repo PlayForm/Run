@@ -8,21 +8,11 @@ pub fn Fn() -> ArgMatches {
 		.author("Playform <hello@playform.cloud>")
 		.about("🍺 Run.")
 		.arg(
-			Arg::new("Directory")
-				.short('D')
-				.long("Directory")
-				.action(SetTrue)
-				.display_order(2)
-				.value_name("DIRECTORY")
-				.required(false)
-				.help("Directory."),
-		)
-		.arg(
 			Arg::new("File")
 				.short('F')
 				.long("File")
 				.action(SetTrue)
-				.display_order(3)
+				.display_order(2)
 				.value_name("FILE")
 				.required(false)
 				.help("File."),
@@ -32,7 +22,7 @@ pub fn Fn() -> ArgMatches {
 				.short('P')
 				.long("Parallel")
 				.action(SetTrue)
-				.display_order(4)
+				.display_order(3)
 				.value_name("PARALLEL")
 				.required(false)
 				.help("Parallel."),
@@ -41,7 +31,7 @@ pub fn Fn() -> ArgMatches {
 			Arg::new("Root")
 				.short('R')
 				.long("Root")
-				.display_order(5)
+				.display_order(4)
 				.value_name("ROOT")
 				.required(false)
 				.help("Root.")
@@ -51,7 +41,7 @@ pub fn Fn() -> ArgMatches {
 			Arg::new("Exclude")
 				.short('E')
 				.long("Exclude")
-				.display_order(6)
+				.display_order(5)
 				.value_name("EXCLUDE")
 				.required(false)
 				.help("Exclude.")
@@ -59,7 +49,7 @@ pub fn Fn() -> ArgMatches {
 		)
 		.arg(
 			Arg::new("Pattern")
-				.display_order(7)
+				.display_order(6)
 				.value_name("PATTERN")
 				.required(true)
 				.help("Pattern.")
@@ -68,7 +58,7 @@ pub fn Fn() -> ArgMatches {
 		.arg(
 			Arg::new("Command")
 				.num_args(0..=10)
-				.display_order(8)
+				.display_order(7)
 				.value_name("COMMAND")
 				.required(true)
 				.allow_hyphen_values(true)

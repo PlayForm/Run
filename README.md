@@ -96,8 +96,8 @@ the current directory. Basically, it replaces the following command:
 find -iname .git -type d -execdir git fetch upstream \;
 ```
 
-To specify a `--File` argument or `-F`, if you would like to search for a file
-instead of a directory, use:
+If you want to limit execution to files matching a certain pattern only specify
+a `--File` argument or `-F`:
 
 ```sh
 Run -F astro.config.ts npx astro add @playform/compress
