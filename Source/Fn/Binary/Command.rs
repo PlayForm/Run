@@ -6,7 +6,7 @@ pub fn Fn() -> ArgMatches {
 	Command::new("Run")
 		.version(env!("CARGO_PKG_VERSION"))
 		.author("Playform <hello@playform.cloud>")
-		.about("🍺 Run.")
+		.about("🍺 Run")
 		.arg(
 			Arg::new("File")
 				.short('F')
