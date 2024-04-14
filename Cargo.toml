@@ -16,7 +16,7 @@ path = "Source/Library.rs"
 
 [dependencies]
 clap = { features = ["derive"], version = "4.5.4" }
-tokio = { features = ["full"], version = "1.36.0" }
+tokio = { features = ["full"], version = "1.37.0" }
 walkdir = "2.5.0"
 
 [lib]
@@ -34,5 +34,5 @@ description = "🍺 Run"
 license = "MIT"
 name = "prun"
 repository = "https://github.com/Playform/Run.git"
-version = "0.0.4"
+version = "0.0.5"
 edition = "2021"
