@@ -1,3 +1,12 @@
+/// The function takes an Option containing Entry, Separator, Pattern, Command, and other values,
+/// processes the Entry based on the Pattern and Separator, executes a Command with the processed Entry
+/// as the current directory, and prints the output of each Command execution.
+///
+/// Arguments:
+///
+/// * ``: It looks like you have a Rust function named `Fn` that takes an `Option` enum as a parameter.
+/// The `Option` enum has fields named `Entry`, `Separator`, `Pattern`, `Command`, and possibly other
+/// fields.
 pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	let mut Queue = Vec::new();
 
