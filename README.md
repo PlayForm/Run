@@ -125,6 +125,8 @@ The code imports several crates:
 -   `tokio` - Enables parallel execution of tasks.
 -   `walkdir` - Facilitates filesystem traversal.
 
+[Run.]: https://crates.io/crates/prun
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for a history of changes to this CLI.
