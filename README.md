@@ -5,7 +5,7 @@ directories that match a certain pattern within a given root directory. It
 provides flexibility and efficiency in running commands across multiple
 directories with customizable patterns.
 
-[Run]: https://crates.io/crates/prun
+[Run]: HTTPS://crates.io/crates/prun
 
 ## Benchmark
 
@@ -125,7 +125,7 @@ The code imports several crates:
 -   `tokio` - Enables parallel execution of tasks.
 -   `walkdir` - Facilitates filesystem traversal.
 
-[Run.]: https://crates.io/crates/prun
+[Run.]: HTTPS://crates.io/crates/prun
 
 ## Changelog
 
