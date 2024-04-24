@@ -5,7 +5,7 @@ pub mod Sequential;
 pub fn Fn() -> ArgMatches {
 	Command::new("Run")
 		.version(env!("CARGO_PKG_VERSION"))
-		.author("Playform <hello@playform.cloud>")
+		.author("PlayForm <hello@playform.cloud>")
 		.about("🍺 Run.")
 		.arg(
 			Arg::new("File")
