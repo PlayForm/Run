@@ -1,4 +1,4 @@
-# 🍺 [Run.]
+# 🍺 [Run —]
 
 `Run` is a command-line tool designed to execute a specified command in all
 directories that match a certain pattern within a given root directory. It
@@ -125,7 +125,7 @@ The code imports several crates:
 -   `tokio` - Enables parallel execution of tasks.
 -   `walkdir` - Facilitates filesystem traversal.
 
-[Run.]: HTTPS://crates.io/crates/prun
+[Run —]: httpS://crates.io/crates/prun
 
 ## Changelog
 
