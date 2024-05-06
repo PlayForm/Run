@@ -1,4 +1,4 @@
-# 🍺 — [Run] —
+# 🍺 [Run] —
 
 `Run` is a command-line tool designed to execute a specified command in all
 directories that match a certain pattern within a given root directory. It
