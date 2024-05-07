@@ -32,6 +32,8 @@ pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 		.build()
 		.expect("Cannot Runtime.")
 		.block_on(async {
+			println!("{}", String::from_utf8_lossy(&Queue.remove(0).await));
+
 			for Queue in Queue {
 				println!("{}", String::from_utf8_lossy(&Queue.await));
 			}
