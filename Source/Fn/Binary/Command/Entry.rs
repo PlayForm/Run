@@ -1,14 +1,14 @@
 /// This Rust function walks through a directory, filters out certain files based on exclusion criteria,
 /// and returns a collection of paths.
-/// 
+///
 /// Arguments:
-/// 
+///
 /// * ``: It looks like you have a function that takes an `Option` struct as a parameter and performs
 /// some file system operations based on the provided configuration. Here's a breakdown of the
 /// parameters:
-/// 
+///
 /// Returns:
-/// 
+///
 /// a `Vec<String>` containing paths that meet the specified criteria after processing the entries from
 /// the directory specified by the `Root` parameter.
 pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }: &Option) -> Return {
