@@ -6,7 +6,7 @@ pub fn Fn() -> ArgMatches {
 	Command::new("Run")
 		.version(env!("CARGO_PKG_VERSION"))
 		.author("PlayForm <hello@playform.cloud>")
-		.about("🍺 Run.")
+		.about("🍺 Run —")
 		.arg(
 			Arg::new("File")
 				.short('F')
@@ -15,7 +15,7 @@ pub fn Fn() -> ArgMatches {
 				.display_order(2)
 				.value_name("FILE")
 				.required(false)
-				.help("File."),
+				.help("📝 File —"),
 		)
 		.arg(
 			Arg::new("Parallel")
@@ -25,7 +25,7 @@ pub fn Fn() -> ArgMatches {
 				.display_order(3)
 				.value_name("PARALLEL")
 				.required(false)
-				.help("Parallel."),
+				.help("⏩ Parallel —"),
 		)
 		.arg(
 			Arg::new("Root")
@@ -34,7 +34,7 @@ pub fn Fn() -> ArgMatches {
 				.display_order(4)
 				.value_name("ROOT")
 				.required(false)
-				.help("Root.")
+				.help("📂 Root —")
 				.default_value("."),
 		)
 		.arg(
@@ -44,7 +44,7 @@ pub fn Fn() -> ArgMatches {
 				.display_order(5)
 				.value_name("EXCLUDE")
 				.required(false)
-				.help("Exclude.")
+				.help("🚫 Exclude —")
 				.default_value("node_modules .git target dist vendor"),
 		)
 		.arg(
@@ -52,7 +52,7 @@ pub fn Fn() -> ArgMatches {
 				.display_order(6)
 				.value_name("PATTERN")
 				.required(true)
-				.help("Pattern.")
+				.help("🔍 Pattern —")
 				.default_value("."),
 		)
 		.arg(
@@ -63,7 +63,7 @@ pub fn Fn() -> ArgMatches {
 				.required(true)
 				.allow_hyphen_values(true)
 				.allow_negative_numbers(true)
-				.help("Command."),
+				.help("🖥️ Command —"),
 		)
 		.get_matches()
 }
