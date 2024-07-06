@@ -19,6 +19,10 @@ clap = { features = ["derive"], version = "4.5.8" }
 tokio = { features = ["full"], version = "1.38.0" }
 walkdir = "2.5.0"
 
+[build-dependencies]
+serde = { version = "1.0.203", features = ["derive"] }
+toml = "0.8.14"
+
 [lib]
 crate-type = ["staticlib", "cdylib", "rlib"]
 name = "Library"
