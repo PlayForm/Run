@@ -24,7 +24,7 @@ pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 				.current_dir(Entry)
 				.output();
 
-			Queue.push(async move { Output.await.expect("Cannot await.").stdout });
+			Queue.push(async move { Output.await.expect("Cannot Output.").stdout });
 		});
 
 	tokio::runtime::Builder::new_multi_thread()
