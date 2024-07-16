@@ -56,7 +56,7 @@ sys     0m8.354s +8s</pre>
 	</tr>
 	<tr>
 		<td>
-			<pre>Run -P .git 'git add . && git commit -m "squash!" && git sync'</pre>
+			<pre>Run -P .git 'git add . && git ecommit -m "squash!" && git sync'</pre>
 		</td>
 		<td>
 			<pre>real    0m33.813s
@@ -67,7 +67,7 @@ sys     0m0.060s</pre>
 	<tr>
 		<td>
 			<pre>find -iname .git -type d -execdir \
-bash -c 'git add . && git commit -m "squash!" && git sync' \;</pre>
+bash -c 'git add . && git ecommit -m "squash!" && git sync' \;</pre>
 		</td>
 		<td>
 			<pre>real    0m53.122s +20s
