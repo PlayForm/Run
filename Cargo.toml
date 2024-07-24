@@ -15,8 +15,8 @@ name = "Innkeeper"
 path = "Source/Library.rs"
 
 [dependencies]
-clap = { features = ["derive"], version = "4.5.9" }
-tokio = { features = ["full"], version = "1.38.1" }
+clap = { features = ["derive"], version = "4.5.10" }
+tokio = { features = ["full"], version = "1.39.1" }
 walkdir = "2.5.0"
 
 [build-dependencies]
