@@ -4,6 +4,7 @@ mod Fn;
 mod Struct;
 
 #[allow(dead_code)]
-fn main() {
+#[tokio::main]
+async fn main() {
 	(Struct::Binary::Command::Struct::Fn().Fn)()
 }

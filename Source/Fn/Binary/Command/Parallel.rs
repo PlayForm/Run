@@ -6,31 +6,35 @@
 ///
 /// The `Option` enum has fields named `Entry`, `Separator`, `Pattern`, `Command`, and possibly other
 /// fields.
-pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
-	let Queue: Vec<_> = Entry
-		.into_par_iter()
-		.filter_map(|Entry| {
-			Entry
-				.last()
-				.filter(|Last| *Last == &Pattern)
-				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
-		})
-		.map(|Entry| {
-			Command::new(Command.get(0).expect("Cannot Command."))
-				.args(&Command[1..])
-				.current_dir(Entry)
-				.output()
-				.expect("Cannot Output.")
-				.stdout
-		})
-		.collect();
+pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
+	let Entry = Entry.into_par_iter().filter_map(|Entry| {
+		Entry
+			.last()
+			.filter(|Last| *Last == &Pattern)
+			.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
+	});
 
-	for Queue in Queue {
-		println!("{}", String::from_utf8_lossy(&Queue));
-	}
+	let Queue: Vec<_> = stream::iter(Entry)
+		.map(|Entry| async move {
+			String::from_utf8_lossy(
+				&tokio::process::Command::new(Command.get(0).expect("Cannot Command."))
+					.args(&Command[1..])
+					.current_dir(Entry)
+					.output()
+					.await
+					.expect("Cannot Output.")
+					.stdout,
+			)
+			.to_string()
+		})
+		.collect()
+		.await;
+
+	Queue.par_iter().for_each(|Output| println!("{}", Output));
+
+	Queue
 }
 
-use std::process::Command;
-
 use crate::Struct::Binary::Command::Entry::Struct as Option;
+use futures::stream::{self, StreamExt};
 use rayon::prelude::*;

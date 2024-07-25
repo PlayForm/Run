@@ -15,14 +15,15 @@ name = "Innkeeper"
 path = "Source/Library.rs"
 
 [dependencies]
-clap = { features = ["derive"], version = "4.5.10" }
+clap = { features = ["derive"], version = "4.5.11" }
 walkdir = "2.5.0"
 futures = "0.3.30"
 rayon = "1.10.0"
+tokio = { version = "1.39.1", features = ["full"] }
 
 [build-dependencies]
 serde = { version = "1.0.204", features = ["derive"] }
-toml = "0.8.15"
+toml = "0.8.16"
 
 [lib]
 crate-type = ["staticlib", "cdylib", "rlib"]
