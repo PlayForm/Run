@@ -1,6 +1,6 @@
 ## 0.0.6
 
--   Switch `tokio` to `rayon`
+-   Add `rayon` and parallel + concurrent execution
 
 ## 0.0.5
 
