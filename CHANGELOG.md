@@ -1,3 +1,7 @@
+## 0.0.6
+
+-   Switch `tokio` to `rayon`
+
 ## 0.0.5
 
 -   Cleanup

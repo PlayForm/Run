@@ -3,7 +3,6 @@
 ///
 /// Arguments:
 ///
-/// * ``: It looks like you have a function that takes an `Option` struct as a parameter and performs
 /// some file system operations based on the provided configuration. Here's a breakdown of the
 /// parameters:
 ///
