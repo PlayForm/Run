@@ -1,7 +1,7 @@
 # 🍺 [Run] —
 
 `Run` is a command-line tool that executes commands in multiple directories
-simultaneously. It leverages parallel processing and concurrent I/O to
+simultaneously. It leverages parallel processing and concurrent `I/O` to
 efficiently run tasks across directories.
 
 [Run]: HTTPS://crates.io/crates/prun
@@ -88,7 +88,7 @@ cargo install prun
 Run .git git fetch upstream
 ```
 
-This command will fetch from upstream for all .git repositories inside the
+This command will fetch from upstream for all `.git` repositories inside the
 current directory. It essentially replaces the following command:
 
 ```sh
@@ -123,7 +123,8 @@ Run -P -R D:\Developer .git git fetch upstream
 
 #### --Exclude:
 
-Exclude certain files or directories (defailt is `node_modules .git target dist vendor`)
+Exclude certain files or directories (defailt is
+`node_modules .git target dist vendor`)
 
 #### --Pattern:
 
