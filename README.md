@@ -123,17 +123,15 @@ Run -P -R D:\Developer .git git fetch upstream
 
 #### --Exclude:
 
-Exclude certain files or directoriesExclude certain files or directoriesExclude
-certain files or directories
+Exclude certain files or directories
 
 #### --Pattern:
 
-Specify a custom pattern for matchingSpecify a custom pattern for
-matchingSpecify a custom pattern for matching
+Specify a custom pattern for matching
 
 #### --Separator:
 
-Define a custom separatorDefine a custom separatorDefine a custom separator
+Define a custom separator
 
 ## Dependencies
 
