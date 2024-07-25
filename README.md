@@ -107,7 +107,7 @@ Run -F astro.config.ts npx astro add @playform/compress
 
 #### --Root or -R:
 
-Set the current working directory to a different folder (default is .):
+Set the current working directory to a different folder (default is `.`):
 
 ```sh
 Run -R D:\Developer .git git fetch upstream
@@ -115,7 +115,7 @@ Run -R D:\Developer .git git fetch upstream
 
 #### --Parallel or -P:
 
-Run commands in parallel (default is sequential):
+Run commands in `parallel` (default is `sequential`):
 
 ```sh
 Run -P -R D:\Developer .git git fetch upstream
@@ -123,7 +123,7 @@ Run -P -R D:\Developer .git git fetch upstream
 
 #### --Exclude:
 
-Exclude certain files or directories
+Exclude certain files or directories (defailt is `node_modules .git target dist vendor`)
 
 #### --Pattern:
 
