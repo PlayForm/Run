@@ -6,7 +6,7 @@ efficiently run tasks across directories.
 
 [Run]: HTTPS://crates.io/crates/prun
 
-## Benchmark
+## Bench
 
 <table>
 	<tr>
