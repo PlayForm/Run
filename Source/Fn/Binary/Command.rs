@@ -2,6 +2,10 @@ pub mod Entry;
 pub mod Parallel;
 pub mod Sequential;
 
+/// This function defines and configures command line arguments for the "Run" command.
+/// It sets up various arguments such as File, Parallel, Root, Exclude, Pattern, and Command.
+/// Each argument has specific properties like short and long flags, display order, value names, required status, help messages, and default values.
+/// The function returns the parsed command line arguments using ArgMatches.
 pub fn Fn() -> ArgMatches {
 	Command::new("Run")
 		.version(env!("CARGO_PKG_VERSION"))

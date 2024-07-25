@@ -1,3 +1,17 @@
+/// Executes a command with arguments in a specific directory for each entry in the given list.
+///
+/// # Arguments
+///
+/// * `Option` - A struct containing `Command`, `Entry`, `Pattern`, `Separator`, and other optional fields.
+///
+/// # Example
+///
+/// ```
+/// use std::process::{Command, Stdio};
+///
+/// let options = Option { Command: vec!["ls".to_string()], Entry: vec!["/path/to/dir".to_string()], Pattern: "pattern", Separator: '/'.to_string() };
+/// Fn(options);
+/// ```
 pub fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
 	Entry
 		.into_iter()

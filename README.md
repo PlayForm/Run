@@ -1,8 +1,8 @@
 # 🍺 [Run] —
 
 `Run` is a command-line tool that executes commands in multiple directories
-concurrently. It leverages parallel processing and concurrent I/O to efficiently
-run tasks across directories.
+simultaneously. It leverages parallel processing and concurrent I/O to
+efficiently run tasks across directories.
 
 [Run]: HTTPS://crates.io/crates/prun
 
@@ -97,24 +97,41 @@ find -iname .git -type d -execdir git fetch upstream \;
 
 ## Options
 
---File or -F: Limit execution to files matching a certain pattern:
+#### --File or -F:
+
+Limit execution to files matching a certain pattern:
 
 ```sh
 Run -F astro.config.ts npx astro add @playform/compress
 ```
 
---Root or -R: Set the current working directory to a different folder (default
-is .):
+#### --Root or -R:
+
+Set the current working directory to a different folder (default is .):
 
 ```sh
 Run -R D:\Developer .git git fetch upstream
 ```
 
---Parallel or -P: Run commands in parallel (default is sequential):
+#### --Parallel or -P:
+
+Run commands in parallel (default is sequential):
 
 ```sh
 Run -P -R D:\Developer .git git fetch upstream
 ```
+
+#### --Exclude:
+
+Exclude certain files or directories
+
+#### --Pattern:
+
+Specify a custom pattern for matching
+
+#### --Separator:
+
+Define a custom separator
 
 ## Dependencies
 
