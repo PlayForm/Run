@@ -1,9 +1,8 @@
 # 🍺 [Run] —
 
-`Run` is a command-line tool designed to execute a specified command in all
-directories that match a certain pattern within a given root directory. It
-provides flexibility and efficiency in running commands across multiple
-directories with customizable patterns.
+`Run` is a command-line tool that executes commands in multiple directories
+concurrently. It leverages parallel processing and concurrent I/O to efficiently
+run tasks across directories.
 
 [Run]: HTTPS://crates.io/crates/prun
 
@@ -89,29 +88,29 @@ cargo install prun
 Run .git git fetch upstream
 ```
 
-This command will fetch from `upstream` for all the `.git` repositories inside
-the current directory. Basically, it replaces the following command:
+This command will fetch from upstream for all .git repositories inside the
+current directory. It essentially replaces the following command:
 
 ```sh
 find -iname .git -type d -execdir git fetch upstream \;
 ```
 
-If you want to limit execution to files matching a certain pattern only specify
-a `--File` argument or `-F`:
+## Options
+
+--File or -F: Limit execution to files matching a certain pattern:
 
 ```sh
 Run -F astro.config.ts npx astro add @playform/compress
 ```
 
-Additionally, you can provide a `--Root` argument or `-R` to set the current
-working directory to a different folder. The default is `.`.
+--Root or -R: Set the current working directory to a different folder (default
+is .):
 
 ```sh
 Run -R D:\Developer .git git fetch upstream
 ```
 
-Specify a `--Parallel` argument or `-P` if you would like to run commands in
-parallel. The default is sequential.
+--Parallel or -P: Run commands in parallel (default is sequential):
 
 ```sh
 Run -P -R D:\Developer .git git fetch upstream
@@ -119,12 +118,12 @@ Run -P -R D:\Developer .git git fetch upstream
 
 ## Dependencies
 
-The code imports several crates:
+`Run` relies on several Rust crates to provide its functionality:
 
--   `clap` - For parsing command-line arguments.
--   `rayon` - 
--   `tokio` - 
--   `walkdir` - Facilitates filesystem traversal.
+-   `clap` - Parses command-line arguments
+-   `rayon` - Enables parallel processing
+-   `tokio` - Provides an asynchronous runtime
+-   `walkdir` - Facilitates efficient filesystem traversal
 
 [Run]: HTTPS://crates.io/crates/prun
 
