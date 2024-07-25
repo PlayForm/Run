@@ -122,7 +122,8 @@ Run -P -R D:\Developer .git git fetch upstream
 The code imports several crates:
 
 -   `clap` - For parsing command-line arguments.
--   `rayon` - Enables parallel execution of tasks.
+-   `rayon` - 
+-   `tokio` - 
 -   `walkdir` - Facilitates filesystem traversal.
 
 [Run]: HTTPS://crates.io/crates/prun
