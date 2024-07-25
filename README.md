@@ -15,22 +15,32 @@ efficiently run tasks across directories.
 	</tr>
 	<tr>
 		<td>
-			<pre>Run -P .git ls</pre>
+			<pre>find -iname .git -execdir ls \;</pre>
 		</td>
 		<td>
-			<pre>real    0m9.441s
-user    0m0.030s
-sys     0m0.046s</pre>
+			<pre>real    0m14.476s
+user    0m5.260s
+sys     0m7.526s</pre>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<pre>find -iname .git -type d -execdir ls \;</pre>
+			<pre>Run -P .git ls</pre>
 		</td>
 		<td>
-			<pre>real    0m14.293s +5s
-user    0m4.645s +4s
-sys     0m8.937s +8s</pre>
+			<pre>real    0m7.194s
+user    0m0.030s
+sys     0m0.045s</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>find -iname .git -type d -execdir git status \;</pre>
+		</td>
+		<td>
+			<pre>real    1m1.242s
+user    0m4.080s
+sys     0m6.354s</pre>
 		</td>
 	</tr>
 	<tr>
@@ -38,40 +48,9 @@ sys     0m8.937s +8s</pre>
 			<pre>Run -P .git git status</pre>
 		</td>
 		<td>
-			<pre>real    0m24.146s
-user    0m0.030s
-sys     0m0.062s</pre>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<pre>find -iname .git -type d -execdir ls \;</pre>
-		</td>
-		<td>
-			<pre>real    0m28.584s +4s
-user    0m4.695s +4s
-sys     0m8.354s +8s</pre>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<pre>Run -P .git 'git add . && git ecommit && git sync'</pre>
-		</td>
-		<td>
-			<pre>real    0m33.813s
-user    0m0.015s
-sys     0m0.060s</pre>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<pre>find -iname .git -type d -execdir \
-bash -c 'git add . && git ecommit && git sync' \;</pre>
-		</td>
-		<td>
-			<pre>real    0m53.122s +20s
-user    0m9.449s +9s
-sys     0m14.442s +14s</pre>
+			<pre>real    0m21.947s
+user    0m0.045s
+sys     0m0.031s</pre>
 		</td>
 	</tr>
 </table>
