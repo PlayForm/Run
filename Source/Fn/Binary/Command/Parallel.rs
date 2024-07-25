@@ -7,15 +7,21 @@
 /// The `Option` enum has fields named `Entry`, `Separator`, `Pattern`, `Command`, and possibly other
 /// fields.
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
-	let Entry = Entry.into_par_iter().filter_map(|Entry| {
+	let Queue: Vec<String> = stream::iter(
 		Entry
-			.last()
-			.filter(|Last| *Last == &Pattern)
-			.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
-	});
+			.into_par_iter()
+			.filter_map(|Entry| {
+				Entry
+					.last()
+					.filter(|Last| *Last == &Pattern)
+					.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
+			})
+			.collect::<Vec<String>>(),
+	)
+	.map(|Entry| {
+		let Command = Command.clone();
 
-	let Queue: Vec<_> = stream::iter(Entry)
-		.map(|Entry| async move {
+		async move {
 			String::from_utf8_lossy(
 				&tokio::process::Command::new(Command.get(0).expect("Cannot Command."))
 					.args(&Command[1..])
@@ -26,13 +32,13 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 					.stdout,
 			)
 			.to_string()
-		})
-		.collect()
-		.await;
+		}
+	})
+	.buffer_unordered(num_cpus::get())
+	.collect()
+	.await;
 
 	Queue.par_iter().for_each(|Output| println!("{}", Output));
-
-	Queue
 }
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
