@@ -109,10 +109,6 @@ Exclude certain files or directories (defailt is
 
 Specify a custom pattern for matching
 
-#### --Separator:
-
-Define a custom separator
-
 ## Dependencies
 
 `Run` relies on several Rust crates to provide its functionality:
