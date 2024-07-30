@@ -7,7 +7,7 @@
 /// The `Option` enum has fields named `Entry`, `Separator`, `Pattern`, `Command`, and possibly other
 /// fields.
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
-	let Queue: Vec<String> = stream::iter(
+	let Queue: Vec<String> = futures::stream::iter(
 		Entry
 			.into_par_iter()
 			.filter_map(|Entry| {
@@ -42,5 +42,5 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 }
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
-use futures::stream::{self, StreamExt};
+use futures::stream::StreamExt;
 use rayon::prelude::*;
