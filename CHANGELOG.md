@@ -1,4 +1,12 @@
+# Changelog
+
 ## 0.1.0
+
+### Breaking Changes
+
+-   Removed the --Separator option description: If the `--Separator` option
+    itself was removed from the code, this would be a breaking change as it
+    would affect users relying on this option.
 
 ### Changed
 
@@ -22,6 +30,24 @@
     -   Updated import statement for StreamExt
 
 ## 0.0.7
+
+### Breaking Changes
+
+-   Updated clap dependency to version 4.5.11: Dependency updates can sometimes
+    introduce breaking changes if the new version is not backward compatible.
+-   Updated tokio dependency to version 1.39.1 with full features: Similar to
+    the clap update, this could introduce breaking changes if the new version of
+    tokio is not backward compatible.
+-   Major refactoring of Source/Fn/Binary/Command/Parallel.rs for better async
+    support: Major refactoring often introduces breaking changes, especially if
+    the public API or expected behavior changes.
+-   Updated Source/Library.rs to use async main function: Changing the main
+    function to async can be a breaking change if users were not expecting this
+    and need to adjust their code accordingly.
+-   Refactored Source/Struct/Binary/Command.rs for improved type safety and
+    async support: Refactoring for type safety and async support can introduce
+    breaking changes if the function signatures or expected usage patterns
+    change.
 
 ### Added
 
@@ -55,6 +81,17 @@
 
 ## 0.0.6
 
+### Breaking Changes
+
+-   Updated clap dependency to version 4.5.11: As mentioned before, dependency
+    updates can introduce breaking changes.
+-   Updated tokio dependency to version 1.39.1: Similar to the clap update, this
+    could introduce breaking changes.
+-   Refactored Parallel execution to use async/await and tokio: This is likely a
+    breaking change as it changes the execution model.
+-   Updated main function to use tokio runtime: Changing the main function to
+    use a specific runtime can be a breaking change.
+
 ### Added
 
 -   New .github/FUNDING.yml file with Open Collective funding information
@@ -85,6 +122,11 @@
     async support
 
 ## 0.0.5
+
+### Breaking Changes
+
+-   Updated tokio dependency to version 1.37.0: Dependency updates can introduce
+    breaking changes.
 
 ### Changed
 
@@ -123,6 +165,12 @@
 -   Updated version number to 0.0.3
 
 ## 0.0.2
+
+### Breaking Changes
+
+-   Added new binary targets: "Inn" and "Innkeeper": Adding new binaries is not
+    a breaking change, but if it involved changes to existing binaries or their
+    interfaces, it could be.
 
 ### Added
 
