@@ -43,3 +43,11 @@ name = "prun"
 repository = "https://github.com/PlayForm/Run.git"
 version = "0.1.0"
 edition = "2021"
+include = [
+	"Source/**/*",
+	"LICENSE",
+	"README.md",
+	"CHANGELOG.md",
+	"build.rs",
+	"Cargo.toml",
+]
