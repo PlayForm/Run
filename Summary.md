@@ -598,7 +598,113 @@ index 9a9d6fa..2c80c56 100644
 + /// Fn(options);
 + /// ```
 
-🗣️ Summary from Run/v0.0.7 to v0.0.1 in .
+🗣️ Summary from Run/v0.0.7 to Run/v0.1.0 in .
+diff --git a/Cargo.toml b/Cargo.toml
+index 8fc9504..7185e08 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+- tokio = { version = "1.39.1", features = ["full"] }
++ tokio = { version = "1.39.2", features = ["full"] }
+- toml = "0.8.16"
++ toml = "0.8.17"
+- version = "0.0.7"
++ version = "0.1.0"
++ include = [
++ 	"Source/**/*",
++ 	"LICENSE",
++ 	"README.md",
++ 	"CHANGELOG.md",
++ 	"build.rs",
++ 	"Cargo.toml",
++ ]
+diff --git a/README.md b/README.md
+index 77f3dee..706161c 100644
+--- a/README.md
++++ b/README.md
+- simultaneously. It leverages parallel processing and concurrent I/O to
++ simultaneously. It leverages parallel processing and concurrent `I/O` to
+- ## Benchmark
++ ## Bench
+- 			<pre>Run -P .git ls</pre>
+- 		</td>
+- 		<td>
+- 			<pre>real    0m9.441s
+- user    0m0.030s
+- sys     0m0.046s</pre>
+- 		</td>
+- 	</tr>
+- 	<tr>
+- 		<td>
+- 			<pre>find -iname .git -type d -execdir ls \;</pre>
++ 			<pre>find -iname .git -execdir ls \;</pre>
+- 			<pre>real    0m14.293s +5s
+- user    0m4.645s +4s
+- sys     0m8.937s +8s</pre>
++ 			<pre>real    0m14.476s
++ user    0m5.260s
++ sys     0m7.526s</pre>
+- 			<pre>Run -P .git git status</pre>
++ 			<pre>Run -P .git ls</pre>
+- 			<pre>real    0m24.146s
++ 			<pre>real    0m7.194s
+- sys     0m0.062s</pre>
++ sys     0m0.045s</pre>
+- 			<pre>find -iname .git -type d -execdir ls \;</pre>
++ 			<pre>find -iname .git -type d -execdir git status \;</pre>
+- 			<pre>real    0m28.584s +4s
+- user    0m4.695s +4s
+- sys     0m8.354s +8s</pre>
++ 			<pre>real    1m1.242s
++ user    0m4.080s
++ sys     0m6.354s</pre>
+- 			<pre>Run -P .git 'git add . && git ecommit && git sync'</pre>
+- 		</td>
+- 		<td>
+- 			<pre>real    0m33.813s
+- user    0m0.015s
+- sys     0m0.060s</pre>
+- 		</td>
+- 	</tr>
+- 	<tr>
+- 		<td>
+- 			<pre>find -iname .git -type d -execdir \
+- bash -c 'git add . && git ecommit && git sync' \;</pre>
++ 			<pre>Run -P .git git status</pre>
+- 			<pre>real    0m53.122s +20s
+- user    0m9.449s +9s
+- sys     0m14.442s +14s</pre>
++ 			<pre>real    0m21.947s
++ user    0m0.045s
++ sys     0m0.031s</pre>
+- This command will fetch from upstream for all .git repositories inside the
++ This command will fetch from upstream for all `.git` repositories inside the
+- Set the current working directory to a different folder (default is .):
++ Set the current working directory to a different folder (default is `.`):
+- Run commands in parallel (default is sequential):
++ Run commands in `parallel` (default is `sequential`):
+- Exclude certain files or directories
++ Exclude certain files or directories (defailt is
++ `node_modules .git target dist vendor`)
+- #### --Separator:
+- 
+- Define a custom separator
+- 
+diff --git a/Source/Fn/Binary/Command.rs b/Source/Fn/Binary/Command.rs
+index f9a3fbf..5eca35e 100644
+--- a/Source/Fn/Binary/Command.rs
++++ b/Source/Fn/Binary/Command.rs
+- 		.author("PlayForm <hello@playform.cloud>")
++ 		.author("🖋️ Source — 👐🏻 Open — <Source/Open@PlayForm.Cloud>")
+diff --git a/Source/Fn/Binary/Command/Parallel.rs b/Source/Fn/Binary/Command/Parallel.rs
+index ff9548b..5e71ca9 100644
+--- a/Source/Fn/Binary/Command/Parallel.rs
++++ b/Source/Fn/Binary/Command/Parallel.rs
+- 	let Queue: Vec<String> = stream::iter(
++ 	let Queue: Vec<String> = futures::stream::iter(
+- use futures::stream::{self, StreamExt};
++ use futures::stream::StreamExt;
+
+🗣️ Summary from Run/v0.1.0 to v0.0.1 in .
 diff --git a/.cargo/Config.toml b/.cargo/Config.toml
 deleted file mode 100644
 index 5507528..0000000
@@ -715,7 +821,7 @@ index 73ccc94..550762c 100644
 + 			.trim()
 + 			.trim_matches('"')
 diff --git a/Cargo.toml b/Cargo.toml
-index 8fc9504..37256c8 100644
+index 7185e08..37256c8 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 - name = "PRun"
@@ -737,22 +843,30 @@ index 8fc9504..37256c8 100644
 + tokio = { features = ["full"], version = "1.36.0" }
 - futures = "0.3.30"
 - rayon = "1.10.0"
-- tokio = { version = "1.39.1", features = ["full"] }
+- tokio = { version = "1.39.2", features = ["full"] }
 - num_cpus = "1.16.0"
 - 
 - [build-dependencies]
 - serde = { version = "1.0.204", features = ["derive"] }
-- toml = "0.8.16"
+- toml = "0.8.17"
 - default-run = "Run"
 - description = "🍺 Run —"
 + default-run = "INN2"
 + description = "🍺 INN2 lets you execute parallel commands in multiple directories."
 - name = "prun"
 - repository = "https://github.com/PlayForm/Run.git"
-- version = "0.0.7"
+- version = "0.1.0"
 + name = "inn2"
 + repository = "https://github.com/NikolaRHristov/INN2.git"
 + version = "0.0.1"
+- include = [
+- 	"Source/**/*",
+- 	"LICENSE",
+- 	"README.md",
+- 	"CHANGELOG.md",
+- 	"build.rs",
+- 	"Cargo.toml",
+- ]
 diff --git a/CODE_OF_CONDUCT.md b/CODE_OF_CONDUCT.md
 index 01e92b5..b4f1f9b 100644
 --- a/CODE_OF_CONDUCT.md
@@ -792,13 +906,13 @@ index f236d76..c47b9fa 100644
 - Copyright (c) 2023-2024 PlayForm
 + Copyright (c) 2023-2024 Nikola R. Hristov
 diff --git a/README.md b/README.md
-index 77f3dee..26d3127 100644
+index 706161c..26d3127 100644
 --- a/README.md
 +++ b/README.md
 - # 🍺 [Run] —
 + # 🍺 [INN2]
 - `Run` is a command-line tool that executes commands in multiple directories
-- simultaneously. It leverages parallel processing and concurrent I/O to
+- simultaneously. It leverages parallel processing and concurrent `I/O` to
 - efficiently run tasks across directories.
 + INN2 is a command-line tool designed to execute a specified command in all
 + directories that match a certain pattern within a given root directory. It
@@ -806,19 +920,64 @@ index 77f3dee..26d3127 100644
 + directories with customizable patterns.
 - [Run]: HTTPS://crates.io/crates/prun
 + [INN2]: https://crates.io/crates/inn2
-- 			<pre>Run -P .git ls</pre>
+- ## Bench
++ ## Benchmark
+- 			<pre>find -iname .git -execdir ls \;</pre>
 + 			<pre>INN2 -P .git ls</pre>
-- 			<pre>Run -P .git git status</pre>
+- 			<pre>real    0m14.476s
+- user    0m5.260s
+- sys     0m7.526s</pre>
++ 			<pre>real    0m9.441s
++ user    0m0.030s
++ sys     0m0.046s</pre>
+- 			<pre>Run -P .git ls</pre>
++ 			<pre>find -iname .git -type d -execdir ls \;</pre>
++ 		</td>
++ 		<td>
++ 			<pre>real    0m14.293s +5s
++ user    0m4.645s +4s
++ sys     0m8.937s +8s</pre>
++ 	</tr>
++ 	<tr>
+- 			<pre>real    0m7.194s
 + 			<pre>INN2 -P .git git status</pre>
-- 			<pre>Run -P .git 'git add . && git ecommit && git sync'</pre>
++ 		</td>
++ 		<td>
++ 			<pre>real    0m24.146s
+- sys     0m0.045s</pre>
++ sys     0m0.062s</pre>
++ 		</td>
++ 	</tr>
++ 	<tr>
++ 		<td>
++ 			<pre>find -iname .git -type d -execdir ls \;</pre>
++ 		</td>
++ 		<td>
++ 			<pre>real    0m28.584s +4s
++ user    0m4.695s +4s
++ sys     0m8.354s +8s</pre>
+- 			<pre>find -iname .git -type d -execdir git status \;</pre>
 + 			<pre>INN2 -P .git 'git add . && git commit -m "squash!" && git sync'</pre>
-- bash -c 'git add . && git ecommit && git sync' \;</pre>
+- 			<pre>real    1m1.242s
+- user    0m4.080s
+- sys     0m6.354s</pre>
++ 			<pre>real    0m33.813s
++ user    0m0.015s
++ sys     0m0.060s</pre>
+- 			<pre>Run -P .git git status</pre>
++ 			<pre>find -iname .git -type d -execdir \
 + bash -c 'git add . && git commit -m "squash!" && git sync' \;</pre>
+- 			<pre>real    0m21.947s
+- user    0m0.045s
+- sys     0m0.031s</pre>
++ 			<pre>real    0m53.122s +20s
++ user    0m9.449s +9s
++ sys     0m14.442s +14s</pre>
 - cargo install prun
 + cargo install inn2
 - Run .git git fetch upstream
 + INN2 .git git fetch upstream
-- This command will fetch from upstream for all .git repositories inside the
+- This command will fetch from upstream for all `.git` repositories inside the
 - current directory. It essentially replaces the following command:
 + This command will fetch from upstream for all the .git repositories inside the
 + current directory. Essentially, it replaces the following shell command:
@@ -833,29 +992,26 @@ index 77f3dee..26d3127 100644
 + INN2 -F astro.config.ts npx astro add astro-compress
 - #### --Root or -R:
 - 
-- Set the current working directory to a different folder (default is .):
+- Set the current working directory to a different folder (default is `.`):
 + Additionally, you can provide a `--Root` argument or `-R` to set the current
 + working directory to a different folder. The default is `.`.
 - Run -R D:\Developer .git git fetch upstream
 + INN2 -R D:\Developer .git git fetch upstream
 - #### --Parallel or -P:
 - 
-- Run commands in parallel (default is sequential):
+- Run commands in `parallel` (default is `sequential`):
 + Specify a `--Parallel` argument or `-P` if you would like to run commands in
 + parallel. The default is sequential.
 - Run -P -R D:\Developer .git git fetch upstream
 + INN2 -P -R D:\Developer .git git fetch upstream
 - #### --Exclude:
 - 
-- Exclude certain files or directories
+- Exclude certain files or directories (defailt is
+- `node_modules .git target dist vendor`)
 - 
 - #### --Pattern:
 - 
 - Specify a custom pattern for matching
-- 
-- #### --Separator:
-- 
-- Define a custom separator
 - 
 - `Run` relies on several Rust crates to provide its functionality:
 - 
@@ -869,7 +1025,7 @@ index 77f3dee..26d3127 100644
 + -   `tokio` - Enables parallel execution of tasks.
 + -   `walkdir` - Facilitates filesystem traversal.
 diff --git a/Source/Fn/Binary/Command.rs b/Source/Fn/Binary/Command.rs
-index f9a3fbf..d9d47b8 100644
+index 5eca35e..d9d47b8 100644
 --- a/Source/Fn/Binary/Command.rs
 +++ b/Source/Fn/Binary/Command.rs
 - /// This function defines and configures command line arguments for the "Run" command.
@@ -878,7 +1034,7 @@ index f9a3fbf..d9d47b8 100644
 - /// The function returns the parsed command line arguments using ArgMatches.
 - 	Command::new("Run")
 + 	Command::new("Innkeeper")
-- 		.author("PlayForm <hello@playform.cloud>")
+- 		.author("🖋️ Source — 👐🏻 Open — <Source/Open@PlayForm.Cloud>")
 - 		.about("🍺 Run —")
 + 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 + 		.about("Run a command in all directories having a certain pattern.")
@@ -930,7 +1086,7 @@ index b771f11..bf4ce76 100644
 - 					},
 + 					true => std::fs::metadata(&Path).expect("Cannot Metadata.").is_dir() && Match,
 diff --git a/Source/Fn/Binary/Command/Parallel.rs b/Source/Fn/Binary/Command/Parallel.rs
-index ff9548b..efd9808 100644
+index 5e71ca9..efd9808 100644
 --- a/Source/Fn/Binary/Command/Parallel.rs
 +++ b/Source/Fn/Binary/Command/Parallel.rs
 - /// The function takes an Option containing Entry, Separator, Pattern, Command, and other values,
@@ -942,7 +1098,7 @@ index ff9548b..efd9808 100644
 - /// The `Option` enum has fields named `Entry`, `Separator`, `Pattern`, `Command`, and possibly other
 - /// fields.
 - pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
-- 	let Queue: Vec<String> = stream::iter(
+- 	let Queue: Vec<String> = futures::stream::iter(
 + pub fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 + 	let mut Queue = Vec::new();
 + 
@@ -989,7 +1145,7 @@ index ff9548b..efd9808 100644
 - 	.await;
 - 
 - 	Queue.par_iter().for_each(|Output| println!("{}", Output));
-- use futures::stream::{self, StreamExt};
+- use futures::stream::StreamExt;
 - use rayon::prelude::*;
 + use tokio::process::Command;
 diff --git a/Source/Fn/Binary/Command/Sequential.rs b/Source/Fn/Binary/Command/Sequential.rs
@@ -8937,7 +9093,7 @@ index 550762c..73ccc94 100644
 + 		.package
 + 		.version
 diff --git a/Cargo.toml b/Cargo.toml
-index b8e9a72..0afed79 100644
+index b8e9a72..7185e08 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 + [[bin]]
@@ -8953,12 +9109,12 @@ index b8e9a72..0afed79 100644
 + clap = { features = ["derive"], version = "4.5.11" }
 + futures = "0.3.30"
 + rayon = "1.10.0"
-+ tokio = { version = "1.39.1", features = ["full"] }
++ tokio = { version = "1.39.2", features = ["full"] }
 + num_cpus = "1.16.0"
 + 
 + [build-dependencies]
 + serde = { version = "1.0.204", features = ["derive"] }
-+ toml = "0.8.16"
++ toml = "0.8.17"
 - default-run = "Inn"
 - description = "🍺 Run."
 + default-run = "Run"
