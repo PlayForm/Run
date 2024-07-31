@@ -8937,7 +8937,7 @@ index 550762c..73ccc94 100644
 + 		.package
 + 		.version
 diff --git a/Cargo.toml b/Cargo.toml
-index b8e9a72..8fc9504 100644
+index b8e9a72..d9635d8 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 + [[bin]]
@@ -8968,7 +8968,7 @@ index b8e9a72..8fc9504 100644
 - version = "0.1.9"
 + name = "prun"
 + repository = "https://github.com/PlayForm/Run.git"
-+ version = "0.0.7"
++ version = "0.1.0"
 diff --git a/CODE_OF_CONDUCT.md b/CODE_OF_CONDUCT.md
 index 13ffed8..01e92b5 100644
 --- a/CODE_OF_CONDUCT.md
