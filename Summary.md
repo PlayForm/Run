@@ -4,7 +4,7 @@ index cbb2f71..33f48c4 100644
 --- a/.gitignore
 +++ b/.gitignore
 - !/target/release/Inn
-- !/target/release/Innkeeper
+- !/target/release/InnKeeper
 + !/target/release/PRun
 + !/target/release/Run
 diff --git a/Cargo.toml b/Cargo.toml
@@ -13,7 +13,7 @@ index b8e9a72..08052b2 100644
 +++ b/Cargo.toml
 - name = "Inn"
 + name = "PRun"
-- name = "Innkeeper"
+- name = "InnKeeper"
 + name = "Run"
 - default-run = "Inn"
 + default-run = "Run"
@@ -117,7 +117,7 @@ index 08052b2..054df0b 100644
 + path = "Source/Library.rs"
 + 
 + [[bin]]
-+ name = "Innkeeper"
++ name = "InnKeeper"
 + path = "Source/Library.rs"
 + 
 - version = "0.0.1"
@@ -789,7 +789,7 @@ index 34f0334..cbb2f71 100644
 + !/target/release/*.deb
 + !/target/release/*.exe
 + !/target/release/Inn
-+ !/target/release/Innkeeper
++ !/target/release/InnKeeper
 diff --git a/build.rs b/build.rs
 index 73ccc94..550762c 100644
 --- a/build.rs
@@ -836,7 +836,7 @@ index 7185e08..37256c8 100644
 - path = "Source/Library.rs"
 - 
 - [[bin]]
-- name = "Innkeeper"
+- name = "InnKeeper"
 + name = "INN2"
 - clap = { features = ["derive"], version = "4.5.11" }
 + clap = { features = ["derive"], version = "4.5.1" }
@@ -1033,7 +1033,7 @@ index 5eca35e..d9d47b8 100644
 - /// Each argument has specific properties like short and long flags, display order, value names, required status, help messages, and default values.
 - /// The function returns the parsed command line arguments using ArgMatches.
 - 	Command::new("Run")
-+ 	Command::new("Innkeeper")
++ 	Command::new("InnKeeper")
 - 		.author("🖋️ Source — 👐🏻 Open — <Source/Open@PlayForm.Cloud>")
 - 		.about("🍺 Run —")
 + 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
@@ -1275,7 +1275,7 @@ index 370ce1d..cbb2f71 100644
 - !/target/release/PRun
 - !/target/release/Run
 + !/target/release/Inn
-+ !/target/release/Innkeeper
++ !/target/release/InnKeeper
 diff --git a/build.rs b/build.rs
 index 73ccc94..550762c 100644
 --- a/build.rs
@@ -1578,7 +1578,7 @@ index cbb2f71..a60405a 100644
 - !/target/release/*.deb
 - !/target/release/*.exe
 - !/target/release/Inn
-- !/target/release/Innkeeper
+- !/target/release/InnKeeper
 + /Target/*
 + !/Target/release
 + /Target/release/*
@@ -2120,7 +2120,7 @@ index d9d47b8..0000000
 - pub mod Sequential;
 - 
 - pub fn Fn() -> ArgMatches {
-- 	Command::new("Innkeeper")
+- 	Command::new("InnKeeper")
 - 		.version(env!("CARGO_PKG_VERSION"))
 - 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 - 		.about("Run a command in all directories having a certain pattern.")
@@ -2362,7 +2362,7 @@ index 0000000..a179931
 + use walkdir::WalkDir;
 + 
 + pub fn run() {
-+ 	let matches = ClapCommand::new("Innkeeper")
++ 	let matches = ClapCommand::new("InnKeeper")
 + 		.version("0.0.8")
 + 		.about("Runs a command in all directories having a certain pattern.")
 + 		.arg(
@@ -2791,8 +2791,8 @@ index 6956652..9f6e224 100644
 + path = "Source/Function/Binary/Inn.rs"
 - name = "innkeeper"
 - path = "Source/Binary/innkeeper.rs"
-+ name = "Innkeeper"
-+ path = "Source/Function/Binary/Innkeeper.rs"
++ name = "InnKeeper"
++ path = "Source/Function/Binary/InnKeeper.rs"
 diff --git a/Source/Binary/inn.rs b/Source/Binary/inn.rs
 deleted file mode 100644
 index e2fe709..0000000
@@ -2834,7 +2834,7 @@ index 0000000..07bb03b
 + 
 + #[allow(dead_code)]
 + pub fn run() {
-+ 	let Match = ClapCommand::new("Innkeeper")
++ 	let Match = ClapCommand::new("InnKeeper")
 + 		.version(env!("CARGO_PKG_VERSION"))
 + 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 + 		.about("Run a command in all directories having a certain pattern.")
@@ -3031,11 +3031,11 @@ index 0000000..38e3fe5
 + fn main() {
 + 	Command::run()
 + }
-diff --git a/Source/Function/Binary/Innkeeper.rs b/Source/Function/Binary/Innkeeper.rs
+diff --git a/Source/Function/Binary/InnKeeper.rs b/Source/Function/Binary/InnKeeper.rs
 new file mode 100644
 index 0000000..38e3fe5
 --- /dev/null
-+++ b/Source/Function/Binary/Innkeeper.rs
++++ b/Source/Function/Binary/InnKeeper.rs
 + #![allow(non_snake_case)]
 + mod Command;
 + 
@@ -3063,7 +3063,7 @@ index a179931..0000000
 - use walkdir::WalkDir;
 - 
 - pub fn run() {
-- 	let matches = ClapCommand::new("Innkeeper")
+- 	let matches = ClapCommand::new("InnKeeper")
 - 		.version("0.0.8")
 - 		.about("Runs a command in all directories having a certain pattern.")
 - 		.arg(
@@ -3697,7 +3697,7 @@ index 16f2af5..a7c4e95 100644
 +++ b/README.md
 - Inn is a tiny Rust utility that lets execute commmands in different directories
 - concurrently.
-+ Innkeeper is a command-line tool designed to execute a specified command in all
++ InnKeeper is a command-line tool designed to execute a specified command in all
 + directories that match a certain pattern within a given root directory. It
 + provides flexibility and efficiency in running commands across multiple
 + directories with customizable patterns.
@@ -3763,7 +3763,7 @@ index f3f38ac..ac44f76 100644
 + autoexamples = false
 + autotests = false
 + default-run = "Inn"
-+ description = "🍺 Innkeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
++ description = "🍺 InnKeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
 + license = "MIT"
 + name = "innkeeper"
 + repository = "https://github.com/NikolaRHristov/Inn.git"
@@ -3846,8 +3846,8 @@ index af6967c..2485de6 100644
 + use clap::{Arg, ArgAction::SetTrue, Command as CommandClap};
 + use tokio::process::Command as CommandTokio;
 + use walkdir::WalkDir;
-- 	let Match = ClapCommand::new("Innkeeper")
-+ 	let Match = CommandClap::new("Innkeeper")
+- 	let Match = ClapCommand::new("InnKeeper")
++ 	let Match = CommandClap::new("InnKeeper")
 - 		!Exclude.clone().into_iter().any(|Pattern| {
 + 		!Exclude.clone().into_iter().filter(|Exclude| Pattern != Exclude).any(|Exclude| {
 - 				fs::metadata(Path.clone()).unwrap().is_dir() && Path.contains(Pattern)
@@ -3944,7 +3944,7 @@ index a60405a..cbb2f71 100644
 + !/target/release/*.deb
 + !/target/release/*.exe
 + !/target/release/Inn
-+ !/target/release/Innkeeper
++ !/target/release/InnKeeper
 diff --git a/build.rs b/build.rs
 index 8f162d7..550762c 100644
 --- a/build.rs
@@ -3963,8 +3963,8 @@ index e0ee1fb..bd5db8e 100644
 - path = "Source/Function/Binary/Inn.rs"
 - 
 - [[bin]]
-- name = "Innkeeper"
-- path = "Source/Function/Binary/Innkeeper.rs"
+- name = "InnKeeper"
+- path = "Source/Function/Binary/InnKeeper.rs"
 + name = "INN2"
 + path = "Source/Library.rs"
 - walkdir = "2.4.0"
@@ -3975,7 +3975,7 @@ index e0ee1fb..bd5db8e 100644
 + name = "Library"
 + path = "Source/Library.rs"
 - default-run = "Inn"
-- description = "🍺 Innkeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
+- description = "🍺 InnKeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
 + default-run = "INN2"
 + description = "🍺 INN2 lets you execute parallel commands in multiple directories."
 - name = "innkeeper"
@@ -4015,7 +4015,7 @@ index 8460887..26d3127 100644
 +++ b/README.md
 - # 🍺 [Inn]
 + # 🍺 [INN2]
-- Innkeeper is a command-line tool designed to execute a specified command in all
+- InnKeeper is a command-line tool designed to execute a specified command in all
 + INN2 is a command-line tool designed to execute a specified command in all
 - [Inn]: https://crates.io/crates/innkeeper
 + [INN2]: https://crates.io/crates/inn2
@@ -4123,7 +4123,7 @@ index 0000000..d9d47b8
 + pub mod Sequential;
 + 
 + pub fn Fn() -> ArgMatches {
-+ 	Command::new("Innkeeper")
++ 	Command::new("InnKeeper")
 + 		.version(env!("CARGO_PKG_VERSION"))
 + 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 + 		.about("Run a command in all directories having a certain pattern.")
@@ -4348,7 +4348,7 @@ index 2485de6..0000000
 - 
 - #[allow(dead_code)]
 - pub fn run() {
-- 	let Match = CommandClap::new("Innkeeper")
+- 	let Match = CommandClap::new("InnKeeper")
 - 		.version(env!("CARGO_PKG_VERSION"))
 - 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 - 		.about("Run a command in all directories having a certain pattern.")
@@ -4556,10 +4556,10 @@ index 38e3fe5..0000000
 - fn main() {
 - 	Command::run()
 - }
-diff --git a/Source/Function/Binary/Innkeeper.rs b/Source/Function/Binary/Innkeeper.rs
+diff --git a/Source/Function/Binary/InnKeeper.rs b/Source/Function/Binary/InnKeeper.rs
 deleted file mode 100644
 index 38e3fe5..0000000
---- a/Source/Function/Binary/Innkeeper.rs
+--- a/Source/Function/Binary/InnKeeper.rs
 +++ /dev/null
 - #![allow(non_snake_case)]
 - mod Command;
@@ -4833,7 +4833,7 @@ index cbb2f71..96ef6c0 100644
 - !/target/release/*.deb
 - !/target/release/*.exe
 - !/target/release/Inn
-- !/target/release/Innkeeper
+- !/target/release/InnKeeper
 diff --git a/build.rs b/build.rs
 deleted file mode 100644
 index 550762c..0000000
@@ -5327,7 +5327,7 @@ index d9d47b8..0000000
 - pub mod Sequential;
 - 
 - pub fn Fn() -> ArgMatches {
-- 	Command::new("Innkeeper")
+- 	Command::new("InnKeeper")
 - 		.version(env!("CARGO_PKG_VERSION"))
 - 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 - 		.about("Run a command in all directories having a certain pattern.")
@@ -5684,7 +5684,7 @@ index 0000000..9a36f7f
 + use walkdir::WalkDir;
 + 
 + fn main() {
-+ 	let matches = ClapCommand::new("Innkeeper")
++ 	let matches = ClapCommand::new("InnKeeper")
 + 		.version("0.0.2")
 + 		.about("Runs a command in all directories having a certain folder.")
 + 		.arg(
@@ -5962,7 +5962,7 @@ index 0000000..d5b6e76
 + use walkdir::WalkDir;
 + 
 + pub fn run() {
-+ 	let matches = ClapCommand::new("Innkeeper")
++ 	let matches = ClapCommand::new("InnKeeper")
 + 		.version("0.0.5")
 + 		.about("Runs a command in all directories having a certain pattern.")
 + 		.arg(
@@ -6139,7 +6139,7 @@ index 13fc651..0000000
 - use walkdir::WalkDir;
 - 
 - fn main() {
-- 	let matches = ClapCommand::new("Innkeeper")
+- 	let matches = ClapCommand::new("InnKeeper")
 - 		.version("0.0.4")
 - 		.about("Runs a command in all directories having a certain folder.")
 - 		.arg(
@@ -6992,8 +6992,8 @@ index a3c1765..abda709 100644
 - path = "src/bin/inn.rs"
 + name = "Inn"
 + path = "Source/Function/Binary/Inn.rs"
-+ name = "Innkeeper"
-+ path = "Source/Function/Binary/Innkeeper.rs"
++ name = "InnKeeper"
++ path = "Source/Function/Binary/InnKeeper.rs"
 + 
 + [dependencies]
 + clap = { features = ["derive"], version = "4.5.1" }
@@ -7006,7 +7006,7 @@ index a3c1765..abda709 100644
 + autoexamples = false
 + autotests = false
 + default-run = "Inn"
-+ description = "🍺 Innkeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
++ description = "🍺 InnKeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
 + license = "MIT"
 - path = "src/bin/innkeeper.rs"
 + repository = "https://github.com/NikolaRHristov/Inn.git"
@@ -7188,7 +7188,7 @@ index 781899a..fed2ce7 100644
 - # [inn] 🍺
 + # 🍺 [Inn]
 - Inn is a tiny Rust utlity that lets execute commmands in multiple directories.
-+ Innkeeper is a command-line tool designed to execute a specified command in all
++ InnKeeper is a command-line tool designed to execute a specified command in all
 + directories that match a certain pattern within a given root directory. It
 + provides flexibility and efficiency in running commands across multiple
 + directories with customizable patterns.
@@ -7243,7 +7243,7 @@ index 0000000..2485de6
 + 
 + #[allow(dead_code)]
 + pub fn run() {
-+ 	let Match = CommandClap::new("Innkeeper")
++ 	let Match = CommandClap::new("InnKeeper")
 + 		.version(env!("CARGO_PKG_VERSION"))
 + 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 + 		.about("Run a command in all directories having a certain pattern.")
@@ -7451,11 +7451,11 @@ index 0000000..38e3fe5
 + fn main() {
 + 	Command::run()
 + }
-diff --git a/Source/Function/Binary/Innkeeper.rs b/Source/Function/Binary/Innkeeper.rs
+diff --git a/Source/Function/Binary/InnKeeper.rs b/Source/Function/Binary/InnKeeper.rs
 new file mode 100644
 index 0000000..38e3fe5
 --- /dev/null
-+++ b/Source/Function/Binary/Innkeeper.rs
++++ b/Source/Function/Binary/InnKeeper.rs
 + #![allow(non_snake_case)]
 + mod Command;
 + 
@@ -7499,7 +7499,7 @@ index a179931..0000000
 - use walkdir::WalkDir;
 - 
 - pub fn run() {
-- 	let matches = ClapCommand::new("Innkeeper")
+- 	let matches = ClapCommand::new("InnKeeper")
 - 		.version("0.0.8")
 - 		.about("Runs a command in all directories having a certain pattern.")
 - 		.arg(
@@ -7815,14 +7815,14 @@ index a60405a..cbb2f71 100644
 + !/target/release/*.deb
 + !/target/release/*.exe
 + !/target/release/Inn
-+ !/target/release/Innkeeper
++ !/target/release/InnKeeper
 diff --git a/Cargo.toml b/Cargo.toml
 index 2f992ce..53af508 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 - path = "Source/Function/Binary/Inn.rs"
 + path = "Source/Library.rs"
-- path = "Source/Function/Binary/Innkeeper.rs"
+- path = "Source/Function/Binary/InnKeeper.rs"
 + path = "Source/Library.rs"
 - walkdir = "2.4.0"
 + walkdir = "2.5.0"
@@ -7831,7 +7831,7 @@ index 2f992ce..53af508 100644
 + crate-type = ["staticlib", "cdylib", "rlib"]
 + name = "Library"
 + path = "Source/Library.rs"
-- description = "🍺 Innkeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
+- description = "🍺 InnKeeper is a command-line tool designed to execute a specified command in all directories that match a certain pattern within a given root directory. It provides flexibility and efficiency in running commands across multiple directories with customizable patterns."
 + description = "🍺 Inn lets you execute parallel commands in multiple directories."
 - version = "0.1.2"
 + version = "0.1.3"
@@ -7886,7 +7886,7 @@ index 0000000..d9d47b8
 + pub mod Sequential;
 + 
 + pub fn Fn() -> ArgMatches {
-+ 	Command::new("Innkeeper")
++ 	Command::new("InnKeeper")
 + 		.version(env!("CARGO_PKG_VERSION"))
 + 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 + 		.about("Run a command in all directories having a certain pattern.")
@@ -8121,7 +8121,7 @@ index 92e380e..0000000
 - 
 - #[allow(dead_code)]
 - pub fn run() {
-- 	let Match = CommandClap::new("Innkeeper")
+- 	let Match = CommandClap::new("InnKeeper")
 - 		.version(env!("CARGO_PKG_VERSION"))
 - 		.author("Nikola R. Hristov <nikola@nikolahristov.tech>")
 - 		.about("Run a command in all directories having a certain pattern.")
@@ -8329,10 +8329,10 @@ index 38e3fe5..0000000
 - fn main() {
 - 	Command::run()
 - }
-diff --git a/Source/Function/Binary/Innkeeper.rs b/Source/Function/Binary/Innkeeper.rs
+diff --git a/Source/Function/Binary/InnKeeper.rs b/Source/Function/Binary/InnKeeper.rs
 deleted file mode 100644
 index 38e3fe5..0000000
---- a/Source/Function/Binary/Innkeeper.rs
+--- a/Source/Function/Binary/InnKeeper.rs
 +++ /dev/null
 - #![allow(non_snake_case)]
 - mod Command;
@@ -8727,7 +8727,7 @@ diff --git a/README.md b/README.md
 index 99eb0cd..202fdaa 100644
 --- a/README.md
 +++ b/README.md
-- Innkeeper is a command-line tool designed to execute a specified command in all
+- InnKeeper is a command-line tool designed to execute a specified command in all
 + Inn is a command-line tool designed to execute a specified command in all
 - This command will fetch from upstream for all the .git repositories inside the
 - current directory. Essentially, it replaces the following shell command:
@@ -8737,7 +8737,7 @@ diff --git a/Source/Fn/Binary/Command.rs b/Source/Fn/Binary/Command.rs
 index d9d47b8..39a9066 100644
 --- a/Source/Fn/Binary/Command.rs
 +++ b/Source/Fn/Binary/Command.rs
-- 	Command::new("Innkeeper")
+- 	Command::new("InnKeeper")
 + 	Command::new("Inn")
 diff --git a/Source/Fn/Binary/Command/Parallel.rs b/Source/Fn/Binary/Command/Parallel.rs
 index 1d048ea..efd9808 100644
@@ -9054,7 +9054,7 @@ index cbb2f71..34f0334 100644
 - !/target/release/*.deb
 - !/target/release/*.exe
 - !/target/release/Inn
-- !/target/release/Innkeeper
+- !/target/release/InnKeeper
 + !/Target/release
 + /Target/release/*
 + 

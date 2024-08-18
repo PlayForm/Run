@@ -7,3 +7,5 @@
 !/Target/release/*.exe
 !/Target/release/PRun
 !/Target/release/Run
+!/Target/release/Inn
+!/Target/release/InnKeeper

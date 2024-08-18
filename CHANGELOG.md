@@ -168,13 +168,13 @@
 
 ### Breaking Changes
 
--   Added new binary targets: "Inn" and "Innkeeper": Adding new binaries is not
+-   Added new binary targets: "Inn" and "InnKeeper": Adding new binaries is not
     a breaking change, but if it involved changes to existing binaries or their
     interfaces, it could be.
 
 ### Added
 
--   New binary targets: "Inn" and "Innkeeper"
+-   New binary targets: "Inn" and "InnKeeper"
 
 ### Changed
 

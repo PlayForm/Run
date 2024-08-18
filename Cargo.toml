@@ -11,7 +11,7 @@ name = "Inn"
 path = "Source/Library.rs"
 
 [[bin]]
-name = "Innkeeper"
+name = "InnKeeper"
 path = "Source/Library.rs"
 
 [dependencies]
