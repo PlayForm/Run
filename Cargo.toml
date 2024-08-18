@@ -15,16 +15,16 @@ name = "InnKeeper"
 path = "Source/Library.rs"
 
 [dependencies]
-clap = { features = ["derive"], version = "4.5.11" }
+clap = { features = ["derive"], version = "4.5.16" }
 walkdir = "2.5.0"
 futures = "0.3.30"
 rayon = "1.10.0"
-tokio = { version = "1.39.2", features = ["full"] }
+tokio = { version = "1.39.3", features = ["full"] }
 num_cpus = "1.16.0"
 
 [build-dependencies]
-serde = { version = "1.0.204", features = ["derive"] }
-toml = "0.8.17"
+serde = { version = "1.0.208", features = ["derive"] }
+toml = "0.8.19"
 
 [lib]
 crate-type = ["staticlib", "cdylib", "rlib"]
