@@ -55,13 +55,13 @@ sys     0m0.031s</pre>
 	</tr>
 </table>
 
-## Installation
+## 🚀 Installation
 
 ```sh
 cargo install prun
 ```
 
-## Usage
+## 🛠️ Usage
 
 ```sh
 Run .git git fetch upstream
