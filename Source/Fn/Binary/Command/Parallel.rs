@@ -1,3 +1,6 @@
+pub mod GPG;
+pub mod Process;
+
 /// The function takes an Option containing Entry, Separator, Pattern, Command, and other values,
 /// processes the Entry based on the Pattern and Separator, executes a Command with the processed Entry
 /// as the current directory, and prints the output of each Command execution.
@@ -22,16 +25,13 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 		let Command = Command.clone();
 
 		async move {
-			String::from_utf8_lossy(
-				&tokio::process::Command::new(Command.get(0).expect("Cannot Command."))
-					.args(&Command[1..])
-					.current_dir(Entry)
-					.output()
-					.await
-					.expect("Cannot Output.")
-					.stdout,
-			)
-			.to_string()
+			if GPG::Fn(&Command) {
+				let _lock = GPG_MUTEX.lock().await;
+
+				Process::Fn(&Command, &Entry).await
+			} else {
+				Process::Fn(&Command, &Entry).await
+			}
 		}
 	})
 	.buffer_unordered(num_cpus::get())
@@ -43,4 +43,8 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
 use futures::stream::StreamExt;
+use once_cell::sync::Lazy;
 use rayon::prelude::*;
+use tokio::sync::Mutex;
+
+static GPG_MUTEX: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
