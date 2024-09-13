@@ -30,7 +30,7 @@ pub fn Fn() -> bool {
 				&Command::new("git")
 					.args(&["config", "--get", "commit.gpgsign"])
 					.output()
-					.expect("Failed to execute git command")
+					.expect("Cannot output.")
 					.stdout,
 			)
 			.trim() == "true",
