@@ -1,3 +1,28 @@
+/// Checks if Git commit signing is enabled.
+///
+/// This function determines whether Git commit signing is enabled by checking
+/// the Git configuration. It uses a caching mechanism to avoid repeated Git
+/// command executions.
+///
+/// # Returns
+///
+/// * `bool` - `true` if commit signing is enabled, `false` otherwise.
+///
+/// # Panics
+///
+/// This function will panic if it fails to execute the Git command to check
+/// the commit signing configuration.
+///
+/// # Thread Safety
+///
+/// This function uses atomic operations for thread-safe access to shared state.
+///
+/// # Examples
+///
+/// ```
+/// let is_signing_enabled = Fn();
+/// println!("Commit signing is enabled: {}", is_signing_enabled);
+/// ```
 pub fn Fn() -> bool {
 	if !COMMIT_SIGNING_CHECKED.load(Ordering::Relaxed) {
 		COMMIT_SIGNING_ENABLED.store(
