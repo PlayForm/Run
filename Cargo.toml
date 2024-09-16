@@ -42,7 +42,7 @@ description = "🍺 Run —"
 license = "MIT"
 name = "prun"
 repository = "HTTPS://GitHub.Com/PlayForm/Run.git"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 include = [
 	"Source/**/*",
