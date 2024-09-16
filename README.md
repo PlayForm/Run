@@ -1,8 +1,7 @@
 # 🍺 [Run] —
 
 `Run` is a command-line tool that executes commands in multiple directories
-simultaneously. It leverages parallel processing and concurrent `I/O` to
-efficiently run tasks across directories.
+concurrently.
 
 [Run]: HTTPS://crates.io/crates/prun
 
@@ -18,9 +17,9 @@ efficiently run tasks across directories.
 			<pre>find -iname .git -execdir ls \;</pre>
 		</td>
 		<td>
-			<pre>real    0m14.476s
-user    0m5.260s
-sys     0m7.526s</pre>
+			<pre>real    0m17.340s
+user    0m6.214s
+sys     0m9.138s</pre>
 		</td>
 	</tr>
 	<tr>
@@ -28,19 +27,19 @@ sys     0m7.526s</pre>
 			<pre>Run -P .git -C ls</pre>
 		</td>
 		<td>
-			<pre>real    0m7.194s
-user    0m0.030s
-sys     0m0.045s</pre>
+			<pre>real    0m8.480s
+user    0m0.046s
+sys     0m0.046s</pre>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<pre>find -iname .git -type d -execdir git status \;</pre>
+			<pre>find -iname .git -execdir git status \;</pre>
 		</td>
 		<td>
-			<pre>real    1m1.242s
-user    0m4.080s
-sys     0m6.354s</pre>
+			<pre>real    1m19.070s
+user    0m5.385s
+sys     0m7.357s</pre>
 		</td>
 	</tr>
 	<tr>
@@ -48,9 +47,9 @@ sys     0m6.354s</pre>
 			<pre>Run -P .git -C 'git status'</pre>
 		</td>
 		<td>
-			<pre>real    0m21.947s
-user    0m0.045s
-sys     0m0.031s</pre>
+			<pre>real    0m26.170s
+user    0m0.030s
+sys     0m0.046s</pre>
 		</td>
 	</tr>
 </table>
@@ -62,6 +61,26 @@ cargo install prun
 ```
 
 ## 🛠️ Usage
+
+`Run` can be used with various options:
+
+```sh
+🍺 Run —
+
+Usage: Run [OPTIONS] --Command <COMMAND> <PATTERN>
+
+Arguments:
+  <PATTERN>  🔍 Pattern — [default: .]
+
+Options:
+  -F, --File               📝 File —
+  -P, --Parallel           ⏩ Parallel —
+  -R, --Root <ROOT>        📂 Root — [default: .]
+  -E, --Exclude <EXCLUDE>  🚫 Exclude — [default: "node_modules .git target dist vendor"]
+  -C, --Command <COMMAND>  🖥️ Command —
+  -h, --help               Print help
+  -V, --version            Print version
+```
 
 ```sh
 Run .git -C 'git fetch upstream'
