@@ -27,11 +27,7 @@ impl Struct {
 				.map(|Command| Command.to_string())
 				.collect::<Vec<_>>(),
 			Pattern: Fn().get_one::<String>("Pattern").expect("Cannot Pattern.").to_owned(),
-			Command: Fn()
-				.get_many::<String>("Command")
-				.expect("Cannot Command.")
-				.map(|Command| Command.to_string())
-				.collect::<Vec<_>>(),
+			Command: Fn().get_many::<String>("Command").expect("Cannot Command").cloned().collect(),
 			Separator,
 		}
 	}

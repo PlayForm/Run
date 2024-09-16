@@ -61,7 +61,9 @@ pub fn Fn() -> ArgMatches {
 		)
 		.arg(
 			Arg::new("Command")
-				.num_args(0..=10)
+				.short('C')
+				.long("Command")
+				.action(clap::ArgAction::Append)
 				.display_order(7)
 				.value_name("COMMAND")
 				.required(true)

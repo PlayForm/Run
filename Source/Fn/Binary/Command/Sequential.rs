@@ -12,16 +12,17 @@
 /// let options = Option { Command: vec!["ls".to_string()], Entry: vec!["/path/to/dir".to_string()], Pattern: "pattern", Separator: '/'.to_string() };
 /// Fn(options);
 /// ```
-pub fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
-	Entry
-		.into_iter()
-		.filter_map(|Entry| {
-			Entry
-				.last()
-				.filter(|Last| *Last == &Pattern)
-				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
-		})
-		.for_each(|Entry| {
+pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
+	for Entry in Entry.into_iter().filter_map(|Entry| {
+		Entry
+			.last()
+			.filter(|Last| *Last == &Pattern)
+			.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
+	}) {
+		for Command in &Command {
+			let Command: Vec<String> = Command.split(' ').map(String::from).collect();
+			let Entry = Entry.clone();
+
 			let mut Command = Command::new(Command.get(0).expect("Cannot Command."))
 				.args(&Command[1..])
 				.current_dir(Entry)
@@ -45,7 +46,8 @@ pub fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
 			}
 
 			println!("{}", Output);
-		})
+		}
+	}
 }
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;

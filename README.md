@@ -25,7 +25,7 @@ sys     0m7.526s</pre>
 	</tr>
 	<tr>
 		<td>
-			<pre>Run -P .git ls</pre>
+			<pre>Run -P .git -C ls</pre>
 		</td>
 		<td>
 			<pre>real    0m7.194s
@@ -45,7 +45,7 @@ sys     0m6.354s</pre>
 	</tr>
 	<tr>
 		<td>
-			<pre>Run -P .git git status</pre>
+			<pre>Run -P .git -C 'git status'</pre>
 		</td>
 		<td>
 			<pre>real    0m21.947s
@@ -64,7 +64,7 @@ cargo install prun
 ## 🛠️ Usage
 
 ```sh
-Run .git git fetch upstream
+Run .git -C 'git fetch upstream'
 ```
 
 This command will fetch from upstream for all `.git` repositories inside the
@@ -76,12 +76,26 @@ find -iname .git -type d -execdir git fetch upstream \;
 
 ## Options
 
+#### --Command or -C:
+
+The command to execute:
+
+```sh
+Run .git -C 'git status'
+```
+
+or multiple commands:
+
+```sh
+Run .git -C 'git status' -C 'git add .' -C 'git commit'
+```
+
 #### --File or -F:
 
 Limit execution to files matching a certain pattern:
 
 ```sh
-Run -F astro.config.ts npx astro add @playform/compress
+Run -F astro.config.ts -C 'npx astro add @playform/compress'
 ```
 
 #### --Root or -R:
@@ -89,7 +103,7 @@ Run -F astro.config.ts npx astro add @playform/compress
 Set the current working directory to a different folder (default is `.`):
 
 ```sh
-Run -R D:\Developer .git git fetch upstream
+Run -R D:\Developer .git -C 'git fetch upstream'
 ```
 
 #### --Parallel or -P:
@@ -97,7 +111,7 @@ Run -R D:\Developer .git git fetch upstream
 Run commands in `parallel` (default is `sequential`):
 
 ```sh
-Run -P -R D:\Developer .git git fetch upstream
+Run -P -R D:\Developer .git -C 'git fetch upstream'
 ```
 
 #### --Exclude:
