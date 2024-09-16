@@ -26,31 +26,33 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	.await
 	.expect("Cannot blocking.");
 
-	let Command = Entry.into_iter().map(|Entry| {
-		let Command = Command.clone();
-		let Approval = Approval.clone();
+	futures::stream::iter(Entry.into_iter())
+		.map(|Entry| {
+			let Command = Command.clone();
+			let Approval = Approval.clone();
 
-		async move {
-			let mut Output = Vec::new();
+			async move {
+				let mut Output = Vec::new();
 
-			for Command in &Command {
-				let Command: Vec<String> = Command.split(' ').map(String::from).collect();
+				for Command in &Command {
+					let Command: Vec<String> = Command.split(' ').map(String::from).collect();
 
-				if GPG::Fn(&Command) {
-					let Lock = GPG_MUTEX.lock().await;
-					drop(Lock);
+					if GPG::Fn(&Command) {
+						let Lock = GPG_MUTEX.lock().await;
+						drop(Lock);
+					}
+
+					Output.push(Process::Fn(&Command, &Entry).await);
 				}
 
-				Output.push(Process::Fn(&Command, &Entry).await);
+				if let Err(_) = Approval.send(Output) {
+					eprintln!("Cannot send.");
+				}
 			}
-
-			if let Err(_) = Approval.send(Output) {
-				eprintln!("Cannot send.");
-			}
-		}
-	});
-
-	futures::stream::iter(Command).buffer_unordered(num_cpus::get()).collect::<Vec<()>>().await;
+		})
+		.buffer_unordered(num_cpus::get())
+		.collect::<Vec<()>>()
+		.await;
 
 	drop(Approval);
 
