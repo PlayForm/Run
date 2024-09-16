@@ -1,12 +1,33 @@
 ## 0.1.1
 
+### Added
+
+-   Added support for multiple commands using the `-C` or `--Command` flag.
+-   Introduced a new `GPG` module to handle Git commit signing.
+-   Added a `Process` module to encapsulate asynchronous command execution.
+
+### Changed
+
+-   Updated various dependencies to their latest versions:
+    -   `clap` to 4.5.16
+    -   `tokio` to 1.40.0
+    -   `serde` to 1.0.209
+    -   `toml` to 0.8.19
+-   Updated the project repository URL to `HTTPS://GitHub.Com/PlayForm/Run.git`.
+-   Improved the README with clearer usage instructions and examples.
+-   Renamed the binary target from `Innkeeper` to `InnKeeper` for consistency.
+-   Enhanced error handling during parallel command execution.
+
+### Fixed
+
+-   Resolved an issue where parallel execution could deadlock when Git commit
+    signing was enabled.
+
 ## 0.1.0
 
 ### Breaking Changes
 
--   Removed the --Separator option description: If the `--Separator` option
-    itself was removed from the code, this would be a breaking change as it
-    would affect users relying on this option.
+-   Removed the `--Separator` option.
 
 ### Changed
 
