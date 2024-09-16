@@ -1,7 +1,17 @@
 /Target/*
 
+!/Target/debug
+/Target/debug/*
+
 !/Target/release
 /Target/release/*
+
+!/Target/debug/*.deb
+!/Target/debug/*.exe
+!/Target/debug/PRun
+!/Target/debug/Run
+!/Target/debug/Inn
+!/Target/debug/InnKeeper
 
 !/Target/release/*.deb
 !/Target/release/*.exe
