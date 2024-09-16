@@ -12,25 +12,29 @@ pub mod Process;
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	let (Approval, mut Receive) = tokio::sync::mpsc::unbounded_channel();
 
-	for Entry in Entry
-		.into_par_iter()
-		.filter_map(|Entry| {
-			Entry
-				.last()
-				.filter(|Last| *Last == &Pattern)
-				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
-		})
-		.collect::<Vec<String>>()
-	{
+	let Entry = tokio::task::spawn_blocking(move || {
+		Entry
+			.into_par_iter()
+			.filter_map(|Entry| {
+				Entry
+					.last()
+					.filter(|Last| *Last == &Pattern)
+					.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
+			})
+			.collect::<Vec<String>>()
+	})
+	.await
+	.expect("Cannot blocking.");
+
+	let Command = Entry.into_iter().map(|Entry| {
 		let Command = Command.clone();
 		let Approval = Approval.clone();
 
-		tokio::spawn(async move {
+		async move {
 			let mut Output = Vec::new();
 
 			for Command in &Command {
 				let Command: Vec<String> = Command.split(' ').map(String::from).collect();
-				let Entry = Entry.clone();
 
 				if GPG::Fn(&Command) {
 					let Lock = GPG_MUTEX.lock().await;
@@ -43,8 +47,10 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 			if let Err(_) = Approval.send(Output) {
 				eprintln!("Cannot send.");
 			}
-		});
-	}
+		}
+	});
+
+	futures::stream::iter(Command).buffer_unordered(num_cpus::get()).collect::<Vec<()>>().await;
 
 	drop(Approval);
 
@@ -56,6 +62,7 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 }
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
+use futures::StreamExt;
 use once_cell::sync::Lazy;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use tokio::sync::Mutex;
