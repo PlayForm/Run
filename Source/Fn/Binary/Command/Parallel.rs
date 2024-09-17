@@ -1,14 +1,34 @@
 pub mod GPG;
 pub mod Process;
 
-/// The function takes an Option containing Entry, Separator, Pattern, Command, and other values,
-/// processes the Entry based on the Pattern and Separator, executes a Command with the processed Entry
-/// as the current directory, and prints the output of each Command execution.
+/// Executes a command pipeline based on input entries and a pattern.
 ///
-/// Arguments:
+/// This function processes a set of string entries, filters them based on a pattern,
+/// and then executes a command pipeline for each matching entry. The results of each
+/// pipeline execution are then sent through a channel for further processing.
 ///
-/// The `Option` enum has fields named `Entry`, `Separator`, `Pattern`, `Command`, and possibly other
-/// fields.
+/// # Arguments
+///
+/// * `options`: An optional struct containing the following fields:
+///     * `Entry`: A vector of string slices representing the input entries.
+///     * `Separator`: A string slice used to join the filtered parts of an entry.
+///     * `Pattern`: A string slice representing the pattern to filter entries.
+///     * `Command`: A vector of string slices representing the command pipeline to execute.
+///
+/// # Example
+///
+/// ```
+/// use your_crate::Fn;
+///
+/// let options = Some(YourOptionStruct {
+///     Entry: vec!["entry1/part1", "entry1/part2", "entry2/part1"],
+///     Separator: "/",
+///     Pattern: "part2",
+///     Command: vec!["echo hello", "grep world"],
+/// });
+///
+/// tokio::runtime::Runtime::new().unwrap().block_on(Fn(options));
+/// ```
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	let (Approval, mut Receive) = tokio::sync::mpsc::unbounded_channel();
 
@@ -24,7 +44,7 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 			.collect::<Vec<String>>()
 	})
 	.await
-	.expect("Cannot blocking.");
+	.expect("Cannot spawn_blocking.");
 
 	futures::stream::iter(Entry.into_iter())
 		.map(|Entry| {
