@@ -32,47 +32,53 @@ pub mod Process;
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	let (Approval, mut Receive) = tokio::sync::mpsc::unbounded_channel();
 
-	let Entry = tokio::task::spawn_blocking(move || {
-		Entry
-			.into_par_iter()
-			.filter_map(|Entry| {
-				Entry
-					.last()
-					.filter(|Last| *Last == &Pattern)
-					.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
-			})
-			.collect::<Vec<String>>()
-	})
-	.await
-	.expect("Cannot spawn_blocking.");
+	let Entry = Entry
+		.into_par_iter()
+		.filter_map(|Entry| {
+			Entry
+				.last()
+				.filter(|Last| *Last == &Pattern)
+				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
+		})
+		.collect::<Vec<String>>();
 
-	futures::stream::iter(Entry.into_iter())
-		.map(|Entry| {
-			let Command = Command.clone();
-			let Approval = Approval.clone();
+	let Pool = Arc::new(rayon::ThreadPoolBuilder::new().build().expect("Cannot build."));
+	let Semaphore = Arc::new(tokio::sync::Semaphore::new(num_cpus::get()));
 
-			async move {
+	futures::future::join_all(Entry.into_iter().map(|Entry| {
+		let Command = Command.clone();
+		let Approval = Approval.clone();
+		let Semaphore = Arc::clone(&Semaphore);
+		let Pool = Arc::clone(&Pool);
+
+		tokio::spawn(async move {
+			let _Permit = Semaphore.acquire().await.expect("Cannot acquire.");
+
+			if let Err(_) = Approval.send(Pool.install(|| {
 				let mut Output = Vec::new();
 
 				for Command in &Command {
 					let Command: Vec<String> = Command.split(' ').map(String::from).collect();
 
 					if GPG::Fn(&Command) {
-						let Lock = GPG_MUTEX.lock().await;
+						let Lock = GPG_MUTEX.lock().expect("Cannot lock.");
 						drop(Lock);
 					}
 
-					Output.push(Process::Fn(&Command, &Entry).await);
+					Output.push(tokio::task::block_in_place(|| {
+						tokio::runtime::Runtime::new()
+							.expect("Cannot Runtime.")
+							.block_on(Process::Fn(&Command, &Entry))
+					}));
 				}
 
-				if let Err(_) = Approval.send(Output) {
-					eprintln!("Cannot send.");
-				}
+				Output
+			})) {
+				eprintln!("Cannot send.");
 			}
 		})
-		.buffer_unordered(num_cpus::get())
-		.collect::<Vec<()>>()
-		.await;
+	}))
+	.await;
 
 	drop(Approval);
 
@@ -84,9 +90,8 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 }
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
-use futures::StreamExt;
 use once_cell::sync::Lazy;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use tokio::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 static GPG_MUTEX: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
