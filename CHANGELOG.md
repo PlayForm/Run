@@ -1,3 +1,20 @@
+## 0.1.3
+
+### Improved
+
+-   Enhanced parallel execution in Source/Fn/Binary/Command/Parallel.rs:
+    -   Leverages `tokio::sync::mpsc` for improved channel communication.
+    -   Refactored for clarity and conciseness.
+
+### Changed
+
+-   Updated documentation for the Fn function in
+    Source/Fn/Binary/Command/Parallel.rs:
+    -   Provides a more concise and informative description of the function's
+        purpose.
+    -   Includes a revised, more practical example of how to use the function.
+-   Minor code style and formatting adjustments for consistency.
+
 ## 0.1.2
 
 ### Changed
