@@ -1,5 +1,28 @@
 ## 0.1.2
 
+### Changed
+
+-   Updated `once_cell` dependency to version 1.19.0
+-   Updated version number to 0.1.2 in Cargo.toml
+-   Simplified project description in README.md
+-   Updated benchmark results in README.md
+-   Changed find command example in README.md to use `-iname` instead of `-name`
+-   Added detailed usage instructions and options to README.md
+-   Updated dependencies section in README.md with more detailed information
+
+### Improved
+
+-   Enhanced parallel execution in `Source/Fn/Binary/Command/Parallel.rs`:
+    -   Added thread pool and semaphore for better resource management
+    -   Improved error handling and asynchronous execution
+-   Updated documentation for the `Fn` function in
+    `Source/Fn/Binary/Command/Parallel.rs`
+
+### Fixed
+
+-   Changed `use tokio::sync::Mutex;` to `use std::sync::{Arc, Mutex};` for
+    better compatibility
+
 ## 0.1.1
 
 ### Added
