@@ -31,6 +31,7 @@ pub mod Process;
 /// ```
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	let (Approval, mut Receive) = tokio::sync::mpsc::unbounded_channel();
+	let Force = rayon::current_num_threads();
 
 	let Entry = Entry
 		.into_par_iter()
@@ -42,32 +43,40 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 		})
 		.collect::<Vec<String>>();
 
-	let Pool = Arc::new(rayon::ThreadPoolBuilder::new().build().expect("Cannot build."));
+	let Queue = Arc::new(crossbeam_queue::ArrayQueue::new(Entry.len()));
 
-	Entry.into_par_iter().for_each(|Entry| {
-		let Command = Command.clone();
-		let Approval = Approval.clone();
+	for Entry in Entry {
+		Queue.push(Entry).expect("Cannot push.");
+	}
 
-		Pool.spawn(move || {
-			let Output = tokio::runtime::Runtime::new().unwrap().block_on(async move {
-				let mut Output = Vec::new();
+	(0..Force).into_par_iter().for_each(|_| {
+		let Runtime = tokio::runtime::Runtime::new().expect("Cannot Runtime.");
 
-				for Command in &Command {
-					let Command: Vec<String> = Command.split(' ').map(String::from).collect();
+		Runtime.block_on(async {
+			let Queue = Arc::clone(&Queue);
+			let Approval = Approval.clone();
+			let Command = Command.clone();
 
-					if GPG::Fn(&Command) {
-						let Lock = GPG_MUTEX.lock().expect("Cannot lock.");
-						drop(Lock);
+			loop {
+				if let Some(Entry) = Queue.pop() {
+					let mut Output = Vec::new();
+
+					for Command in &Command {
+						let Command: Vec<String> = Command.split(' ').map(String::from).collect();
+
+						if GPG::Fn(&Command) {
+							let _Lock = GPG_MUTEX.lock().await;
+						}
+
+						Output.push(Process::Fn(&Command, &Entry).await);
 					}
 
-					Output.push(Process::Fn(&Command, &Entry).await);
+					if let Err(_) = Approval.send(Output) {
+						eprintln!("Cannot send.");
+					}
+				} else {
+					break;
 				}
-
-				Output
-			});
-
-			if let Err(_) = Approval.send(Output) {
-				eprintln!("Cannot send.");
 			}
 		});
 	});
@@ -82,8 +91,10 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 }
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
+
 use once_cell::sync::Lazy;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 static GPG_MUTEX: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
