@@ -43,18 +43,13 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 		.collect::<Vec<String>>();
 
 	let Pool = Arc::new(rayon::ThreadPoolBuilder::new().build().expect("Cannot build."));
-	let Semaphore = Arc::new(tokio::sync::Semaphore::new(num_cpus::get()));
 
-	futures::future::join_all(Entry.into_iter().map(|Entry| {
+	Entry.into_par_iter().for_each(|Entry| {
 		let Command = Command.clone();
 		let Approval = Approval.clone();
-		let Semaphore = Arc::clone(&Semaphore);
-		let Pool = Arc::clone(&Pool);
 
-		tokio::spawn(async move {
-			let _Permit = Semaphore.acquire().await.expect("Cannot acquire.");
-
-			if let Err(_) = Approval.send(Pool.install(|| {
+		Pool.spawn(move || {
+			let Output = tokio::runtime::Runtime::new().unwrap().block_on(async move {
 				let mut Output = Vec::new();
 
 				for Command in &Command {
@@ -65,20 +60,17 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 						drop(Lock);
 					}
 
-					Output.push(tokio::task::block_in_place(|| {
-						tokio::runtime::Runtime::new()
-							.expect("Cannot Runtime.")
-							.block_on(Process::Fn(&Command, &Entry))
-					}));
+					Output.push(Process::Fn(&Command, &Entry).await);
 				}
 
 				Output
-			})) {
+			});
+
+			if let Err(_) = Approval.send(Output) {
 				eprintln!("Cannot send.");
 			}
-		})
-	}))
-	.await;
+		});
+	});
 
 	drop(Approval);
 
