@@ -51,7 +51,7 @@ pub mod Process;
 /// async fn Process::Fn(command: &[String], entry: &str) -> String;
 /// ```
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
-	let (Approval, mut Receive) = mpsc::unbounded_channel();
+	let (Allow, mut Receive) = mpsc::unbounded_channel();
 	let Force = rayon::current_num_threads();
 
 	let Entry = Entry
@@ -70,7 +70,7 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 		Queue.push(Entry).expect("Cannot push.");
 	}
 
-	let (ApprovalWork, ReceiveWork) = mpsc::channel::<String>(32);
+	let (AllowWork, ReceiveWork) = mpsc::channel::<String>(32);
 	let ReceiveWork = Arc::new(Mutex::new(ReceiveWork));
 
 	let Output = tokio::spawn(async move {
@@ -83,7 +83,9 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 
 	for _ in 0..Force {
 		let ReceiveWork = Arc::clone(&ReceiveWork);
-		let Approval = Approval.clone();
+
+		let Allow = Allow.clone();
+
 		let Command = Command.clone();
 
 		tokio::spawn(async move {
@@ -105,7 +107,7 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 							Output.push(Process::Fn(&Command, &Entry).await);
 						}
 
-						if let Err(_) = Approval.send(Output) {
+						if let Err(_) = Allow.send(Output) {
 							eprintln!("Cannot send.");
 						}
 					}
@@ -116,18 +118,19 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	}
 
 	(0..Force).into_par_iter().for_each(|_| {
-		let ApprovalWork = ApprovalWork.clone();
+		let AllowWork = AllowWork.clone();
+
 		let Queue = Arc::clone(&Queue);
 
 		tokio::runtime::Runtime::new().expect("Cannot Runtime.").block_on(async {
 			while let Some(Entry) = Queue.pop() {
-				ApprovalWork.send(Entry).await.expect("Cannot send.");
+				AllowWork.send(Entry).await.expect("Cannot send.");
 			}
 		});
 	});
 
-	drop(Approval);
-	drop(ApprovalWork);
+	drop(Allow);
+	drop(AllowWork);
 
 	Output.await.expect("Output task failed");
 }
