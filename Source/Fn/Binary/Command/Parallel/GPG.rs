@@ -25,7 +25,7 @@ pub mod Git;
 /// let requires_signing = Fn(&command);
 /// assert!(!requires_signing);
 /// ```
-pub fn Fn(Command: &[String]) -> bool {
+pub fn Fn(Command:&[String]) -> bool {
 	if Command.get(0) == Some(&"git".to_string()) {
 		match Command.get(1).map(String::as_str) {
 			Some("commit") | Some("ecommit") => Git::Fn(),

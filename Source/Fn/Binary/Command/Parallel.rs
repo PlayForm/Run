@@ -9,7 +9,8 @@ pub mod Process;
 ///     * `Entry`: A vector of strings representing the entries to process.
 ///     * `Separator`: A string used to join the entry parts after filtering.
 ///     * `Pattern`: A string used to filter the entries.
-///     * `Command`: A vector of strings representing the commands to execute on each entry.
+///     * `Command`: A vector of strings representing the commands to execute on
+///       each entry.
 ///
 /// # Example
 ///
@@ -17,40 +18,44 @@ pub mod Process;
 /// use your_crate::Fn;
 ///
 /// let options = Some(Option {
-///     Entry: vec!["entry1/part1".to_string(), "entry2/part1".to_string()],
-///     Separator: "/".to_string(),
-///     Pattern: "part1".to_string(),
-///     Command: vec!["echo {}".to_string(), "ls -l {}".to_string()],
+/// 	Entry:vec!["entry1/part1".to_string(), "entry2/part1".to_string()],
+/// 	Separator:"/".to_string(),
+/// 	Pattern:"part1".to_string(),
+/// 	Command:vec!["echo {}".to_string(), "ls -l {}".to_string()],
 /// });
 ///
 /// tokio_test::block_on(Fn(options));
 /// ```
 ///
-/// This example defines a vector of entries, a separator, a pattern and a vector of commands.
-/// The `Fn` function is then called with the options.
+/// This example defines a vector of entries, a separator, a pattern and a
+/// vector of commands. The `Fn` function is then called with the options.
 ///
 /// # Details
 ///
 /// The function first filters the entries based on the provided pattern.
-/// Then, it creates a queue of filtered entries and spawns multiple worker tasks.
-/// Each worker task picks an entry from the queue and executes the provided commands on it.
-/// The output of each command is collected and printed to the console.
+/// Then, it creates a queue of filtered entries and spawns multiple worker
+/// tasks. Each worker task picks an entry from the queue and executes the
+/// provided commands on it. The output of each command is collected and printed
+/// to the console.
 ///
-/// The function utilizes parallel processing using `rayon` and asynchronous programming using `tokio` to improve performance.
+/// The function utilizes parallel processing using `rayon` and asynchronous
+/// programming using `tokio` to improve performance.
 ///
-/// The `GPG_MUTEX` is used to ensure that only one thread can access the GPG functions at a time.
+/// The `GPG_MUTEX` is used to ensure that only one thread can access the GPG
+/// functions at a time.
 ///
 /// # Note
 ///
 /// The function assumes that the provided commands are valid shell commands.
 ///
-/// The function also assumes that the `GPG::Fn` and `Process::Fn` functions are defined elsewhere and have the following signatures:
+/// The function also assumes that the `GPG::Fn` and `Process::Fn` functions are
+/// defined elsewhere and have the following signatures:
 ///
 /// ```rust
 /// fn GPG::Fn(command: &[String]) -> bool;
 /// async fn Process::Fn(command: &[String], entry: &str) -> String;
 /// ```
-pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
+pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 	let (Allow, mut Receive) = mpsc::unbounded_channel();
 	let Force = rayon::current_num_threads();
 
@@ -97,7 +102,7 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 						let mut Output = Vec::new();
 
 						for Command in &Command {
-							let Command: Vec<String> =
+							let Command:Vec<String> =
 								Command.split(' ').map(String::from).collect();
 
 							if GPG::Fn(&Command) {
@@ -110,7 +115,7 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 						if let Err(_) = Allow.send(Output) {
 							eprintln!("Cannot send.");
 						}
-					}
+					},
 					None => break,
 				}
 			}
@@ -122,11 +127,13 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 
 		let Queue = Arc::clone(&Queue);
 
-		tokio::runtime::Runtime::new().expect("Cannot Runtime.").block_on(async {
-			while let Some(Entry) = Queue.pop() {
-				AllowWork.send(Entry).await.expect("Cannot send.");
-			}
-		});
+		tokio::runtime::Runtime::new().expect("Cannot Runtime.").block_on(
+			async {
+				while let Some(Entry) = Queue.pop() {
+					AllowWork.send(Entry).await.expect("Cannot send.");
+				}
+			},
+		);
 	});
 
 	drop(Allow);
@@ -135,11 +142,12 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	Output.await.expect("Output task failed");
 }
 
-use crate::Struct::Binary::Command::Entry::Struct as Option;
+use std::sync::Arc;
 
 use once_cell::sync::Lazy;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use std::sync::Arc;
 use tokio::sync::{mpsc, Mutex};
 
-static GPG_MUTEX: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
+use crate::Struct::Binary::Command::Entry::Struct as Option;
+
+static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));

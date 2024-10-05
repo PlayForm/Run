@@ -1,14 +1,16 @@
-/// Executes a command asynchronously in a specified directory and returns its output as a string.
+/// Executes a command asynchronously in a specified directory and returns its
+/// output as a string.
 ///
-/// This function uses `tokio::process::Command` to run the specified command asynchronously
-/// in the given directory and capture its standard output.
+/// This function uses `tokio::process::Command` to run the specified command
+/// asynchronously in the given directory and capture its standard output.
 ///
 /// # Arguments
 ///
 /// * `Command` - A slice of strings representing the command and its arguments.
-///               The first element is expected to be the command itself, and subsequent
-///               elements are its arguments.
-/// * `Entry` - A string slice representing the directory in which to execute the command.
+///   The first element is expected to be the command itself, and subsequent
+///   elements are its arguments.
+/// * `Entry` - A string slice representing the directory in which to execute
+///   the command.
 ///
 /// # Returns
 ///
@@ -29,10 +31,10 @@
 ///
 /// #[tokio::main]
 /// async fn main() {
-///     let command = vec!["ls".to_string(), "-l".to_string()];
-///     let entry = "/home/user";
-///     let output = Fn(&command, entry).await;
-///     println!("Command output: {}", output);
+/// 	let command = vec!["ls".to_string(), "-l".to_string()];
+/// 	let entry = "/home/user";
+/// 	let output = Fn(&command, entry).await;
+/// 	println!("Command output: {}", output);
 /// }
 /// ```
 ///
@@ -40,7 +42,7 @@
 ///
 /// This function uses `tokio::process::Command` for asynchronous execution,
 /// so it must be called within an async context.
-pub async fn Fn(Command: &[String], Entry: &str) -> String {
+pub async fn Fn(Command:&[String], Entry:&str) -> String {
 	String::from_utf8_lossy(
 		&tokio::process::Command::new(Command.get(0).expect("Cannot Command."))
 			.args(&Command[1..])
