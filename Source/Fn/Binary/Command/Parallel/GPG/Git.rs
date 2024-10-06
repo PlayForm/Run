@@ -43,11 +43,12 @@ pub fn Fn() -> bool {
 	COMMIT_SIGNING_ENABLED.load(Ordering::Relaxed)
 }
 
-use once_cell::sync::Lazy;
 use std::{
 	process::Command,
 	sync::atomic::{AtomicBool, Ordering},
 };
 
-static COMMIT_SIGNING_ENABLED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
-static COMMIT_SIGNING_CHECKED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
+use once_cell::sync::Lazy;
+
+static COMMIT_SIGNING_ENABLED:Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
+static COMMIT_SIGNING_CHECKED:Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));

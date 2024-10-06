@@ -127,13 +127,11 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 
 		let Queue = Arc::clone(&Queue);
 
-		tokio::runtime::Runtime::new().expect("Cannot Runtime.").block_on(
-			async {
-				while let Some(Entry) = Queue.pop() {
-					AllowWork.send(Entry).await.expect("Cannot send.");
-				}
-			},
-		);
+		tokio::runtime::Runtime::new().expect("Cannot Runtime.").block_on(async {
+			while let Some(Entry) = Queue.pop() {
+				AllowWork.send(Entry).await.expect("Cannot send.");
+			}
+		});
 	});
 
 	drop(Allow);

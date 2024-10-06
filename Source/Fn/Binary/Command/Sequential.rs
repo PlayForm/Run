@@ -27,19 +27,17 @@ pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }:Option) {
 			.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
 	}) {
 		for Command in &Command {
-			let Command:Vec<String> =
-				Command.split(' ').map(String::from).collect();
+			let Command:Vec<String> = Command.split(' ').map(String::from).collect();
 			let Entry = Entry.clone();
 
-			let mut Command =
-				Command::new(Command.get(0).expect("Cannot Command."))
-					.args(&Command[1..])
-					.current_dir(Entry)
-					.stdout(Stdio::piped())
-					.spawn()
-					.expect("Cannot spawn.")
-					.stdout
-					.expect("Cannot stdout.");
+			let mut Command = Command::new(Command.get(0).expect("Cannot Command."))
+				.args(&Command[1..])
+				.current_dir(Entry)
+				.stdout(Stdio::piped())
+				.spawn()
+				.expect("Cannot spawn.")
+				.stdout
+				.expect("Cannot stdout.");
 
 			let mut Output = String::new();
 

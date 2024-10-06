@@ -10,15 +10,12 @@
 ///
 /// a `Vec<String>` containing paths that meet the specified criteria after
 /// processing the entries from the directory specified by the `Root` parameter.
-pub fn Fn(
-	Option { Exclude, File, Pattern, Root, Separator, .. }:&Option,
-) -> Return {
+pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }:&Option) -> Return {
 	WalkDir::new(Root)
 		.follow_links(false)
 		.into_iter()
 		.filter_map(|Entry| {
-			let Path =
-				Entry.expect("Cannot Entry.").path().display().to_string();
+			let Path = Entry.expect("Cannot Entry.").path().display().to_string();
 
 			// TODO: Separate this into Entry/Exclude.rs
 			if !Exclude
@@ -30,9 +27,7 @@ pub fn Fn(
 
 					match File {
 						true => {
-							match std::fs::metadata(std::path::PathBuf::from(
-								&Path,
-							)) {
+							match std::fs::metadata(std::path::PathBuf::from(&Path)) {
 								Ok(Metadata) => Metadata.is_dir() && Match,
 								Err(_Error) => false,
 							}
@@ -40,11 +35,7 @@ pub fn Fn(
 						false => Match,
 					}
 				}) {
-				Some(
-					Path.split(*Separator)
-						.map(|Entry| Entry.to_string())
-						.collect(),
-				)
+				Some(Path.split(*Separator).map(|Entry| Entry.to_string()).collect())
 			} else {
 				None
 			}
@@ -54,7 +45,4 @@ pub fn Fn(
 
 use walkdir::WalkDir;
 
-use crate::Struct::Binary::Command::{
-	Entry::Type as Return,
-	Option::Struct as Option,
-};
+use crate::Struct::Binary::Command::{Entry::Type as Return, Option::Struct as Option};
