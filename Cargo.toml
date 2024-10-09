@@ -15,7 +15,7 @@ name = "InnKeeper"
 path = "Source/Library.rs"
 
 [dependencies]
-clap = { features = ["derive"], version = "4.5.19" }
+clap = { features = ["derive"], version = "4.5.20" }
 walkdir = "2.5.0"
 futures = "0.3.31"
 rayon = "1.10.0"
