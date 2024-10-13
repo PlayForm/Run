@@ -146,32 +146,32 @@ Specify a custom pattern for matching
 
 `Run` relies on several Rust crates to provide its functionality:
 
--   [clap](https://crates.io/crates/clap) (v4.5.17) - A powerful and flexible
+-   [`clap`](https://crates.io/crates/clap) (v4.5.17) - A powerful and flexible
     command-line argument parser. The "derive" feature is used to simplify the
     creation of command-line interfaces through derive macros.
 
--   [walkdir](https://crates.io/crates/walkdir) (v2.5.0) - Provides an efficient
+-   [`walkdir`](https://crates.io/crates/walkdir) (v2.5.0) - Provides an efficient
     and cross-platform way to recursively traverse directories. This is useful
     for filesystem operations and searching.
 
--   [futures](https://crates.io/crates/futures) (v0.3.30) - Offers abstractions
+-   [`futures`](https://crates.io/crates/futures) (v0.3.30) - Offers abstractions
     for asynchronous programming in Rust. It's used in conjunction with tokio to
     handle asynchronous operations effectively.
 
--   [rayon](https://crates.io/crates/rayon) (v1.10.0) - Enables easy parallelism
+-   [`rayon`](https://crates.io/crates/rayon) (v1.10.0) - Enables easy parallelism
     for data-parallel tasks. It's used to parallelize CPU-bound operations,
     improving performance on multi-core systems.
 
--   [tokio](https://crates.io/crates/tokio) (v1.40.0) - An asynchronous runtime
+-   [`tokio`](https://crates.io/crates/tokio) (v1.40.0) - An asynchronous runtime
     for Rust, providing essential building blocks for writing reliable
     asynchronous applications. The "full" feature set is used to enable all
     tokio functionality.
 
--   [num_cpus](https://crates.io/crates/num_cpus) (v1.16.0) - A small crate that
+-   [`num_cpus`](https://crates.io/crates/num_cpus) (v1.16.0) - A small crate that
     determines the number of CPUs on the current system. This is useful for
     optimizing parallel workloads.
 
--   [once_cell](https://crates.io/crates/once_cell) (v1.19.0) - Provides a way
+-   [`once_cell`](https://crates.io/crates/once_cell) (v1.19.0) - Provides a way
     to perform lazy static initialization. It's often used for global variables
     or singletons that need to be initialized only once.
 
@@ -183,4 +183,4 @@ operations while efficiently traversing filesystems.
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for a history of changes to this CLI.
+See [`CHANGELOG.md`](CHANGELOG.md) for a history of changes to this CLI.
