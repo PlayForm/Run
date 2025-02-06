@@ -6,7 +6,7 @@
     - Leverages `tokio::sync::mpsc` for improved channel communication.
     - Refactored for clarity and conciseness.
 
-### Changed
+### Change
 
 - Updated documentation for the Fn function in
   Source/Fn/Binary/Command/Parallel.rs:
@@ -17,7 +17,7 @@
 
 ## 0.1.2
 
-### Changed
+### Change
 
 - Updated once_cell dependency to version 1.19.0
 - Updated version number to 0.1.2 in Cargo.toml
@@ -29,7 +29,7 @@
 - Changed `use tokio::sync::Mutex;` to `use std::sync::{Arc, Mutex};` for better
   compatibility
 
-### Added
+### Add
 
 - Added `crossbeam-queue = "0.3.11"` dependency
 
@@ -45,13 +45,13 @@
 
 ## 0.1.1
 
-### Added
+### Add
 
 - Added support for multiple commands using the `-C` or `--Command` flag.
 - Introduced a new GPG module to handle Git commit signing.
 - Added a Process module to encapsulate asynchronous command execution.
 
-### Changed
+### Change
 
 - Updated various dependencies to their latest versions:
     - `clap` to 4.5.17
@@ -74,7 +74,7 @@
 
 - Removed the `--Separator` option.
 
-### Changed
+### Change
 
 - Updated version number from 0.0.7 to 0.1.0 in `Cargo.toml`
 
@@ -114,14 +114,14 @@
   async support: Refactoring for type safety and async support can introduce
   breaking changes if the function signatures or expected usage patterns change.
 
-### Added
+### Add
 
 - New `.cargo/Config.toml` file with build and profile configurations
 - Added `futures = "0.3.30"` dependency
 - Added `rayon = "1.10.0"` dependency
 - Added `num_cpus = "1.16.0"` dependency
 
-### Changed
+### Change
 
 - Updated `.gitignore` to use "Target" instead of "target" for consistency
 - Updated `clap` dependency to version 4.5.11
@@ -157,14 +157,14 @@
 - Updated main function to use `tokio` runtime: Changing the main function to
   use a specific runtime can be a breaking change.
 
-### Added
+### Add
 
 - New `.github/FUNDING.yml` file with Open Collective funding information
 - Added `serde = { version = "1.0.204", features = ["derive"] }` as a build
   dependency
 - Added `toml = "0.8.16"` as a build dependency
 
-### Changed
+### Change
 
 - Updated various GitHub Action workflows
 - Updated `clap` dependency to version 4.5.11
@@ -193,7 +193,7 @@
 - Updated `tokio` dependency to version 1.37.0: Dependency updates can introduce
   breaking changes.
 
-### Changed
+### Change
 
 - Updated `tokio` dependency to version 1.37.0
 - Changed project description to "🍺 Run"
@@ -213,7 +213,7 @@
 
 ## 0.0.4
 
-### Changed
+### Change
 
 - Updated version number to 0.0.4
 
@@ -225,7 +225,7 @@
 
 ## 0.0.3
 
-### Changed
+### Change
 
 - Updated version number to 0.0.3
 
@@ -237,11 +237,11 @@
   breaking change, but if it involved changes to existing binaries or their
   interfaces, it could be.
 
-### Added
+### Add
 
 - New binary targets: "Inn" and "InnKeeper"
 
-### Changed
+### Change
 
 - Updated version number from 0.0.1 to 0.0.2
 
