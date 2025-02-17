@@ -16,14 +16,14 @@ path = "Source/Library.rs"
 
 [build-dependencies]
 serde = { version = "1.0.217", features = ["derive"] }
-toml = { version = "0.8.19" }
+toml = { version = "0.8.20" }
 
 [dependencies]
-clap = { features = ["derive"], version = "4.5.27" }
+clap = { features = ["derive"], version = "4.5.30" }
 crossbeam-queue = "0.3.12"
 futures = { version = "0.3.31" }
 num_cpus = { version = "1.16.0" }
-once_cell = { version = "1.20.2" }
+once_cell = { version = "1.20.3" }
 rayon = { version = "1.10.0" }
 tokio = { version = "1.43.0", features = ["full"] }
 unbug = { version = "0.4.0" }
@@ -44,7 +44,7 @@ autoexamples = false
 autotests = false
 default-run = "Run"
 description = "Run 🍺"
-edition = "2021"
+edition = "2024"
 include = [
 	"Source/**/*",
 	"LICENSE",
