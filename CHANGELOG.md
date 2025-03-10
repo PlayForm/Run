@@ -63,7 +63,7 @@
 - Renamed the binary target from `Innkeeper` to `InnKeeper` for consistency.
 - Enhanced error handling during parallel command execution.
 
-### Fixed
+### Fix
 
 - Resolved an issue where parallel execution could deadlock when Git commit
   signing was enabled.
@@ -89,7 +89,7 @@
 - Refined command-line argument descriptions in `Source/Fn/Binary/Command.rs`
 - Updated author information in `Source/Fn/Binary/Command.rs`
 
-### Fixed
+### Fix
 
 - Corrected import in `Source/Fn/Binary/Command/Parallel.rs`:
     - Changed `stream::iter` to `futures::stream::iter`
@@ -207,7 +207,7 @@
 - Added documentation to `Source/Fn/Binary/Command/Entry.rs` and
   `Source/Fn/Binary/Command/Parallel.rs`
 
-### Fixed
+### Fix
 
 - Updated links in `CODE_OF_CONDUCT.md` and `CONTRIBUTING.md` to use HTTPS
 
