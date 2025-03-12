@@ -13,7 +13,7 @@ digraph G {
     label="root";
     style=filled; color="#5DADE2"; fillcolor="#5DADE220";
     "n0" [label="root", shape=folder, fillcolor="#5DADE2", penwidth=1.5];
-    "n2" [label="cargo (.): prun v0.1.3", shape=ellipse, fillcolor="#EB984E", penwidth=1.5];
+    "n2" [label="cargo (.): prun v0.1.4", shape=ellipse, fillcolor="#EB984E", penwidth=1.5];
     "n1" [label="Cargo.toml", shape=note, fillcolor="#FADBD8", penwidth=1];
   }
 
