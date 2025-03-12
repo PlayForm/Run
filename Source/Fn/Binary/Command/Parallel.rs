@@ -1,66 +1,19 @@
-pub mod GPG;
-pub mod Process;
-
 /// Executes a series of commands on a list of entries concurrently.
 ///
 /// # Arguments
-///
-/// * `Option` - An optional struct containing the following fields:
-///     * `Entry`: A vector of strings representing the entries to process.
-///     * `Separator`: A string used to join the entry parts after filtering.
-///     * `Pattern`: A string used to filter the entries.
-///     * `Command`: A vector of strings representing the commands to execute on
-///       each entry.
-///
-/// # Example
-///
-/// ```rust
-/// use your_crate::Fn;
-///
-/// let options = Some(Option {
-/// 	Entry:vec!["entry1/part1".to_string(), "entry2/part1".to_string()],
-/// 	Separator:"/".to_string(),
-/// 	Pattern:"part1".to_string(),
-/// 	Command:vec!["echo {}".to_string(), "ls -l {}".to_string()],
-/// });
-///
-/// tokio_test::block_on(Fn(options));
-/// ```
-///
-/// This example defines a vector of entries, a separator, a pattern and a
-/// vector of commands. The `Fn` function is then called with the options.
+/// * `Option` - Struct with fields: `Entry` (Vec<String>), `Separator`
+///   (String), `Pattern` (String), `Command` (Vec<String>).
 ///
 /// # Details
-///
-/// The function first filters the entries based on the provided pattern.
-/// Then, it creates a queue of filtered entries and spawns multiple worker
-/// tasks. Each worker task picks an entry from the queue and executes the
-/// provided commands on it. The output of each command is collected and printed
-/// to the console.
-///
-/// The function utilizes parallel processing using `rayon` and asynchronous
-/// programming using `tokio` to improve performance.
-///
-/// The `GPG_MUTEX` is used to ensure that only one thread can access the GPG
-/// functions at a time.
-///
-/// # Note
-///
-/// The function assumes that the provided commands are valid shell commands.
-///
-/// The function also assumes that the `GPG::Fn` and `Process::Fn` functions are
-/// defined elsewhere and have the following signatures:
-///
-/// ```rust
-/// fn GPG::Fn(command: &[String]) -> bool;
-/// async fn Process::Fn(command: &[String], entry: &str) -> String;
-/// ```
+/// Filters entries by pattern, processes them with commands in parallel using
+/// workers, and prints outputs. Uses Rayon for filtering and Tokio for async
+/// command execution, with a lock-free queue for work distribution.
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
-	let (Allow, mut Receive) = mpsc::unbounded_channel();
+	let (Allow, mut Receive) = mpsc::unbounded_channel::<Vec<String>>();
 
-	let Force = rayon::current_num_threads();
+	let Command = Arc::new(Command);
 
-	let Entry = Entry
+	let Entry:Vec<String> = Entry
 		.into_par_iter()
 		.filter_map(|Entry| {
 			Entry
@@ -68,88 +21,93 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 				.filter(|Last| *Last == &Pattern)
 				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
 		})
-		.collect::<Vec<String>>();
+		.collect();
 
-	let Queue = Arc::new(crossbeam_queue::ArrayQueue::new(Entry.len()));
+	let Queue = Arc::new(ArrayQueue::new(Entry.len()));
 
 	for Entry in Entry {
-		Queue.push(Entry).expect("Cannot push.");
+		Queue.push(Entry).expect("Queue capacity should suffice");
 	}
 
-	let (AllowWork, ReceiveWork) = mpsc::channel::<String>(32);
+	let Force = rayon::current_num_threads();
 
-	let ReceiveWork = Arc::new(Mutex::new(ReceiveWork));
-
-	// TODO: MULTI-THREAD
 	let Output = tokio::spawn(async move {
 		while let Some(Output) = Receive.recv().await {
-			for Output in Output {
+			Output.into_par_iter().for_each(|Output| {
 				println!("{}", Output);
-			}
+			});
 		}
 	});
 
-	for _ in 0..Force {
-		let ReceiveWork = Arc::clone(&ReceiveWork);
+	let Worker = (0..Force)
+		.map(|_| {
+			let Allow = Allow.clone();
 
-		let Allow = Allow.clone();
+			let Command = Arc::clone(&Command);
 
-		let Command = Command.clone();
+			let Queue = Arc::clone(&Queue);
 
-		tokio::spawn(async move {
-			loop {
-				let Entry = { ReceiveWork.lock().await.recv().await };
+			tokio::spawn(async move {
+				while let Some(Entry) = Queue.pop() {
+					let mut Output = Vec::new();
 
-				match Entry {
-					Some(Entry) => {
-						let mut Output = Vec::new();
+					Output.extend(
+						futures::future::join_all(
+							Command
+								.par_iter()
+								.map(|Command| {
+									async {
+										let Part = Command.split(' ').map(String::from).collect::<Vec<String>>();
 
-						for Command in &Command {
-							let Command:Vec<String> =
-								Command.split(' ').map(String::from).collect();
+										match GPG::Fn(&Part) {
+											true => {
+												let _Lock = GPG_MUTEX.lock().await;
+											},
+											false => (),
+										}
 
-							if GPG::Fn(&Command) {
-								let _Lock = GPG_MUTEX.lock().await;
-							}
+										Process::Fn(&Part, &Entry).await
+									}
+								})
+								.collect::<Vec<_>>(),
+						)
+						.await,
+					);
 
-							Output.push(Process::Fn(&Command, &Entry).await);
-						}
-
-						if let Err(_) = Allow.send(Output) {
-							eprintln!("Cannot send.");
-						}
-					},
-					None => break,
+					if let Err(e) = Allow.send(Output) {
+						eprintln!("Failed to send output: {}", e);
+					}
 				}
-			}
-		});
-	}
+			})
+		})
+		.collect::<Vec<_>>();
 
-	(0..Force).into_par_iter().for_each(|_| {
-		let AllowWork = AllowWork.clone();
-
-		let Queue = Arc::clone(&Queue);
-
-		tokio::runtime::Runtime::new().expect("Cannot Runtime.").block_on(async {
-			while let Some(Entry) = Queue.pop() {
-				AllowWork.send(Entry).await.expect("Cannot send.");
-			}
-		});
-	});
+	futures::future::join_all(
+		Worker
+			.into_par_iter()
+			.map(|Worker| async { Worker.await.expect("Worker task failed") })
+			.collect::<Vec<_>>(),
+	)
+	.await;
 
 	drop(Allow);
-
-	drop(AllowWork);
 
 	Output.await.expect("Output task failed");
 }
 
 use std::sync::Arc;
 
+use crossbeam_queue::ArrayQueue;
 use once_cell::sync::Lazy;
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rayon::{
+	iter::{IntoParallelIterator, ParallelIterator},
+	prelude::IntoParallelRefIterator,
+};
 use tokio::sync::{Mutex, mpsc};
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
 
 static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
+
+pub mod GPG;
+pub mod Process;
