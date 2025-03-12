@@ -1,5 +1,37 @@
 ## 0.1.4
 
+### Add
+
+- Added Knowledge.dot to visualize project structure.
+
+### Change
+
+- Updated dependencies:
+    - `clap` to 4.5.32
+    - `crossbeam-queue` to 0.3.12
+    - `futures` to 0.3.31
+    - `once_cell` to 1.21.0
+    - `tokio` to 1.44.0
+    - `unbug` to 0.4.0
+- Updated build-dependencies:
+    - `serde` to 1.0.219
+    - `toml` to 0.8.20
+- Modified project description to "Run 🍺" and updated the edition to "2024" in
+  Cargo.toml.
+- Updated author information in Source/Fn/Binary/Command.rs to "Source ✍🏻 Open
+  👐🏻 <Source/Open@PlayForm.LTD>".
+- Updated help messages in Source/Fn/Binary/Command.rs for brevity.
+
+### Improved
+
+- Enhanced parallel execution in Source/Fn/Binary/Command/Parallel.rs:
+    - Refactored for improved performance and clarity, using par_iter for
+      parallel processing.
+    - Improved error handling and queue management.
+    - Removed unnecessary mutex locking.
+    - Streamlined worker task execution.
+- Removed redundant filtering in Source/Fn/Binary/Command/Entry.rs.
+
 ## 0.1.3
 
 ### Improved
