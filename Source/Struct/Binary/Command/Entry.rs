@@ -20,10 +20,4 @@ impl Struct {
 	}
 }
 
-use crate::Struct::Binary::Command::Option::{
-	Command,
-	Parallel,
-	Pattern,
-	Separator,
-	Struct as Option,
-};
+use crate::Struct::Binary::Command::Option::{Command, Parallel, Pattern, Separator, Struct as Option};
