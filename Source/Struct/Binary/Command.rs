@@ -1,6 +1,6 @@
 pub struct Struct {
 	pub Separator:Option::Separator,
-	pub Fn:Box<dyn Fn() -> Pin<Box<dyn Future<Output = ()> + Send + 'static>> + Send + 'static>,
+	pub Fn:Box<dyn Fn() -> std::pin::Pin<Box<dyn futures::Future<Output = ()> + Send + 'static>> + Send + 'static>,
 }
 
 impl Struct {
@@ -13,10 +13,10 @@ impl Struct {
 
 					match Option.Parallel {
 						true => {
-							Parallel::Fn(Option).await;
+							crate::Fn::Binary::Command::Parallel::Fn(Option).await;
 						},
 						false => {
-							Sequential::Fn(Option).await;
+							crate::Fn::Binary::Command::Sequential::Fn(Option).await;
 						},
 					};
 				})
@@ -26,10 +26,5 @@ impl Struct {
 }
 
 pub mod Entry;
+
 pub mod Option;
-
-use std::pin::Pin;
-
-use futures::Future;
-
-use crate::Fn::Binary::Command::{Parallel, Sequential};

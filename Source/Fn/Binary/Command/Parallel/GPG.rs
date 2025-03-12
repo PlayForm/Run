@@ -1,9 +1,8 @@
-pub mod Git;
-
 /// Determines if a given command requires Git commit signing.
 ///
 /// This function checks if the provided command is a Git command that typically
 /// requires commit signing. It supports various Git operations such as commit,
+///
 /// tag, merge, rebase, cherry-pick, notes, push, and pull.
 ///
 /// # Arguments
@@ -29,9 +28,12 @@ pub fn Fn(Command:&[String]) -> bool {
 	if Command.get(0) == Some(&"git".to_string()) {
 		match Command.get(1).map(String::as_str) {
 			Some("commit") | Some("ecommit") => Git::Fn(),
+
 			_ => false,
 		}
 	} else {
 		false
 	}
 }
+
+pub mod Git;

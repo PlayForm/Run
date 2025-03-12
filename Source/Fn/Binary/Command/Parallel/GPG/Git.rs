@@ -21,6 +21,7 @@
 ///
 /// ```
 /// let is_signing_enabled = Fn();
+///
 /// println!("Commit signing is enabled: {}", is_signing_enabled);
 /// ```
 pub fn Fn() -> bool {
@@ -51,4 +52,5 @@ use std::{
 use once_cell::sync::Lazy;
 
 static COMMIT_SIGNING_ENABLED:Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
+
 static COMMIT_SIGNING_CHECKED:Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));

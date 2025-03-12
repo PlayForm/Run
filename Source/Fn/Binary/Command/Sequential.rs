@@ -20,43 +20,47 @@
 /// Fn(options);
 /// ```
 pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }:Option) {
-	for Entry in Entry.into_iter().filter_map(|Entry| {
-		Entry
-			.last()
-			.filter(|Last| *Last == &Pattern)
-			.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
-	}) {
-		for Command in &Command {
-			let Command:Vec<String> = Command.split(' ').map(String::from).collect();
+	Entry
+		.into_iter()
+		.filter_map(|Entry| {
+			Entry
+				.last()
+				.filter(|Last| *Last == &Pattern)
+				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
+		})
+		.for_each(|Entry| {
+			Command.iter().for_each(|Command| {
+				let Command = Command.split(' ').map(String::from).collect::<Vec<String>>();
 
-			let Entry = Entry.clone();
+				let Entry = Entry.clone();
 
-			let mut Command = Command::new(Command.get(0).expect("Cannot Command."))
-				.args(&Command[1..])
-				.current_dir(Entry)
-				.stdout(Stdio::piped())
-				.spawn()
-				.expect("Cannot spawn.")
-				.stdout
-				.expect("Cannot stdout.");
+				let mut Command = Command::new(Command.get(0).expect("Cannot Command."))
+					.args(&Command[1..])
+					.current_dir(Entry)
+					.stdout(Stdio::piped())
+					.spawn()
+					.expect("Cannot spawn.")
+					.stdout
+					.expect("Cannot stdout.");
 
-			let mut Output = String::new();
+				let mut Output = String::new();
 
-			loop {
-				let mut Buffer = [0; 512];
+				loop {
+					let mut Buffer = [0; 512];
 
-				let Byte = Command.read(&mut Buffer).expect("Cannot read.");
+					let Byte = Command.read(&mut Buffer).expect("Cannot read.");
 
-				if Byte == 0 {
-					break;
+					match Byte == 0 {
+						true => break,
+						false => (),
+					}
+
+					Output.push_str(&String::from_utf8_lossy(&Buffer[..Byte]));
 				}
 
-				Output.push_str(&String::from_utf8_lossy(&Buffer[..Byte]));
-			}
-
-			println!("{}", Output);
-		}
-	}
+				println!("{}", Output);
+			});
+		});
 }
 
 use std::{

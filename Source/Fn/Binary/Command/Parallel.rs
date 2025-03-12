@@ -25,9 +25,9 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 
 	let Queue = Arc::new(ArrayQueue::new(Entry.len()));
 
-	for Entry in Entry {
+	Entry.into_par_iter().for_each(|Entry| {
 		Queue.push(Entry).expect("Queue capacity should suffice");
-	}
+	});
 
 	let Force = rayon::current_num_threads();
 
@@ -74,8 +74,11 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 						.await,
 					);
 
-					if let Err(e) = Allow.send(Output) {
-						eprintln!("Failed to send output: {}", e);
+					match Allow.send(Output) {
+						Err(e) => {
+							eprintln!("Failed to send output: {}", e);
+						},
+						_ => (),
 					}
 				}
 			})
@@ -110,4 +113,5 @@ use crate::Struct::Binary::Command::Entry::Struct as Option;
 static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
 pub mod GPG;
+
 pub mod Process;

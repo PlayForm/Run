@@ -32,8 +32,11 @@
 /// #[tokio::main]
 /// async fn main() {
 /// 	let command = vec!["ls".to_string(), "-l".to_string()];
+///
 /// 	let entry = "/home/user";
+///
 /// 	let output = Fn(&command, entry).await;
+///
 /// 	println!("Command output: {}", output);
 /// }
 /// ```
