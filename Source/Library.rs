@@ -4,5 +4,8 @@
 #[tokio::main]
 async fn main() { (Struct::Binary::Command::Struct::Fn().Fn)().await }
 
+
+
+
 mod Fn;
 mod Struct;
