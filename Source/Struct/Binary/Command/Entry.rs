@@ -1,29 +1,29 @@
 pub type Type = Vec<Vec<String>>;
 
 pub struct Struct {
-	pub Command:Command,
+	pub Command: Command,
 
-	pub Entry:Type,
+	pub Entry: Type,
 
-	pub Parallel:Parallel,
+	pub Parallel: Parallel,
 
-	pub Pattern:Pattern,
+	pub Pattern: Pattern,
 
-	pub Separator:Separator,
+	pub Separator: Separator,
 }
 
 impl Struct {
-	pub fn Fn(Option:&Option) -> Self {
+	pub fn Fn(Option: &Option) -> Self {
 		Self {
-			Command:Option.Command.clone(),
+			Command: Option.Command.clone(),
 
-			Entry:crate::Fn::Binary::Command::Entry::Fn(Option),
+			Entry: crate::Fn::Binary::Command::Entry::Fn(Option),
 
-			Parallel:Option.Parallel,
+			Parallel: Option.Parallel,
 
-			Pattern:Option.Pattern.clone(),
+			Pattern: Option.Pattern.clone(),
 
-			Separator:Option.Separator,
+			Separator: Option.Separator,
 		}
 	}
 }

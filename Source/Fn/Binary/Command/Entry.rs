@@ -10,7 +10,7 @@
 ///
 /// a `Vec<String>` containing paths that meet the specified criteria after
 /// processing the entries from the directory specified by the `Root` parameter.
-pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }:&Option) -> Return {
+pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }: &Option) -> Return {
 	WalkDir::new(Root)
 		.follow_links(false)
 		.into_iter()
@@ -26,11 +26,9 @@ pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }:&Option) -> Ret
 					let Match = Path.contains(&Exclude);
 
 					match File {
-						true => {
-							match std::fs::metadata(std::path::PathBuf::from(&Path)) {
-								Ok(Metadata) => Metadata.is_dir() && Match,
-								Err(_Error) => false,
-							}
+						true => match std::fs::metadata(std::path::PathBuf::from(&Path)) {
+							Ok(Metadata) => Metadata.is_dir() && Match,
+							Err(_Error) => false,
 						},
 						false => Match,
 					}

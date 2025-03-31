@@ -45,7 +45,7 @@
 ///
 /// This function uses `tokio::process::Command` for asynchronous execution,
 /// so it must be called within an async context.
-pub async fn Fn(Command:&[String], Entry:&str) -> String {
+pub async fn Fn(Command: &[String], Entry: &str) -> String {
 	String::from_utf8_lossy(
 		&tokio::process::Command::new(Command.get(0).expect("Cannot Command."))
 			.args(&Command[1..])

@@ -19,7 +19,7 @@
 /// };
 /// Fn(options);
 /// ```
-pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }:Option) {
+pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
 	Entry
 		.into_iter()
 		.filter_map(|Entry| {

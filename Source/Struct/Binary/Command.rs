@@ -1,13 +1,13 @@
 pub struct Struct {
-	pub Separator:Option::Separator,
-	pub Fn:Box<dyn Fn() -> std::pin::Pin<Box<dyn futures::Future<Output = ()> + Send + 'static>> + Send + 'static>,
+	pub Separator: Option::Separator,
+	pub Fn: Box<dyn Fn() -> std::pin::Pin<Box<dyn futures::Future<Output = ()> + Send + 'static>> + Send + 'static>,
 }
 
 impl Struct {
 	pub fn Fn() -> Self {
 		Self {
-			Separator:std::path::MAIN_SEPARATOR,
-			Fn:Box::new(|| {
+			Separator: std::path::MAIN_SEPARATOR,
+			Fn: Box::new(|| {
 				Box::pin(async move {
 					let Option = Entry::Struct::Fn(&Option::Struct::Fn(Struct::Fn()));
 

@@ -1,11 +1,11 @@
 #[derive(Deserialize)]
 struct Toml {
-	package:Package,
+	package: Package,
 }
 
 #[derive(Deserialize)]
 struct Package {
-	version:String,
+	version: String,
 }
 
 fn main() {

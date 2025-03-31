@@ -8,12 +8,12 @@
 /// Filters entries by pattern, processes them with commands in parallel using
 /// workers, and prints outputs. Uses Rayon for filtering and Tokio for async
 /// command execution, with a lock-free queue for work distribution.
-pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
+pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
 	let (Allow, mut Receive) = mpsc::unbounded_channel::<Vec<String>>();
 
 	let Command = Arc::new(Command);
 
-	let Entry:Vec<String> = Entry
+	let Entry: Vec<String> = Entry
 		.into_par_iter()
 		.filter_map(|Entry| {
 			Entry
@@ -55,19 +55,17 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 						futures::future::join_all(
 							Command
 								.par_iter()
-								.map(|Command| {
-									async {
-										let Part = Command.split(' ').map(String::from).collect::<Vec<String>>();
+								.map(|Command| async {
+									let Part = Command.split(' ').map(String::from).collect::<Vec<String>>();
 
-										match GPG::Fn(&Part) {
-											true => {
-												let _Lock = GPG_MUTEX.lock().await;
-											},
-											false => (),
-										}
-
-										Process::Fn(&Part, &Entry).await
+									match GPG::Fn(&Part) {
+										true => {
+											let _Lock = GPG_MUTEX.lock().await;
+										},
+										false => (),
 									}
+
+									Process::Fn(&Part, &Entry).await
 								})
 								.collect::<Vec<_>>(),
 						)
@@ -110,7 +108,7 @@ use tokio::sync::{Mutex, mpsc};
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
 
-static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
+static GPG_MUTEX: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
 pub mod GPG;
 

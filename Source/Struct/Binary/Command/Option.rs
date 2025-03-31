@@ -5,40 +5,40 @@ pub type Pattern = String;
 pub type Separator = char;
 
 pub struct Struct {
-	pub Command:Command,
+	pub Command: Command,
 
-	pub Exclude:Vec<String>,
+	pub Exclude: Vec<String>,
 
-	pub File:bool,
+	pub File: bool,
 
-	pub Parallel:Parallel,
+	pub Parallel: Parallel,
 
-	pub Pattern:Pattern,
+	pub Pattern: Pattern,
 
-	pub Root:String,
+	pub Root: String,
 
-	pub Separator:Separator,
+	pub Separator: Separator,
 }
 
 impl Struct {
-	pub fn Fn(Option { Separator, .. }:Option) -> Self {
+	pub fn Fn(Option { Separator, .. }: Option) -> Self {
 		Self {
-			File:Fn().get_flag("File"),
+			File: Fn().get_flag("File"),
 
-			Parallel:Fn().get_flag("Parallel"),
+			Parallel: Fn().get_flag("Parallel"),
 
-			Root:Fn().get_one::<String>("Root").expect("Cannot Root.").to_owned(),
+			Root: Fn().get_one::<String>("Root").expect("Cannot Root.").to_owned(),
 
-			Exclude:Fn()
+			Exclude: Fn()
 				.get_one::<String>("Exclude")
 				.expect("Cannot Exclude.")
 				.split(" ")
 				.map(|Command| Command.to_string())
 				.collect::<Vec<_>>(),
 
-			Pattern:Fn().get_one::<String>("Pattern").expect("Cannot Pattern.").to_owned(),
+			Pattern: Fn().get_one::<String>("Pattern").expect("Cannot Pattern.").to_owned(),
 
-			Command:Fn().get_many::<String>("Command").expect("Cannot Command").cloned().collect(),
+			Command: Fn().get_many::<String>("Command").expect("Cannot Command").cloned().collect(),
 
 			Separator,
 		}
