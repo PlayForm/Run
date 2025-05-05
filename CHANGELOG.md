@@ -19,7 +19,7 @@
 - Modified project description to "Run 🍺" and updated the edition to "2024" in
   Cargo.toml.
 - Updated author information in Source/Fn/Binary/Command.rs to "Source ✍🏻 Open
-  👐🏻 <Source/Open@PlayForm.LTD>".
+  👐🏻 <Source/Open@PlayForm.Cloud>".
 - Updated help messages in Source/Fn/Binary/Command.rs for brevity.
 
 ### Improved
