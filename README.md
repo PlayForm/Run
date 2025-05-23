@@ -3,7 +3,7 @@
 `Run` is a command-line tool that executes commands in multiple directories
 concurrently.
 
-[Run]: HTTPS://crates.io/crates/prun
+[Run]: https://crates.io/crates/prun
 
 ## Bench
 
@@ -179,7 +179,7 @@ These dependencies work together to provide a robust, efficient, and
 user-friendly command-line tool capable of handling parallel and asynchronous
 operations while efficiently traversing filesystems.
 
-[Run]: HTTPS://crates.io/crates/prun
+[Run]: https://crates.io/crates/prun
 
 ## Changelog
 

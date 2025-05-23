@@ -92,7 +92,7 @@
     - `tokio` to 1.40.0
     - `serde` to 1.0.210
     - `toml` to 0.8.19
-- Updated the project repository URL to `HTTPS://GitHub.Com/PlayForm/Run.git`.
+- Updated the project repository URL to `https://GitHub.Com/PlayForm/Run.git`.
 - Improved the README with clearer usage instructions and examples.
 - Renamed the binary target from `Innkeeper` to `InnKeeper` for consistency.
 - Enhanced error handling during parallel command execution.
@@ -161,7 +161,7 @@
 - Updated `clap` dependency to version 4.5.11
 - Updated `tokio` dependency to version 1.39.1 with full features
 - Changed project description to "🍺 Run —"
-- Updated repository URL to "HTTPS://github.com/PlayForm/Run.git"
+- Updated repository URL to "https://github.com/PlayForm/Run.git"
 
 ### Improved
 
