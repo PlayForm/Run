@@ -9,7 +9,7 @@
 /// workers, and prints outputs. Uses Rayon for filtering and Tokio for async
 /// command execution, with a lock-free queue for work distribution.
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
-	let Sign:Vec<bool> = Command
+	let CommandSign:Vec<bool> = Command
 		.iter()
 		.map(|cmd_str| {
 			let parts:Vec<String> = cmd_str.split(' ').map(String::from).collect();
@@ -18,9 +18,9 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 		})
 		.collect();
 
-	let Command = Arc::new(Command);
+	let CommandArc = Arc::new(Command);
 
-	let SignArc = Arc::new(Sign);
+	let SignArc = Arc::new(CommandSign);
 
 	let Target:Vec<String> = Entry
 		.into_iter()
@@ -35,7 +35,7 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 
 	stream::iter(Target)
 		.for_each_concurrent(Limit, |Path| {
-			let Local = Arc::clone(&Command);
+			let Local = Arc::clone(&CommandArc);
 
 			let SignLocal = Arc::clone(&SignArc);
 
