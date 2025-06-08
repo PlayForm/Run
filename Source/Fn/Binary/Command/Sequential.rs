@@ -19,7 +19,7 @@
 /// };
 /// Fn(options);
 /// ```
-pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
+pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }:Option) {
 	Entry
 		.into_iter()
 		.filter_map(|Entry| {
@@ -39,16 +39,16 @@ pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
 					.current_dir(Entry)
 					.stdout(Stdio::piped())
 					.spawn()
-					.expect("Cannot spawn.")
-					.stdout
-					.expect("Cannot stdout.");
+					.expect("Cannot spawn.");
+
+				let mut Out = Command.stdout.as_mut().expect("Cannot stdout.");
 
 				let mut Output = String::new();
 
 				loop {
 					let mut Buffer = [0; 512];
 
-					let Byte = Command.read(&mut Buffer).expect("Cannot read.");
+					let Byte = Out.read(&mut Buffer).expect("Cannot read.");
 
 					match Byte == 0 {
 						true => break,
@@ -56,6 +56,12 @@ pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }: Option) {
 					}
 
 					Output.push_str(&String::from_utf8_lossy(&Buffer[..Byte]));
+				}
+
+				let Status = Command.wait().expect("Failed to wait on child process.");
+
+				if !Status.success() {
+					eprintln!("Command failed with status: {}", Status);
 				}
 
 				println!("{}", Output);
