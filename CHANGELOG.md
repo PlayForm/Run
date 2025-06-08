@@ -1,5 +1,30 @@
 ## 0.1.5
 
+### Add
+
+- Added `Source/Graph.md` with Mermaid diagrams documenting execution flow and
+  command processing.
+
+### Change
+
+- Updated dependencies:
+    - `clap` to 4.5.35
+    - `once_cell` to 1.21.3
+    - `tokio` to 1.44.1
+- Updated author email address to `<Source/Open@PlayForm.Cloud>` in CLI output.
+
+### Improved
+
+- Optimized exclusion filtering in `Command/Entry.rs`:
+    - Avoid unnecessary cloning of exclude patterns
+    - Improved variable naming and code clarity
+- Refactored parallel execution in `Command/Parallel.rs`:
+    - Replaced `crossbeam-queue` and `rayon` with `futures::stream` for better
+      async integration
+    - Simplified concurrency model and improved resource management
+- Enhanced error handling in sequential command execution:
+    - Added status code checking and error reporting in `Command/Sequential.rs`
+
 ## 0.1.4
 
 ### Add
