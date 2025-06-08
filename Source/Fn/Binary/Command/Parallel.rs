@@ -37,19 +37,19 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 		.for_each_concurrent(Limit, |Path| {
 			let Local = Arc::clone(&Command);
 
-			let Sign = Arc::clone(&SignArc);
+			let SignLocal = Arc::clone(&SignArc);
 
 			async move {
 				let Task = Local.iter().enumerate().map(|(Current, Command)| {
-					let SignLocal = Sign[Current];
+					let Require = SignLocal[Current];
 
 					let Part:Vec<String> = Command.split(' ').map(String::from).collect();
 
 					let Entry = Path.clone();
 
 					async move {
-						if SignLocal {
-							let _lock = GPG_MUTEX.lock().await;
+						if Require {
+							let _ = GPG_MUTEX.lock().await;
 
 							Process::Fn(&Part, &Entry).await
 						} else {
@@ -58,10 +58,8 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 					}
 				});
 
-				let outputs = futures::future::join_all(Task).await;
-
-				for output in outputs.into_iter().filter(|s| !s.is_empty()) {
-					println!("{}", output);
+				for Output in (futures::future::join_all(Task).await).into_iter().filter(|s| !s.is_empty()) {
+					println!("{}", Output);
 				}
 			}
 		})
@@ -71,7 +69,6 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 use std::sync::Arc;
 
 use futures::stream::{self, StreamExt};
-// The GPG mutex is still necessary to serialize signing operations.
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 
