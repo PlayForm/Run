@@ -41,7 +41,7 @@ pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }:Option) {
 					.spawn()
 					.expect("Cannot spawn.");
 
-				let mut Out = Command.stdout.as_mut().expect("Cannot stdout.");
+				let Out = Command.stdout.as_mut().expect("Cannot stdout.");
 
 				let mut Output = String::new();
 
