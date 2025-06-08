@@ -9,7 +9,7 @@
 /// workers, and prints outputs. Uses Rayon for filtering and Tokio for async
 /// command execution, with a lock-free queue for work distribution.
 pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
-	let commands_require_signing:Vec<bool> = Command
+	let Sign:Vec<bool> = Command
 		.iter()
 		.map(|cmd_str| {
 			let parts:Vec<String> = cmd_str.split(' ').map(String::from).collect();
@@ -18,38 +18,37 @@ pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
 		})
 		.collect();
 
-	let command_arc = Arc::new(Command);
+	let Command = Arc::new(Command);
 
-	let signing_arc = Arc::new(commands_require_signing);
+	let SignArc = Arc::new(Sign);
 
-	let target_dirs:Vec<String> = Entry
+	let Target:Vec<String> = Entry
 		.into_iter()
-		.filter_map(|entry_parts| {
-			entry_parts
-				.last()
-				.filter(|last| *last == &Pattern)
-				.map(|_| entry_parts[0..entry_parts.len() - 1].join(&Separator.to_string()))
+		.filter_map(|Part| {
+			Part.last()
+				.filter(|Last| *Last == &Pattern)
+				.map(|_| Part[0..Part.len() - 1].join(&Separator.to_string()))
 		})
 		.collect();
 
 	let Limit = num_cpus::get();
 
-	stream::iter(target_dirs)
+	stream::iter(Target)
 		.for_each_concurrent(Limit, |Path| {
-			let Local = Arc::clone(&command_arc);
+			let Local = Arc::clone(&Command);
 
-			let Sign = Arc::clone(&signing_arc);
+			let Sign = Arc::clone(&SignArc);
 
 			async move {
 				let Task = Local.iter().enumerate().map(|(Current, Command)| {
-					let Sign = Sign[Current];
+					let SignLocal = Sign[Current];
 
 					let Part:Vec<String> = Command.split(' ').map(String::from).collect();
 
 					let Entry = Path.clone();
 
 					async move {
-						if Sign {
+						if SignLocal {
 							let _lock = GPG_MUTEX.lock().await;
 
 							Process::Fn(&Part, &Entry).await
