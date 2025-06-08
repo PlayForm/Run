@@ -8,108 +8,83 @@
 /// Filters entries by pattern, processes them with commands in parallel using
 /// workers, and prints outputs. Uses Rayon for filtering and Tokio for async
 /// command execution, with a lock-free queue for work distribution.
-pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }: Option) {
-	let (Allow, mut Receive) = mpsc::unbounded_channel::<Vec<String>>();
-
-	let Command = Arc::new(Command);
-
-	let Entry: Vec<String> = Entry
-		.into_par_iter()
-		.filter_map(|Entry| {
-			Entry
-				.last()
-				.filter(|Last| *Last == &Pattern)
-				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
+pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
+	// --- OPTIMIZATION: Check for GPG signing ONCE at the start ---
+	let commands_require_signing:Vec<bool> = Command
+		.iter()
+		.map(|cmd_str| {
+			let parts:Vec<String> = cmd_str.split(' ').map(String::from).collect();
+			GPG::Fn(&parts)
 		})
 		.collect();
 
-	let Queue = Arc::new(ArrayQueue::new(Entry.len()));
+	// --- ARCHITECTURE CHANGE: Pure Tokio/Futures concurrency model ---
+	let command_arc = Arc::new(Command);
+	let signing_arc = Arc::new(commands_require_signing);
 
-	Entry.into_par_iter().for_each(|Entry| {
-		Queue.push(Entry).expect("Queue capacity should suffice");
-	});
-
-	let Force = rayon::current_num_threads();
-
-	let Output = tokio::spawn(async move {
-		while let Some(Output) = Receive.recv().await {
-			Output.into_par_iter().for_each(|Output| {
-				println!("{}", Output);
-			});
-		}
-	});
-
-	let Worker = (0..Force)
-		.map(|_| {
-			let Allow = Allow.clone();
-
-			let Command = Arc::clone(&Command);
-
-			let Queue = Arc::clone(&Queue);
-
-			tokio::spawn(async move {
-				while let Some(Entry) = Queue.pop() {
-					let mut Output = Vec::new();
-
-					Output.extend(
-						futures::future::join_all(
-							Command
-								.par_iter()
-								.map(|Command| async {
-									let Part = Command.split(' ').map(String::from).collect::<Vec<String>>();
-
-									match GPG::Fn(&Part) {
-										true => {
-											let _Lock = GPG_MUTEX.lock().await;
-										},
-										false => (),
-									}
-
-									Process::Fn(&Part, &Entry).await
-								})
-								.collect::<Vec<_>>(),
-						)
-						.await,
-					);
-
-					match Allow.send(Output) {
-						Err(e) => {
-							eprintln!("Failed to send output: {}", e);
-						},
-						_ => (),
-					}
-				}
-			})
+	// Filter the entries to find the directories we need to operate on.
+	// This is fast enough to not need Rayon.
+	let target_dirs:Vec<String> = Entry
+		.into_iter()
+		.filter_map(|entry_parts| {
+			entry_parts
+				.last()
+				.filter(|last| *last == &Pattern)
+				.map(|_| entry_parts[0..entry_parts.len() - 1].join(&Separator.to_string()))
 		})
-		.collect::<Vec<_>>();
+		.collect();
 
-	futures::future::join_all(
-		Worker
-			.into_par_iter()
-			.map(|Worker| async { Worker.await.expect("Worker task failed") })
-			.collect::<Vec<_>>(),
-	)
-	.await;
+	// Determine a reasonable concurrency limit. Using num_cpus is a good default.
+	// This prevents spawning thousands of processes at once.
+	let concurrency_limit = num_cpus::get();
 
-	drop(Allow);
+	// Turn our list of directories into a stream that can be processed
+	// concurrently.
+	stream::iter(target_dirs)
+		.for_each_concurrent(concurrency_limit, |entry_path| {
+			// Clone Arcs for the new async block. This is cheap.
+			let local_commands = Arc::clone(&command_arc);
+			let local_signing_info = Arc::clone(&signing_arc);
 
-	Output.await.expect("Output task failed");
+			async move {
+				// For each directory, run all its commands.
+				// We can run the commands for a *single* directory in parallel.
+				let tasks = local_commands.iter().enumerate().map(|(i, cmd_str)| {
+					let requires_signing = local_signing_info[i];
+					let parts:Vec<String> = cmd_str.split(' ').map(String::from).collect();
+					let entry = entry_path.clone();
+
+					async move {
+						if requires_signing {
+							let _lock = GPG_MUTEX.lock().await;
+							Process::Fn(&parts, &entry).await
+						} else {
+							Process::Fn(&parts, &entry).await
+						}
+					}
+				});
+
+				// Await all commands for the current directory and collect their output.
+				let outputs = futures::future::join_all(tasks).await;
+
+				// Print the results for this directory. `println!` is thread-safe.
+				for output in outputs.into_iter().filter(|s| !s.is_empty()) {
+					println!("{}", output);
+				}
+			}
+		})
+		.await;
 }
 
 use std::sync::Arc;
 
-use crossbeam_queue::ArrayQueue;
+use futures::stream::{self, StreamExt};
+// The GPG mutex is still necessary to serialize signing operations.
 use once_cell::sync::Lazy;
-use rayon::{
-	iter::{IntoParallelIterator, ParallelIterator},
-	prelude::IntoParallelRefIterator,
-};
-use tokio::sync::{Mutex, mpsc};
+use tokio::sync::Mutex;
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
-
-static GPG_MUTEX: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
+static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
 pub mod GPG;
-
 pub mod Process;
