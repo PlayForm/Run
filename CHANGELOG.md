@@ -1,5 +1,27 @@
 ## 0.1.6
 
+### Removed
+
+- Removed `Source/Graph.md` documentation with Mermaid diagrams as the execution
+  flow documentation was deprecated.
+
+### Change
+
+- Updated dependencies:
+    - Removed `unbug` dependency
+    - Simplified `rayon` dependency syntax in Cargo.toml
+
+### Improved
+
+- Refactored parallel execution in `Command/Parallel.rs`:
+    - Reintroduced `rayon` parallel iterators combined with `crossbeam-queue`
+      for efficient work distribution
+    - Implemented hybrid async/parallel model using `tokio::sync::mpsc` for
+      output handling
+    - Simplified resource management with atomic queue-based entry distribution
+    - Added proper thread pool sizing based on available CPU cores
+    - Improved error handling for channel communication failures
+
 ## 0.1.5
 
 ### Add
