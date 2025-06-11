@@ -1,55 +1,59 @@
-// src/Parallel/Process.rs
-
-use std::process::Stdio;
-
-use tokio::process::Command;
-
-/// Executes a command asynchronously, capturing both stdout and stderr.
+/// Executes a command asynchronously in a specified directory and returns its
+/// output as a string.
 ///
-/// This function prevents race conditions by redirecting both output streams
-/// from the child process and capturing them, rather than letting them print
-//  directly to the console.
+/// This function uses `tokio::process::Command` to run the specified command
+/// asynchronously in the given directory and capture its standard output.
+///
 /// # Arguments
+///
 /// * `Command` - A slice of strings representing the command and its arguments.
-/// * `Entry` - The directory in which to execute the command.
+///   The first element is expected to be the command itself, and subsequent
+///   elements are its arguments.
+/// * `Entry` - A string slice representing the directory in which to execute
+///   the command.
 ///
 /// # Returns
-/// A single `String` containing the combined output from both stdout and
-/// stderr.
-pub async fn Fn(CommandParts:&[String], Entry:&str) -> String {
-	// Configure the command to run in the specified directory.
-	let mut command = Command::new(CommandParts.get(0).expect("Cannot Command: command is empty."));
-	command.args(&CommandParts[1..]);
-	command.current_dir(Entry);
-
-	// CRITICAL: Redirect stdout and stderr to a pipe so we can capture them.
-	// This prevents the child process from writing directly to our terminal.
-	command.stdout(Stdio::piped());
-	command.stderr(Stdio::piped());
-
-	// Execute the command and wait for all output.
-	let output = command.output().await.expect("Failed to execute command.");
-
-	// Convert both stdout and stderr from bytes to strings.
-	let stdout_str = String::from_utf8_lossy(&output.stdout);
-	let stderr_str = String::from_utf8_lossy(&output.stderr);
-
-	// Combine the outputs for a complete picture.
-	// We trim to remove unnecessary leading/trailing whitespace.
-	let mut combined_output = String::new();
-	if !stdout_str.is_empty() {
-		combined_output.push_str(stdout_str.trim());
-	}
-	if !stderr_str.is_empty() {
-		// Add a newline if both streams have content.
-		if !combined_output.is_empty() {
-			combined_output.push('\n');
-		}
-		combined_output.push_str(stderr_str.trim());
-	}
-
-	// You could also add error handling here if you want.
-	// For example, if !output.status.success() { ... }
-
-	combined_output
+///
+/// * `String` - The command's standard output as a UTF-8 string.
+///
+/// # Panics
+///
+/// This function will panic in the following situations:
+/// - If `Command` is empty (i.e., no command is provided).
+/// - If the command execution fails.
+/// - If the command's output cannot be captured.
+/// - If the command's output cannot be converted to a valid UTF-8 string.
+///
+/// # Examples
+///
+/// ```
+/// use your_crate_name::Fn;
+///
+/// #[tokio::main]
+/// async fn main() {
+/// 	let command = vec!["ls".to_string(), "-l".to_string()];
+///
+/// 	let entry = "/home/user";
+///
+/// 	let output = Fn(&command, entry).await;
+///
+/// 	println!("Command output: {}", output);
+/// }
+/// ```
+///
+/// # Note
+///
+/// This function uses `tokio::process::Command` for asynchronous execution,
+/// so it must be called within an async context.
+pub async fn Fn(Command:&[String], Entry:&str) -> String {
+	String::from_utf8_lossy(
+		&tokio::process::Command::new(Command.get(0).expect("Cannot Command."))
+			.args(&Command[1..])
+			.current_dir(Entry)
+			.output()
+			.await
+			.expect("Cannot Output.")
+			.stdout,
+	)
+	.to_string()
 }
