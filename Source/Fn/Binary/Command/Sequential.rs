@@ -1,60 +1,74 @@
 use std::path::{Path, PathBuf};
 
-// CRITICAL FIX: Use the non-blocking version of Command for async functions.
-use tokio::process::Command;
+use tokio::process::Command as TokioCommand;
 
-use crate::Struct::Binary::Command::Entry::Struct as Option;
+use crate::Struct::Binary::Command::Entry::Struct as ExecutionOption;
 
-pub async fn Fn(Option { Command, Entry, Pattern, .. }:Option) {
-	// OPTIMIZATION: Pre-parse command strings once.
-	let processed_commands:Vec<Vec<String>> = Command
+/// Executes commands sequentially, one directory at a time.
+///
+/// This function provides a non-parallel execution strategy. It iterates
+/// through each target directory and runs all specified commands within it
+/// before moving to the next. It correctly uses Tokio's non-blocking `Command`
+/// to avoid stalling the async runtime.
+///
+/// # Arguments
+///
+/// * `Option`: An `ExecutionOption` struct containing the commands, paths, and
+///   pattern.
+pub async fn Fn(Option:ExecutionOption) {
+	// Pre-parse command strings into their component parts once.
+	let ProcessedCommands:Vec<Vec<String>> = Option
+		.Command
 		.iter()
-		.map(|cmd_str| cmd_str.split_whitespace().map(String::from).collect())
+		.map(|CommandString| CommandString.split_whitespace().map(String::from).collect())
 		.collect();
 
-	// OPTIMIZATION: Use efficient PathBuf methods to find target directories.
-	let target_dirs:Vec<PathBuf> = Entry
+	// Identify target directories where commands will be executed.
+	let TargetDirs:Vec<PathBuf> = Option
+		.Entry
 		.into_iter()
-		.filter_map(|path| {
-			if path.file_name().map_or(false, |name| name == Pattern.as_str()) {
-				path.parent().map(Path::to_path_buf)
+		.filter_map(|CandidatePath| {
+			if CandidatePath.file_name().map_or(false, |Name| Name == Option.Pattern.as_str()) {
+				CandidatePath.parent().map(Path::to_path_buf)
 			} else {
 				None
 			}
 		})
 		.collect();
 
-	for dir in target_dirs {
-		let dir_str = dir.to_string_lossy();
-		for cmd_parts in &processed_commands {
-			if cmd_parts.is_empty() {
+	for Directory in TargetDirs {
+		let DirectoryString = Directory.to_string_lossy();
+		for CommandParts in &ProcessedCommands {
+			if CommandParts.is_empty() {
 				continue;
 			}
 
-			// Use tokio's Command and .await to keep the runtime unblocked.
-			let output_result = Command::new(&cmd_parts[0])
-				.args(&cmd_parts[1..])
-				.current_dir(dir_str.as_ref())
+			// Execute the command using Tokio's async Command.
+			let OutputResult = TokioCommand::new(&CommandParts[0])
+				.args(&CommandParts[1..])
+				.current_dir(DirectoryString.as_ref())
 				.output()
 				.await;
 
-			match output_result {
-				Ok(output) => {
-					let stdout = String::from_utf8_lossy(&output.stdout);
-					if !stdout.trim().is_empty() {
-						println!("{}", stdout);
+			match OutputResult {
+				Ok(Output) => {
+					let Stdout = String::from_utf8_lossy(&Output.stdout);
+					if !Stdout.trim().is_empty() {
+						println!("{}", Stdout);
 					}
-					if !output.status.success() {
-						let stderr = String::from_utf8_lossy(&output.stderr);
+					if !Output.status.success() {
+						let Stderr = String::from_utf8_lossy(&Output.stderr);
 						eprintln!(
 							"Command failed in '{}' with status {}. Stderr: {}",
-							dir_str,
-							output.status,
-							stderr.trim()
+							DirectoryString,
+							Output.status,
+							Stderr.trim()
 						);
 					}
 				},
-				Err(e) => eprintln!("Failed to spawn command in '{}': {}", dir_str, e),
+				Err(Error) => {
+					eprintln!("Failed to spawn command in '{}': {}", DirectoryString, Error)
+				},
 			}
 		}
 	}

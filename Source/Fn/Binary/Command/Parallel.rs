@@ -8,106 +8,132 @@ use once_cell::sync::Lazy;
 use rayon::prelude::*;
 use tokio::sync::{Mutex, mpsc};
 
-use crate::Struct::Binary::Command::Entry::Struct as Option;
+use crate::Struct::Binary::Command::Entry::Struct as ExecutionOption;
 
 pub mod GPG;
 pub mod Process;
 
+/// A global, asynchronous mutex to ensure that only one GPG-related git command
+/// runs at any given time, preventing conflicts with the GPG agent.
 static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
-/// A command that has been pre-parsed and analyzed for GPG requirements.
+/// Represents a command that has been pre-processed for efficient execution.
+///
+/// This struct holds the parsed command parts and a boolean indicating if it
+/// requires a GPG lock, preventing redundant processing inside the main
+/// execution loop.
 struct ProcessedCommand {
-	parts:Vec<String>,
-	requires_gpg_lock:bool,
+	Parts:Vec<String>,
+	RequiresGpgLock:bool,
 }
 
-pub async fn Fn(Option { Entry, Pattern, Command, .. }:Option) {
-	// OPTIMIZATION: Parse and analyze commands ONCE, outside the hot loops.
-	// This prevents millions of redundant string splits and GPG checks.
-	let processed_commands:Arc<Vec<ProcessedCommand>> = Arc::new(
-		Command
+/// Executes commands in parallel across multiple directories.
+///
+/// This function orchestrates a complex workflow:
+/// 1. Pre-parses all user-provided commands.
+/// 2. Filters the list of candidate paths to find target execution directories.
+/// 3. Sets up a multi-producer, single-consumer channel for work distribution.
+/// 4. Spawns a pool of Tokio worker tasks.
+/// 5. Each worker pulls a directory from the queue and executes all commands
+///    within it.
+/// 6. A dedicated output task prints results to stdout as they become
+///    available.
+pub async fn Fn(Option:ExecutionOption) {
+	// 1. Pre-process commands: Parse strings and check for GPG requirements once.
+	let ProcessedCommands:Arc<Vec<ProcessedCommand>> = Arc::new(
+		Option
+			.Command
 			.par_iter()
-			.map(|cmd_str| {
-				let parts:Vec<String> = cmd_str.split_whitespace().map(String::from).collect();
-				let requires_gpg_lock = GPG::Fn(&parts);
-				ProcessedCommand { parts, requires_gpg_lock }
+			.map(|CommandString| {
+				let Parts:Vec<String> = CommandString.split_whitespace().map(String::from).collect();
+				let RequiresGpgLock = GPG::Fn(&Parts);
+				ProcessedCommand { Parts, RequiresGpgLock }
 			})
 			.collect(),
 	);
 
-	// OPTIMIZATION: Efficiently filter paths and find their parent directories.
-	// This uses proper path manipulation instead of string splitting/joining.
-	let target_dirs:Vec<PathBuf> = Entry
+	// 2. Identify target directories based on the pattern.
+	// This efficiently finds the parent directory of each path that matches the
+	// pattern.
+	let TargetDirs:Vec<PathBuf> = Option
+		.Entry
 		.into_par_iter()
-		.filter_map(|path| {
-			if path.file_name().map_or(false, |name| name == Pattern.as_str()) {
-				path.parent().map(Path::to_path_buf)
+		.filter_map(|CandidatePath| {
+			if CandidatePath.file_name().map_or(false, |Name| Name == Option.Pattern.as_str()) {
+				CandidatePath.parent().map(Path::to_path_buf)
 			} else {
 				None
 			}
 		})
 		.collect();
 
-	if target_dirs.is_empty() {
+	if TargetDirs.is_empty() {
 		return;
 	}
 
-	let (tx, mut rx) = mpsc::unbounded_channel::<String>();
-	let queue = Arc::new(ArrayQueue::new(target_dirs.len()));
-	for dir in target_dirs {
-		queue.push(dir).expect("Queue should have enough capacity");
+	// 3. Set up the work queue and the results channel.
+	let (Tx, mut Rx) = mpsc::unbounded_channel::<String>();
+	let WorkQueue = Arc::new(ArrayQueue::new(TargetDirs.len()));
+	for Dir in TargetDirs {
+		WorkQueue
+			.push(Dir)
+			.expect("Queue should have enough capacity for all target directories.");
 	}
 
-	// This task now handles printing results as they arrive.
-	let output_task = tokio::spawn(async move {
-		while let Some(output) = rx.recv().await {
-			if !output.trim().is_empty() {
-				println!("{}", output);
+	// 4. Spawn the output task to print results from the channel.
+	let OutputTask = tokio::spawn(async move {
+		while let Some(Output) = Rx.recv().await {
+			if !Output.trim().is_empty() {
+				println!("{}", Output);
 			}
 		}
 	});
 
-	let worker_count = rayon::current_num_threads();
-	let mut workers = Vec::with_capacity(worker_count);
-	for _ in 0..worker_count {
-		let queue = Arc::clone(&queue);
-		let commands = Arc::clone(&processed_commands);
-		let tx = tx.clone();
+	// 5. Spawn worker tasks, one for each available CPU core.
+	let WorkerCount = rayon::current_num_threads();
+	let mut WorkerHandles = Vec::with_capacity(WorkerCount);
+	for _ in 0..WorkerCount {
+		let Queue = Arc::clone(&WorkQueue);
+		let Commands = Arc::clone(&ProcessedCommands);
+		let Producer = Tx.clone();
 
-		workers.push(tokio::spawn(async move {
-			while let Some(dir) = queue.pop() {
-				let dir_str = dir.to_string_lossy();
-				let command_futures = commands.iter().map(|cmd| {
+		let WorkerHandle = tokio::spawn(async move {
+			while let Some(Directory) = Queue.pop() {
+				let DirectoryString = Directory.to_string_lossy();
+				let CommandFutures = Commands.iter().map(|Cmd| {
 					async {
-						if cmd.requires_gpg_lock {
-							let _lock = GPG_MUTEX.lock().await;
+						if Cmd.RequiresGpgLock {
+							let _GpgLock = GPG_MUTEX.lock().await;
 						}
-						// Use pre-parsed command parts.
-						Process::Fn(&cmd.parts, &dir_str).await
+						Process::Fn(&Cmd.Parts, &DirectoryString).await
 					}
 				});
 
-				for result in futures::future::join_all(command_futures).await {
-					match result {
-						Ok(output) => {
-							if tx.send(output).is_err() {
-								// Receiver dropped, stop trying to send.
+				for Result in futures::future::join_all(CommandFutures).await {
+					match Result {
+						Ok(Output) => {
+							if Producer.send(Output).is_err() {
+								// Receiver has been dropped, so we can stop processing.
 								break;
 							}
 						},
-						Err(e) => eprintln!("Error executing command in '{}': {}", dir_str, e),
+						Err(Error) => {
+							eprintln!("Error executing command in '{}': {}", DirectoryString, Error)
+						},
 					}
 				}
 			}
-		}));
+		});
+		WorkerHandles.push(WorkerHandle);
 	}
 
-	for worker in workers {
-		worker.await.expect("Worker task panicked");
+	// Wait for all workers to complete their tasks.
+	for Handle in WorkerHandles {
+		Handle.await.expect("Worker task panicked.");
 	}
 
-	// Drop the original sender to signal the output_task that no more messages will
-	// come.
-	drop(tx);
-	output_task.await.expect("Output task panicked");
+	// Drop the original producer, which signals to the receiver that no more
+	// messages will be sent, allowing the output task to terminate gracefully.
+	drop(Tx);
+	OutputTask.await.expect("Output task panicked.");
 }

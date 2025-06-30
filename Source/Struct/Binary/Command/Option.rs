@@ -1,20 +1,24 @@
 use clap::ArgMatches;
 use once_cell::sync::Lazy;
 
-use crate::{
-	Fn::Binary::Command::Fn as ParseClap,
-	Struct::Binary::Command::{Struct as CommandStruct, Struct as Option},
-};
+use crate::{Fn::Binary::Command::Fn as ParseClap, Struct::Binary::Command::Struct as CommandStruct};
 
+/// A type alias for a list of command strings.
 pub type Command = Vec<String>;
+/// A type alias for the boolean `Parallel` flag.
 pub type Parallel = bool;
+/// A type alias for the `Pattern` string.
 pub type Pattern = String;
+/// A type alias for the path separator character.
 pub type Separator = char;
 
-// OPTIMIZATION: Parse command-line arguments only once and store them in a
-// static.
+/// Caches the parsed command-line arguments in a thread-safe, static variable.
+///
+/// This ensures that `clap` argument parsing logic is executed only once,
+/// no matter how many times the configuration is accessed.
 static ARGS:Lazy<ArgMatches> = Lazy::new(ParseClap);
 
+/// A struct that holds the raw, parsed options from the command line.
 pub struct Struct {
 	pub Command:Command,
 	pub Exclude:Vec<String>,
@@ -26,24 +30,30 @@ pub struct Struct {
 }
 
 impl Struct {
-	pub fn Fn(Option { Separator, .. }:CommandStruct) -> Self {
+	/// Creates a new `Struct` instance from the statically parsed `clap`
+	/// arguments.
+	pub fn Fn(_Option:CommandStruct) -> Self {
 		Self {
 			File:ARGS.get_flag("File"),
 			Parallel:ARGS.get_flag("Parallel"),
-			Root:ARGS.get_one::<String>("Root").expect("Root is required.").to_owned(),
+			Root:ARGS.get_one::<String>("Root").expect("Root argument is required.").to_owned(),
 			Exclude:ARGS
 				.get_one::<String>("Exclude")
-				.unwrap_or(&"".to_string())
+				.unwrap_or(&String::new())
 				.split_whitespace()
 				.map(String::from)
 				.collect::<Vec<_>>(),
-			Pattern:ARGS.get_one::<String>("Pattern").expect("Pattern is required.").to_owned(),
+			Pattern:ARGS
+				.get_one::<String>("Pattern")
+				.expect("Pattern argument is required.")
+				.to_owned(),
 			Command:ARGS
 				.get_many::<String>("Command")
-				.expect("Command is required.")
+				.expect("Command argument is required.")
 				.cloned()
 				.collect(),
-			Separator,
+			// The separator is passed through from the initial config.
+			Separator:_Option.Separator,
 		}
 	}
 }

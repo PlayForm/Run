@@ -1,25 +1,40 @@
 use std::io;
 
-/// Executes a command asynchronously and returns its output, handling errors
-/// gracefully.
-pub async fn Fn(command:&[String], entry:&str) -> io::Result<String> {
-	if command.is_empty() {
+use tokio::process::Command as TokioCommand;
+
+/// Executes a command asynchronously in a specified directory.
+///
+/// This function spawns a process using Tokio's non-blocking `Command`,
+/// captures its output, and handles success or failure cases gracefully.
+///
+/// # Arguments
+///
+/// * `CommandParts`: A slice of strings representing the command and its
+///   arguments.
+/// * `EntryDirectory`: The working directory in which to execute the command.
+///
+/// # Returns
+///
+/// A `Result` containing the command's stdout as a `String` on success, or an
+/// `io::Error` on failure.
+pub async fn Fn(CommandParts:&[String], EntryDirectory:&str) -> io::Result<String> {
+	if CommandParts.is_empty() {
 		return Err(io::Error::new(io::ErrorKind::InvalidInput, "Empty command provided"));
 	}
 
-	let output = tokio::process::Command::new(&command[0])
-		.args(&command[1..])
-		.current_dir(entry)
+	let Output = TokioCommand::new(&CommandParts[0])
+		.args(&CommandParts[1..])
+		.current_dir(EntryDirectory)
 		.output()
-		.await?;
+		.await?; // Propagate I/O errors from spawning the process.
 
-	if !output.status.success() {
-		let stderr = String::from_utf8_lossy(&output.stderr);
+	if !Output.status.success() {
+		let Stderr = String::from_utf8_lossy(&Output.stderr);
 		Err(io::Error::new(
 			io::ErrorKind::Other,
-			format!("Command failed with status {}. Stderr: {}", output.status, stderr),
+			format!("Command failed with status {}. Stderr: {}", Output.status, Stderr),
 		))
 	} else {
-		Ok(String::from_utf8_lossy(&output.stdout).to_string())
+		Ok(String::from_utf8_lossy(&Output.stdout).to_string())
 	}
 }
