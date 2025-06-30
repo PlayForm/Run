@@ -1,49 +1,47 @@
-/// This Rust function walks through a directory, filters out certain files
-/// based on exclusion criteria, and returns a collection of paths.
+/// This Rust function walks through a directory, efficiently filters out paths
+/// based on glob-based exclusion criteria, and returns a collection of paths.
 ///
-/// Arguments:
-///
-/// some file system operations based on the provided configuration. Here's a
-/// breakdown of the parameters:
+/// It no longer handles pattern matching, which is deferred to the consumer for
+/// clarity and correctness.
 ///
 /// Returns:
 ///
-/// a `Vec<String>` containing paths that meet the specified criteria after
-/// processing the entries from the directory specified by the `Root` parameter.
-pub fn Fn(Option { Exclude, File, Pattern, Root, Separator, .. }:&Option) -> Return {
-	// The `Exclude` vector is now captured by reference, not cloned repeatedly.
+/// a `Vec<PathBuf>` containing candidate paths.
+pub fn Fn(Option { Exclude, File, Root, .. }:&Option) -> Return {
+	let mut Glob = GlobSetBuilder::new();
+
+	for Exclude in Exclude {
+		let Pattern = format!("{}/**", Exclude.trim_end_matches('/'));
+
+		Glob.add(Glob::new(Exclude).expect("Failed to parse glob pattern."));
+
+		Glob.add(Glob::new(&Pattern).expect("Failed to parse glob pattern."));
+	}
+
+	let Exclude = Glob.build().expect("Failed to build glob set.");
+
 	WalkDir::new(Root)
 		.follow_links(false)
 		.into_iter()
-		.filter_map(|entry_result| {
-			let entry = entry_result.expect("Cannot read directory entry.");
-			let path = entry.path();
-			let path_str = path.display().to_string();
+		.filter_map(Result::ok)
+		.filter(|Entry| {
+			let Path = Entry.path();
 
-			let is_excluded = Exclude.iter().any(|exclude_pattern| {
-				if !Pattern.contains(exclude_pattern) {
-					// Simple optimization
-					let is_match = path_str.contains(exclude_pattern);
-					if *File {
-						// Check if it's a directory that matches the exclude pattern
-						path.is_dir() && is_match
-					} else {
-						is_match
-					}
-				} else {
-					false
-				}
-			});
-
-			if !is_excluded {
-				Some(path_str.split(*Separator).map(|s| s.to_string()).collect())
-			} else {
-				None
+			if Exclude.is_match(Path) {
+				return false;
 			}
+
+			if *File { Path.is_file() } else { true }
 		})
+		.map(|entry| entry.into_path())
 		.collect()
 }
 
+use std::path::PathBuf;
+
+use globset::{Glob, GlobSetBuilder};
 use walkdir::WalkDir;
 
-use crate::Struct::Binary::Command::{Entry::Type as Return, Option::Struct as Option};
+use crate::Struct::Binary::Command::Option::Struct as Option;
+
+pub type Return = Vec<PathBuf>;

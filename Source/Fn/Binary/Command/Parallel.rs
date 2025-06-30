@@ -1,117 +1,113 @@
-/// Executes a series of commands on a list of entries concurrently.
-///
-/// # Arguments
-/// * `Option` - Struct with fields: `Entry` (Vec<String>), `Separator`
-///   (String), `Pattern` (String), `Command` (Vec<String>).
-///
-/// # Details
-/// Filters entries by pattern, processes them with commands in parallel using
-/// workers, and prints outputs. Uses Rayon for filtering and Tokio for async
-/// command execution, with a lock-free queue for work distribution.
-pub async fn Fn(Option { Entry, Separator, Pattern, Command, .. }:Option) {
-	let (Allow, mut Receive) = mpsc::unbounded_channel::<Vec<String>>();
-
-	let Command = Arc::new(Command);
-
-	let Entry:Vec<String> = Entry
-		.into_par_iter()
-		.filter_map(|Entry| {
-			Entry
-				.last()
-				.filter(|Last| *Last == &Pattern)
-				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
-		})
-		.collect();
-
-	let Queue = Arc::new(ArrayQueue::new(Entry.len()));
-
-	Entry.into_par_iter().for_each(|Entry| {
-		Queue.push(Entry).expect("Queue capacity should suffice");
-	});
-
-	let Force = rayon::current_num_threads();
-
-	let Output = tokio::spawn(async move {
-		while let Some(Output) = Receive.recv().await {
-			Output.into_par_iter().for_each(|Output| {
-				println!("{}", Output);
-			});
-		}
-	});
-
-	let Worker = (0..Force)
-		.map(|_| {
-			let Allow = Allow.clone();
-
-			let Command = Arc::clone(&Command);
-
-			let Queue = Arc::clone(&Queue);
-
-			tokio::spawn(async move {
-				while let Some(Entry) = Queue.pop() {
-					let mut Output = Vec::new();
-
-					Output.extend(
-						futures::future::join_all(
-							Command
-								.par_iter()
-								.map(|Command| {
-									async {
-										let Part = Command.split(' ').map(String::from).collect::<Vec<String>>();
-
-										match GPG::Fn(&Part) {
-											true => {
-												let _Lock = GPG_MUTEX.lock().await;
-											},
-											false => (),
-										}
-
-										Process::Fn(&Part, &Entry).await
-									}
-								})
-								.collect::<Vec<_>>(),
-						)
-						.await,
-					);
-
-					match Allow.send(Output) {
-						Err(e) => {
-							eprintln!("Failed to send output: {}", e);
-						},
-						_ => (),
-					}
-				}
-			})
-		})
-		.collect::<Vec<_>>();
-
-	futures::future::join_all(
-		Worker
-			.into_par_iter()
-			.map(|Worker| async { Worker.await.expect("Worker task failed") })
-			.collect::<Vec<_>>(),
-	)
-	.await;
-
-	drop(Allow);
-
-	Output.await.expect("Output task failed");
-}
-
-use std::sync::Arc;
+use std::{
+	path::{Path, PathBuf},
+	sync::Arc,
+};
 
 use crossbeam_queue::ArrayQueue;
 use once_cell::sync::Lazy;
-use rayon::{
-	iter::{IntoParallelIterator, ParallelIterator},
-	prelude::IntoParallelRefIterator,
-};
+use rayon::prelude::*;
 use tokio::sync::{Mutex, mpsc};
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
 
+pub mod GPG;
+pub mod Process;
+
 static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
-pub mod GPG;
+/// A command that has been pre-parsed and analyzed for GPG requirements.
+struct ProcessedCommand {
+	parts:Vec<String>,
+	requires_gpg_lock:bool,
+}
 
-pub mod Process;
+pub async fn Fn(Option { Entry, Pattern, Command, .. }:Option) {
+	// OPTIMIZATION: Parse and analyze commands ONCE, outside the hot loops.
+	// This prevents millions of redundant string splits and GPG checks.
+	let processed_commands:Arc<Vec<ProcessedCommand>> = Arc::new(
+		Command
+			.par_iter()
+			.map(|cmd_str| {
+				let parts:Vec<String> = cmd_str.split_whitespace().map(String::from).collect();
+				let requires_gpg_lock = GPG::Fn(&parts);
+				ProcessedCommand { parts, requires_gpg_lock }
+			})
+			.collect(),
+	);
+
+	// OPTIMIZATION: Efficiently filter paths and find their parent directories.
+	// This uses proper path manipulation instead of string splitting/joining.
+	let target_dirs:Vec<PathBuf> = Entry
+		.into_par_iter()
+		.filter_map(|path| {
+			if path.file_name().map_or(false, |name| name == Pattern.as_str()) {
+				path.parent().map(Path::to_path_buf)
+			} else {
+				None
+			}
+		})
+		.collect();
+
+	if target_dirs.is_empty() {
+		return;
+	}
+
+	let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+	let queue = Arc::new(ArrayQueue::new(target_dirs.len()));
+	for dir in target_dirs {
+		queue.push(dir).expect("Queue should have enough capacity");
+	}
+
+	// This task now handles printing results as they arrive.
+	let output_task = tokio::spawn(async move {
+		while let Some(output) = rx.recv().await {
+			if !output.trim().is_empty() {
+				println!("{}", output);
+			}
+		}
+	});
+
+	let worker_count = rayon::current_num_threads();
+	let mut workers = Vec::with_capacity(worker_count);
+	for _ in 0..worker_count {
+		let queue = Arc::clone(&queue);
+		let commands = Arc::clone(&processed_commands);
+		let tx = tx.clone();
+
+		workers.push(tokio::spawn(async move {
+			while let Some(dir) = queue.pop() {
+				let dir_str = dir.to_string_lossy();
+				let command_futures = commands.iter().map(|cmd| {
+					async {
+						if cmd.requires_gpg_lock {
+							let _lock = GPG_MUTEX.lock().await;
+						}
+						// Use pre-parsed command parts.
+						Process::Fn(&cmd.parts, &dir_str).await
+					}
+				});
+
+				for result in futures::future::join_all(command_futures).await {
+					match result {
+						Ok(output) => {
+							if tx.send(output).is_err() {
+								// Receiver dropped, stop trying to send.
+								break;
+							}
+						},
+						Err(e) => eprintln!("Error executing command in '{}': {}", dir_str, e),
+					}
+				}
+			}
+		}));
+	}
+
+	for worker in workers {
+		worker.await.expect("Worker task panicked");
+	}
+
+	// Drop the original sender to signal the output_task that no more messages will
+	// come.
+	drop(tx);
+	output_task.await.expect("Output task panicked");
+}

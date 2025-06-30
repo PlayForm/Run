@@ -1,77 +1,61 @@
-/// Executes a command with arguments in a specific directory for each entry in
-/// the given list.
-///
-/// # Arguments
-///
-/// * `Option` - A struct containing `Command`, `Entry`, `Pattern`, `Separator`,
-///   and other optional fields.
-///
-/// # Example
-///
-/// ```
-/// use std::process::{Command, Stdio};
-///
-/// let options = Option {
-/// 	Command:vec!["ls".to_string()],
-/// 	Entry:vec!["/path/to/dir".to_string()],
-/// 	Pattern:"pattern",
-/// 	Separator:'/'.to_string(),
-/// };
-/// Fn(options);
-/// ```
-pub async fn Fn(Option { Command, Entry, Pattern, Separator, .. }:Option) {
-	Entry
-		.into_iter()
-		.filter_map(|Entry| {
-			Entry
-				.last()
-				.filter(|Last| *Last == &Pattern)
-				.map(|_| Entry[0..Entry.len() - 1].join(&Separator.to_string()))
-		})
-		.for_each(|Entry| {
-			Command.iter().for_each(|Command| {
-				let Command = Command.split(' ').map(String::from).collect::<Vec<String>>();
+use std::path::{Path, PathBuf};
 
-				let Entry = Entry.clone();
-
-				let mut Command = Command::new(Command.get(0).expect("Cannot Command."))
-					.args(&Command[1..])
-					.current_dir(Entry)
-					.stdout(Stdio::piped())
-					.spawn()
-					.expect("Cannot spawn.");
-
-				let Out = Command.stdout.as_mut().expect("Cannot stdout.");
-
-				let mut Output = String::new();
-
-				loop {
-					let mut Buffer = [0; 512];
-
-					let Byte = Out.read(&mut Buffer).expect("Cannot read.");
-
-					match Byte == 0 {
-						true => break,
-						false => (),
-					}
-
-					Output.push_str(&String::from_utf8_lossy(&Buffer[..Byte]));
-				}
-
-				let Status = Command.wait().expect("Failed to wait on child process.");
-
-				if !Status.success() {
-					eprintln!("Command failed with status: {}", Status);
-				}
-
-				println!("{}", Output);
-			});
-		});
-}
-
-use std::{
-	io::Read,
-	process::{Command, Stdio},
-};
+// CRITICAL FIX: Use the non-blocking version of Command for async functions.
+use tokio::process::Command;
 
 use crate::Struct::Binary::Command::Entry::Struct as Option;
+
+pub async fn Fn(Option { Command, Entry, Pattern, .. }:Option) {
+	// OPTIMIZATION: Pre-parse command strings once.
+	let processed_commands:Vec<Vec<String>> = Command
+		.iter()
+		.map(|cmd_str| cmd_str.split_whitespace().map(String::from).collect())
+		.collect();
+
+	// OPTIMIZATION: Use efficient PathBuf methods to find target directories.
+	let target_dirs:Vec<PathBuf> = Entry
+		.into_iter()
+		.filter_map(|path| {
+			if path.file_name().map_or(false, |name| name == Pattern.as_str()) {
+				path.parent().map(Path::to_path_buf)
+			} else {
+				None
+			}
+		})
+		.collect();
+
+	for dir in target_dirs {
+		let dir_str = dir.to_string_lossy();
+		for cmd_parts in &processed_commands {
+			if cmd_parts.is_empty() {
+				continue;
+			}
+
+			// Use tokio's Command and .await to keep the runtime unblocked.
+			let output_result = Command::new(&cmd_parts[0])
+				.args(&cmd_parts[1..])
+				.current_dir(dir_str.as_ref())
+				.output()
+				.await;
+
+			match output_result {
+				Ok(output) => {
+					let stdout = String::from_utf8_lossy(&output.stdout);
+					if !stdout.trim().is_empty() {
+						println!("{}", stdout);
+					}
+					if !output.status.success() {
+						let stderr = String::from_utf8_lossy(&output.stderr);
+						eprintln!(
+							"Command failed in '{}' with status {}. Stderr: {}",
+							dir_str,
+							output.status,
+							stderr.trim()
+						);
+					}
+				},
+				Err(e) => eprintln!("Failed to spawn command in '{}': {}", dir_str, e),
+			}
+		}
+	}
+}

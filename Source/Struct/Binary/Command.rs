@@ -1,30 +1,27 @@
+pub mod Entry;
+pub mod Option;
+
 pub struct Struct {
-	pub Separator: Option::Separator,
-	pub Fn: Box<dyn Fn() -> std::pin::Pin<Box<dyn futures::Future<Output = ()> + Send + 'static>> + Send + 'static>,
+	pub Separator:Option::Separator,
+	pub Fn:Box<dyn Fn() -> std::pin::Pin<Box<dyn futures::Future<Output = ()> + Send + 'static>> + Send + 'static>,
 }
 
 impl Struct {
 	pub fn Fn() -> Self {
 		Self {
-			Separator: std::path::MAIN_SEPARATOR,
-			Fn: Box::new(|| {
+			Separator:std::path::MAIN_SEPARATOR,
+			Fn:Box::new(|| {
 				Box::pin(async move {
-					let Option = Entry::Struct::Fn(&Option::Struct::Fn(Struct::Fn()));
+					let options_config = Struct::Fn();
+					let options = Entry::Struct::Fn(&Option::Struct::Fn(options_config));
 
-					match Option.Parallel {
-						true => {
-							crate::Fn::Binary::Command::Parallel::Fn(Option).await;
-						},
-						false => {
-							crate::Fn::Binary::Command::Sequential::Fn(Option).await;
-						},
+					if options.Parallel {
+						crate::Fn::Binary::Command::Parallel::Fn(options).await;
+					} else {
+						crate::Fn::Binary::Command::Sequential::Fn(options).await;
 					};
 				})
 			}),
 		}
 	}
 }
-
-pub mod Entry;
-
-pub mod Option;

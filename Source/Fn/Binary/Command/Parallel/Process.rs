@@ -1,59 +1,25 @@
-/// Executes a command asynchronously in a specified directory and returns its
-/// output as a string.
-///
-/// This function uses `tokio::process::Command` to run the specified command
-/// asynchronously in the given directory and capture its standard output.
-///
-/// # Arguments
-///
-/// * `Command` - A slice of strings representing the command and its arguments.
-///   The first element is expected to be the command itself, and subsequent
-///   elements are its arguments.
-/// * `Entry` - A string slice representing the directory in which to execute
-///   the command.
-///
-/// # Returns
-///
-/// * `String` - The command's standard output as a UTF-8 string.
-///
-/// # Panics
-///
-/// This function will panic in the following situations:
-/// - If `Command` is empty (i.e., no command is provided).
-/// - If the command execution fails.
-/// - If the command's output cannot be captured.
-/// - If the command's output cannot be converted to a valid UTF-8 string.
-///
-/// # Examples
-///
-/// ```
-/// use your_crate_name::Fn;
-///
-/// #[tokio::main]
-/// async fn main() {
-/// 	let command = vec!["ls".to_string(), "-l".to_string()];
-///
-/// 	let entry = "/home/user";
-///
-/// 	let output = Fn(&command, entry).await;
-///
-/// 	println!("Command output: {}", output);
-/// }
-/// ```
-///
-/// # Note
-///
-/// This function uses `tokio::process::Command` for asynchronous execution,
-/// so it must be called within an async context.
-pub async fn Fn(Command:&[String], Entry:&str) -> String {
-	String::from_utf8_lossy(
-		&tokio::process::Command::new(Command.get(0).expect("Cannot Command."))
-			.args(&Command[1..])
-			.current_dir(Entry)
-			.output()
-			.await
-			.expect("Cannot Output.")
-			.stdout,
-	)
-	.to_string()
+use std::io;
+
+/// Executes a command asynchronously and returns its output, handling errors
+/// gracefully.
+pub async fn Fn(command:&[String], entry:&str) -> io::Result<String> {
+	if command.is_empty() {
+		return Err(io::Error::new(io::ErrorKind::InvalidInput, "Empty command provided"));
+	}
+
+	let output = tokio::process::Command::new(&command[0])
+		.args(&command[1..])
+		.current_dir(entry)
+		.output()
+		.await?;
+
+	if !output.status.success() {
+		let stderr = String::from_utf8_lossy(&output.stderr);
+		Err(io::Error::new(
+			io::ErrorKind::Other,
+			format!("Command failed with status {}. Stderr: {}", output.status, stderr),
+		))
+	} else {
+		Ok(String::from_utf8_lossy(&output.stdout).to_string())
+	}
 }

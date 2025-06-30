@@ -1,3 +1,5 @@
+use clap::{Arg, ArgAction::SetTrue, ArgMatches, Command};
+
 pub mod Entry;
 pub mod Parallel;
 pub mod Sequential;
@@ -75,5 +77,3 @@ pub fn Fn() -> ArgMatches {
 		)
 		.get_matches()
 }
-
-use clap::{Arg, ArgAction::SetTrue, ArgMatches, Command};
