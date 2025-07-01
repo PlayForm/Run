@@ -35,8 +35,6 @@ pub fn Fn(Option:&CommandOption) -> Return {
 		// This pattern matches the directory/file itself.
 		let DirectGlob = Glob::new(ExcludePattern).expect("Failed to parse glob pattern.");
 
-		// This pattern matches everything *inside* a directory. e.g., "target" becomes
-		// "target/**".
 		let InteriorGlobPattern = format!("{}/**", ExcludePattern.trim_end_matches('/'));
 		let InteriorGlob = Glob::new(&InteriorGlobPattern).expect("Failed to parse interior glob pattern.");
 
@@ -49,24 +47,9 @@ pub fn Fn(Option:&CommandOption) -> Return {
 	WalkDir::new(&Option.Root)
 		.follow_links(false)
 		.into_iter()
-		// Skip any entries that result in an error (e.g., permission denied).
+		.filter_entry(|e| !ExcludeSet.is_match(e.path()))
 		.filter_map(Result::ok)
-		.filter(|DirEntry| {
-			let Path = DirEntry.path();
-
-			// If the path matches any exclusion glob, filter it out.
-			if ExcludeSet.is_match(Path) {
-				return false;
-			}
-
-			// If the --File flag is active, we only want to consider files.
-			// Otherwise, we consider everything that wasn't excluded (directories and files).
-			if Option.File {
-				Path.is_file()
-			} else {
-				true
-			}
-		})
+		.filter(|DirEntry| if Option.File { DirEntry.path().is_file() } else { true })
 		.map(|DirEntry| DirEntry.into_path())
 		.collect()
 }

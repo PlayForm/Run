@@ -50,7 +50,7 @@ pub fn Fn() -> ArgMatches {
 				.display_order(4)
 				.value_name("PATTERNS")
 				.help("A space-separated list of glob patterns to exclude from the search.")
-				.default_value("node_modules .git target dist vendor"),
+				.default_value("**/{node_modules,.git,target,dist,vendor}/**/*"),
 		)
 		.arg(
 			Arg::new("Pattern")

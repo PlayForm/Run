@@ -76,7 +76,7 @@ Options:
   -F, --File               File 📝
   -P, --Parallel           Parallel ⏩
   -R, --Root <ROOT>        Root 📂 [default: .]
-  -E, --Exclude <EXCLUDE>  Exclude 🚫 [default: "node_modules .git target dist vendor"]
+  -E, --Exclude <EXCLUDE>  Exclude 🚫 [default: "**/{node_modules,.git,target,dist,vendor}/**/*"]
   -C, --Command <COMMAND>  Command 🖥️
   -h, --help               Print help
   -V, --version            Print version
@@ -136,7 +136,7 @@ Run -P -R D:\Developer .git -C 'git fetch upstream'
 #### --Exclude:
 
 Exclude certain files or directories (defailt is
-`node_modules .git target dist vendor`)
+`**/{node_modules,.git,target,dist,vendor}/**/*`)
 
 #### --Pattern:
 
