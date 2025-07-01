@@ -9,7 +9,7 @@ parallel, and asynchronous operations.
 
 [Run]: https://crates.io/crates/prun
 
-## Key Features
+## Key Features 🔐
 
 - **Blazing Fast**: Drastically out-performs traditional shell equivalents by
   using an optimized parallel directory walker and asynchronous command
@@ -25,26 +25,17 @@ parallel, and asynchronous operations.
 
 ---
 
-## Performance Benchmarks
+## Performance Benchmarks 🚤
 
 `Run` is significantly faster than its `find -execdir` equivalent. The
-benchmarks below were performed on a Windows machine with an NVMe SSD and 16 CPU
-cores, scanning a large developer directory with hundreds of Git repositories.
+benchmarks below were performed on a Windows machine with an NVMe SSD and 6 core
+CPU (AMD Ryzen 5 5500) with 32 GB of DDR4 RAM, scanning a large developer
+directory with hundreds of Git repositories.
 
 <table>
 	<tr>
 		<th>Command:</th>
 		<th>Time:</th>
-	</tr>
-	<tr>
-		<td>
-			<pre>find -iname .git -execdir ls \;</pre>
-		</td>
-		<td>
-			<pre>real    0m10.562s
-user    0m3.092s
-sys     0m6.789s</pre>
-		</td>
 	</tr>
 	<tr>
 		<td>
@@ -58,22 +49,32 @@ sys     0m0.031s</pre>
 	</tr>
 	<tr>
 		<td>
-			<pre>find -iname .git -execdir git status \;</pre>
-		</td>
-		<td>
-			<pre>real    0m30.352s
-user    0m3.218s
-sys     0m7.286s</pre>
-		</td>
-	</tr>
-	<tr>
-		<td>
 			<pre>Run -P .git -C 'git status'</pre>
 		</td>
 		<td>
 			<pre>real    0m7.412s
 user    0m0.045s
 sys     0m0.031s</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>find -iname .git -execdir ls \;</pre>
+		</td>
+		<td>
+			<pre>real    0m10.562s
+user    0m3.092s
+sys     0m6.789s</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>find -iname .git -execdir git status \;</pre>
+		</td>
+		<td>
+			<pre>real    0m30.352s
+user    0m3.218s
+sys     0m7.286s</pre>
 		</td>
 	</tr>
 </table>
@@ -86,7 +87,7 @@ sys     0m0.031s</pre>
 
 ---
 
-## Installation
+## Installation 🚀
 
 You can install `Run` directly from [Crates.io](https://crates.io/crates/prun)
 using Cargo:
@@ -100,7 +101,7 @@ The installed binary is `Run`. You may want to create a symlink or alias like
 
 ---
 
-## Usage
+## Usage ⚙️
 
 The core idea is to define a `Pattern` (like a file or directory name) that
 identifies the locations where you want to execute one or more `Command`s.
@@ -159,10 +160,8 @@ Run --Pattern package.json --Command "npm install"
     Run --Root ~/projects --Pattern .git --Command "git status -s"
     ```
 
-- **`-P, --Parallel`**: While parallel is the default behavior, this flag exists
-  for clarity. You can run things sequentially by omitting it if sequential
-  execution is ever implemented as the default. _(Currently, it defaults to
-  parallel)_.
+- **`-P, --Parallel`**: You can run things sequentially by omitting it if
+  sequential execution is preferred.
 
 - **`-E, --Exclude <PATTERNS>`**: Override the default exclusion patterns. Note
   that patterns are space-separated.
@@ -174,13 +173,14 @@ Run --Pattern package.json --Command "npm install"
 
 - **`-F, --File`**: Target files directly based on the pattern. This is less
   common. For example, to run a linter on all TypeScript config files:
+
     ```sh
     Run -F --Pattern "tsconfig.json" --Command "npx eslint tsconfig.json"
     ```
 
 ---
 
-## Dependencies
+## Dependencies 🖇️
 
 `Run` stands on the shoulders of giants. It is built with these excellent crates
 from the Rust ecosystem:
@@ -202,6 +202,18 @@ from the Rust ecosystem:
 - **[`once_cell`](https://crates.io/crates/once_cell)**: For safe, efficient,
   and thread-safe one-time initialization of global state.
 
-## Changelog
+---
 
-For a detailed history of changes, see [`CHANGELOG.md`](CHANGELOG.md).
+## License ⚖️
+
+This project is released into the public domain under the **Creative Commons CC0
+Universal** license. You are free to use, modify, distribute, and build upon
+this work for any purpose, without any restrictions. For the full legal text,
+see the [`LICENSE`](LICENSE) file.
+
+---
+
+## Changelog 📜
+
+Stay updated with our progress! See [`CHANGELOG.md`](CHANGELOG.md) for a history
+of changes specific to **Run**.

@@ -1,12 +1,20 @@
+## 0.1.9
+
+### Improved
+
+- Updated `README.md` to reflect the latest changes and benchmark performance.
+
 ## 0.1.8
 
 ### Improved
 
-- **Exclusion Pattern Defaults**: Updated the default exclusion pattern to use glob syntax (`**/{node_modules,.git,target,dist,vendor}/**/*`) for more precise matching of entire directories
+- **Exclusion Pattern Defaults**: Updated the default exclusion pattern to use
+  glob syntax (`**/{node_modules,.git,target,dist,vendor}/**/*`) for more
+  precise matching of entire directories
 - **Optimized Directory Traversal**: Refactored entry filtering logic to:
-  - Use `filter_entry` for early exclusion of entire directories (pruning)
-  - Simplify file filtering with direct path checks
-  - Eliminate redundant pattern matching operations
+    - Use `filter_entry` for early exclusion of entire directories (pruning)
+    - Simplify file filtering with direct path checks
+    - Eliminate redundant pattern matching operations
 
 ## 0.1.7
 
