@@ -49,7 +49,7 @@ pub fn Fn(Option:&CommandOption) -> Return {
 		.into_iter()
 		.filter_entry(|e| !ExcludeSet.is_match(e.path()))
 		.filter_map(Result::ok)
-		.filter(|DirEntry| if Option.File { DirEntry.path().is_file() } else { true })
+		.filter(|DirEntry| if Option.File { DirEntry.file_type().is_file() } else { true })
 		.map(|DirEntry| DirEntry.into_path())
 		.collect()
 }
