@@ -16,17 +16,17 @@ path = "Source/Library.rs"
 
 [build-dependencies]
 serde = { version = "1.0.219", features = ["derive"] }
-toml = { version = "0.8.23" }
+toml = { version = "0.9.1" }
 
 [dependencies]
-clap = { features = ["derive"], version = "4.5.40" }
+clap = { features = ["derive"], version = "4.5.41" }
 crossbeam-queue = "0.3.12"
 futures = { version = "0.3.31" }
 globset = "0.4.16"
 num_cpus = { version = "1.17.0" }
 once_cell = { version = "1.21.3" }
 rayon = "1.10.0"
-tokio = { version = "1.46.0", features = ["full"] }
+tokio = { version = "1.46.1", features = ["full"] }
 walkdir = { version = "2.5.0" }
 
 [features]
