@@ -22,11 +22,12 @@ pub async fn Fn(CommandParts:&[String], EntryDirectory:&str) -> io::Result<Strin
 		return Err(io::Error::new(io::ErrorKind::InvalidInput, "Empty command provided"));
 	}
 
+	// Propagate I/O errors from spawning the process.
 	let Output = TokioCommand::new(&CommandParts[0])
 		.args(&CommandParts[1..])
 		.current_dir(EntryDirectory)
 		.output()
-		.await?; // Propagate I/O errors from spawning the process.
+		.await?;
 
 	if !Output.status.success() {
 		let Stderr = String::from_utf8_lossy(&Output.stderr);

@@ -15,18 +15,18 @@ name = "InnKeeper"
 path = "Source/Library.rs"
 
 [build-dependencies]
-serde = { version = "1.0.219", features = ["derive"] }
-toml = { version = "0.9.1" }
+serde = { version = "1.0.228", features = ["derive"] }
+toml = { version = "0.9.10" }
 
 [dependencies]
-clap = { features = ["derive"], version = "4.5.41" }
+clap = { features = ["derive"], version = "4.5.54" }
 crossbeam-queue = "0.3.12"
 futures = { version = "0.3.31" }
-globset = "0.4.16"
+globset = "0.4.18"
 num_cpus = { version = "1.17.0" }
 once_cell = { version = "1.21.3" }
-rayon = "1.10.0"
-tokio = { version = "1.46.1", features = ["full"] }
+rayon = "1.11.0"
+tokio = { version = "1.49.0", features = ["full"] }
 walkdir = { version = "2.5.0" }
 
 [features]
