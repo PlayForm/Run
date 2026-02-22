@@ -36,11 +36,15 @@ pub async fn Fn(Option:ExecutionOption) {
 		})
 		.collect();
 
-	for Directory in TargetDirs {
+	let mut tmp = TargetDirs.into_iter();
+
+	while let Some(Directory) = tmp.next() {
 		let DirectoryString = Directory.to_string_lossy();
-		for CommandParts in &ProcessedCommands {
-			if CommandParts.is_empty() {
-				continue;
+		let mut tmp = ProcessedCommands.iter();
+		while let Some(CommandParts) = tmp.next() {
+			match CommandParts.is_empty() {
+				true => continue,
+				false => (),
 			}
 
 			// Execute the command using Tokio's async Command.
