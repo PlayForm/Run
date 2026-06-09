@@ -1,3 +1,28 @@
+## 0.2.0
+
+### Fixed
+
+- **Git index lock conflicts in parallel mode**: Commands within a single
+  directory were previously executed concurrently via `join_all`, causing
+  chained git commands (e.g. `git add` → `git commit`) to race for
+  `.git/index.lock` and fail. Commands are now executed sequentially within
+  each directory while directories themselves continue to run in parallel.
+- **GPG mutex scope**: The GPG mutex guard was dropped before the subprocess
+  launched, providing no actual exclusion. It now spans the full duration of
+  the process call.
+
+### Added
+
+- **`Index` module** (`Source/Fn/Binary/Command/Index`): classifies git
+  subcommands that write to the index (`add`, `apply`, `checkout`,
+  `cherry-pick`, `commit`, `merge`, `mv`, `rebase`, `reset`, `restore`, `rm`,
+  `stash`).
+- **`Index::Lock` module** (`Source/Fn/Binary/Command/Index/Lock`): async
+  pre-flight check for `.git/index.lock` with exponential-backoff polling
+  (50 ms → 500 ms cap), a 30-second timeout, and automatic removal of stale
+  locks left by killed processes. Applied in both parallel and sequential
+  execution modes.
+
 ## 0.1.9
 
 ### Improved
@@ -271,7 +296,7 @@
 - Updated `.gitignore` to use "Target" instead of "target" for consistency
 - Updated `clap` dependency to version 4.5.11
 - Updated `tokio` dependency to version 1.39.1 with full features
-- Changed project description to "🍺 Run —"
+- Changed project description to "🍺 Run -"
 - Updated repository URL to "https://github.com/PlayForm/Run.git"
 
 ### Improved

@@ -31,10 +31,10 @@ pub async fn Fn(CommandParts:&[String], EntryDirectory:&str) -> io::Result<Strin
 
 	if !Output.status.success() {
 		let Stderr = String::from_utf8_lossy(&Output.stderr);
-		Err(io::Error::new(
-			io::ErrorKind::Other,
-			format!("Command failed with status {}. Stderr: {}", Output.status, Stderr),
-		))
+		Err(io::Error::other(format!(
+			"Command failed with status {}. Stderr: {}",
+			Output.status, Stderr
+		)))
 	} else {
 		Ok(String::from_utf8_lossy(&Output.stdout).to_string())
 	}

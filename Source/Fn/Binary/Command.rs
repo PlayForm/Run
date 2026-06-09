@@ -1,6 +1,7 @@
 use clap::{Arg, ArgAction, ArgMatches, Command as ClapCommand};
 
 pub mod Entry;
+pub mod Index;
 pub mod Parallel;
 pub mod Sequential;
 

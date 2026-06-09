@@ -8,7 +8,10 @@ use once_cell::sync::Lazy;
 use rayon::prelude::*;
 use tokio::sync::{Mutex, mpsc};
 
-use crate::Struct::Binary::Command::Entry::Struct as ExecutionOption;
+use crate::{
+	Fn::Binary::Command::Index,
+	Struct::Binary::Command::Entry::Struct as ExecutionOption,
+};
 
 pub mod GPG;
 pub mod Process;
@@ -19,47 +22,51 @@ static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
 /// Represents a command that has been pre-processed for efficient execution.
 ///
-/// This struct holds the parsed command parts and a boolean indicating if it
-/// requires a GPG lock, preventing redundant processing inside the main
-/// execution loop.
+/// This struct holds the parsed command parts and booleans indicating whether
+/// the command requires a GPG lock or an index-lock wait, preventing redundant
+/// classification work inside the main execution loop.
 struct ProcessedCommand {
 	Parts:Vec<String>,
 	RequiresGpgLock:bool,
+	RequiresIndexLock:bool,
 }
 
 /// Executes commands in parallel across multiple directories.
 ///
 /// This function orchestrates a complex workflow:
-/// 1. Pre-parses all user-provided commands.
-/// 2. Filters the list of candidate paths to find target execution directories.
+/// 1. Pre-parses all user-provided commands and classifies their lock needs.
+/// 2. Filters the candidate paths to identify target execution directories.
 /// 3. Sets up a multi-producer, single-consumer channel for work distribution.
 /// 4. Spawns a pool of Tokio worker tasks.
 /// 5. Each worker pulls a directory from the queue and executes all commands
-///    within it.
-/// 6. A dedicated output task prints results to stdout as they become
-///    available.
+///    **sequentially** within it, preserving order and preventing index-lock
+///    conflicts between chained git commands (e.g. `git add` → `git commit`).
+/// 6. Before any index-modifying git command the worker waits for
+///    `.git/index.lock` to be released, handling both active locks from other
+///    processes and stale locks left by previously killed processes.
+/// 7. A dedicated output task prints results to stdout as they arrive.
 pub async fn Fn(Option:ExecutionOption) {
-	// 1. Pre-process commands: Parse strings and check for GPG requirements once.
+	// 1. Pre-process commands: parse strings and classify lock requirements once.
 	let ProcessedCommands:Arc<Vec<ProcessedCommand>> = Arc::new(
 		Option
 			.Command
 			.par_iter()
 			.map(|CommandString| {
-				let Parts:Vec<String> = CommandString.split_whitespace().map(String::from).collect();
+				let Parts:Vec<String> =
+					CommandString.split_whitespace().map(String::from).collect();
 				let RequiresGpgLock = GPG::Fn(&Parts);
-				ProcessedCommand { Parts, RequiresGpgLock }
+				let RequiresIndexLock = Index::Fn(&Parts);
+				ProcessedCommand { Parts, RequiresGpgLock, RequiresIndexLock }
 			})
 			.collect(),
 	);
 
 	// 2. Identify target directories based on the pattern.
-	// This efficiently finds the parent directory of each path that matches the
-	// pattern.
 	let TargetDirs:Vec<PathBuf> = Option
 		.Entry
 		.into_par_iter()
 		.filter_map(|CandidatePath| {
-			if CandidatePath.file_name().map_or(false, |Name| Name == Option.Pattern.as_str()) {
+			if CandidatePath.file_name().is_some_and(|Name| Name == Option.Pattern.as_str()) {
 				CandidatePath.parent().map(Path::to_path_buf)
 			} else {
 				None
@@ -100,25 +107,44 @@ pub async fn Fn(Option:ExecutionOption) {
 		let WorkerHandle = tokio::spawn(async move {
 			while let Some(Directory) = Queue.pop() {
 				let DirectoryString = Directory.to_string_lossy();
-				let CommandFutures = Commands.iter().map(|Cmd| {
-					async {
-						if Cmd.RequiresGpgLock {
-							let _GpgLock = GPG_MUTEX.lock().await;
-						}
-						Process::Fn(&Cmd.Parts, &DirectoryString).await
-					}
-				});
 
-				for Result in futures::future::join_all(CommandFutures).await {
+				// Commands are executed sequentially within each directory.
+				// This preserves the user-supplied order (e.g. `git add` before
+				// `git commit`) and ensures only one command at a time holds
+				// the git index lock for this repository.
+				'commands: for Cmd in Commands.iter() {
+					// Wait for any in-flight index lock before writing to the index.
+					if Cmd.RequiresIndexLock
+						&& !Index::Lock::Fn(&DirectoryString).await
+					{
+						eprintln!(
+							"Skipping remaining commands in '{}': git index lock timed out.",
+							DirectoryString
+						);
+						break 'commands;
+					}
+
+					// Hold the GPG mutex for the entire duration of the process
+					// so the GPG agent is not shared concurrently.
+					let Result = if Cmd.RequiresGpgLock {
+						let _GpgLock = GPG_MUTEX.lock().await;
+						Process::Fn(&Cmd.Parts, &DirectoryString).await
+					} else {
+						Process::Fn(&Cmd.Parts, &DirectoryString).await
+					};
+
 					match Result {
 						Ok(Output) => {
 							if Producer.send(Output).is_err() {
-								// Receiver has been dropped, so we can stop processing.
-								break;
+								// Receiver dropped - stop processing entirely.
+								break 'commands;
 							}
 						},
 						Err(Error) => {
-							eprintln!("Error executing command in '{}': {}", DirectoryString, Error)
+							eprintln!(
+								"Error executing command in '{}': {}",
+								DirectoryString, Error
+							)
 						},
 					}
 				}
@@ -132,8 +158,7 @@ pub async fn Fn(Option:ExecutionOption) {
 		Handle.await.expect("Worker task panicked.");
 	}
 
-	// Drop the original producer, which signals to the receiver that no more
-	// messages will be sent, allowing the output task to terminate gracefully.
+	// Drop the original producer to signal the output task to terminate.
 	drop(Tx);
 	OutputTask.await.expect("Output task panicked.");
 }
