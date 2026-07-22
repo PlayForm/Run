@@ -1,3 +1,15 @@
+## 0.2.3
+
+### Improved
+
+- **Halved glob matching overhead**: Removed redundant interior glob patterns
+  (`pattern/**`) that were added alongside each exclude pattern. The
+  `/**/*` suffix already present in exclude patterns like
+  `**/node_modules/**/*` matches content at *all* depths inside the excluded
+  directory (because `**` matches zero or more directory levels), making the
+  interior variant a strict subset that only doubled the `GlobSet` size without
+  adding any new matches.
+
 ## 0.2.2
 
 ### Fixed

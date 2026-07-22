@@ -29,17 +29,15 @@ pub type Return = Vec<PathBuf>;
 pub fn Fn(Option:&CommandOption) -> Return {
 	let mut GlobBuilder = GlobSetBuilder::new();
 
-	// Compile the exclusion patterns provided by the user into a high-performance
-	// GlobSet.
+	// Compile the exclusion patterns provided by the user into a
+	// high-performance GlobSet.
+	//
+	// Only the pattern itself is needed — the `/**/*` suffix (e.g. in
+	// `**/node_modules/**/*`) already matches content at *all* depths
+	// inside the excluded directory, so no separate interior pattern
+	// is required.
 	for ExcludePattern in &Option.Exclude {
-		// This pattern matches the directory/file itself.
-		let DirectGlob = Glob::new(ExcludePattern).expect("Failed to parse glob pattern.");
-
-		let InteriorGlobPattern = format!("{}/**", ExcludePattern.trim_end_matches('/'));
-		let InteriorGlob = Glob::new(&InteriorGlobPattern).expect("Failed to parse interior glob pattern.");
-
-		GlobBuilder.add(DirectGlob);
-		GlobBuilder.add(InteriorGlob);
+		GlobBuilder.add(Glob::new(ExcludePattern).expect("Failed to parse glob pattern."));
 	}
 
 	let ExcludeSet = GlobBuilder.build().expect("Failed to build glob set.");
