@@ -1,3 +1,13 @@
+## 0.2.4
+
+### Added
+
+- **Shell expansion support**: Commands are now executed via `sh -c` instead of
+  direct process spawn. Shell features like `~`, `$HOME`, pipes (`|`), and
+  redirects (`>`, `<`) now work as expected. The `Index` and `GPG`
+  classification functions split on whitespace internally for analysis only;
+  the original command string is preserved for execution.
+
 ## 0.2.3
 
 ### Improved

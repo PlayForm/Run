@@ -3,31 +3,30 @@ use std::io;
 use tokio::io::AsyncBufReadExt;
 use tokio::process::Command as TokioCommand;
 
-/// Executes a command asynchronously in a specified directory.
+/// Executes a command asynchronously in a specified directory via `sh -c`.
 ///
-/// This function spawns a process using Tokio's non-blocking `Command`,
-/// streams stdout into a local buffer line by line as it's produced,
-/// captures stderr, and checks the exit status on completion.
+/// This function spawns a shell so that `~`, `$HOME`, pipes, redirects, and
+/// other shell features work.  stdout is collected line-by-line into a local
+/// buffer; stderr is captured for error reporting.
 ///
 /// # Arguments
 ///
-/// * `CommandParts`: A slice of strings representing the command and its
-///   arguments.
+/// * `CommandString`: The full command string as provided by the user.
 /// * `EntryDirectory`: The working directory in which to execute the command.
 ///
 /// # Returns
 ///
 /// A `Result` containing the command's stdout as a `String` on success, or an
 /// `io::Error` on failure.
-pub async fn Fn(CommandParts:&[String], EntryDirectory:&str) -> io::Result<String> {
-	if CommandParts.is_empty() {
+pub async fn Fn(CommandString:&str, EntryDirectory:&str) -> io::Result<String> {
+	let Trimmed = CommandString.trim();
+	if Trimmed.is_empty() {
 		return Err(io::Error::new(io::ErrorKind::InvalidInput, "Empty command provided"));
 	}
 
-	// Use spawn + piped streams so the process runs concurrently and we can
-	// collect stdout as it arrives, rather than buffering it all at the end.
-	let mut Child = TokioCommand::new(&CommandParts[0])
-		.args(&CommandParts[1..])
+	// Use `sh -c` so shell expansion works.
+	let mut Child = TokioCommand::new("sh")
+		.args(["-c", Trimmed])
 		.current_dir(EntryDirectory)
 		.stdout(std::process::Stdio::piped())
 		.stderr(std::process::Stdio::piped())

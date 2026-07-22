@@ -14,11 +14,11 @@ pub mod Git;
 /// # Returns
 ///
 /// `true` if the command is a signing-related Git command, `false` otherwise.
-pub fn Fn(CommandParts:&[String]) -> bool {
-	// Check if the first part of the command is "git".
-	if CommandParts.first().map(String::as_str) == Some("git") {
-		// Check the subcommand (e.g., "commit", "tag").
-		match CommandParts.get(1).map(String::as_str) {
+pub fn Fn(Command:&str) -> bool {
+	let Parts:Vec<&str> = Command.split_whitespace().collect();
+
+	if Parts.first().copied() == Some("git") {
+		match Parts.get(1).copied() {
 			Some("commit" | "tag" | "merge" | "rebase" | "cherry-pick") => Git::Fn(),
 			_ => false,
 		}

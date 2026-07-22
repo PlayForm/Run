@@ -22,11 +22,11 @@ static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
 /// Represents a command that has been pre-processed for efficient execution.
 ///
-/// This struct holds the parsed command parts and booleans indicating whether
-/// the command requires a GPG lock or an index-lock wait, preventing redundant
+/// This struct holds the command string and booleans indicating whether the
+/// command requires a GPG lock or an index-lock wait, preventing redundant
 /// classification work inside the main execution loop.
 struct ProcessedCommand {
-	Parts:Vec<String>,
+	Command:String,
 	RequiresGpgLock:bool,
 	RequiresIndexLock:bool,
 }
@@ -34,29 +34,27 @@ struct ProcessedCommand {
 /// Executes commands in parallel across multiple directories.
 ///
 /// This function orchestrates a complex workflow:
-/// 1. Pre-parses all user-provided commands and classifies their lock needs.
+/// 1. Pre-classifies all user-provided commands for lock requirements.
 /// 2. Filters the candidate paths to identify target execution directories.
 /// 3. Sets up a multi-producer, single-consumer channel for work distribution.
 /// 4. Spawns a pool of Tokio worker tasks.
 /// 5. Each worker pulls a directory from the queue and executes all commands
-///    **sequentially** within it, preserving order and preventing index-lock
-///    conflicts between chained git commands (e.g. `git add` → `git commit`).
+///    **sequentially** within it via `sh -c`, preserving order and preventing
+///    index-lock conflicts between chained git commands.
 /// 6. Before any index-modifying git command the worker waits for
 ///    `.git/index.lock` to be released, handling both active locks from other
 ///    processes and stale locks left by previously killed processes.
 /// 7. A dedicated output task prints results to stdout as they arrive.
 pub async fn Fn(Option:ExecutionOption) {
-	// 1. Pre-process commands: parse strings and classify lock requirements once.
+	// 1. Pre-process commands: classify lock requirements once.
 	let ProcessedCommands:Arc<Vec<ProcessedCommand>> = Arc::new(
 		Option
 			.Command
 			.par_iter()
 			.map(|CommandString| {
-				let Parts:Vec<String> =
-					CommandString.split_whitespace().map(String::from).collect();
-				let RequiresGpgLock = GPG::Fn(&Parts);
-				let RequiresIndexLock = Index::Fn(&Parts);
-				ProcessedCommand { Parts, RequiresGpgLock, RequiresIndexLock }
+				let RequiresGpgLock = GPG::Fn(CommandString);
+				let RequiresIndexLock = Index::Fn(CommandString);
+				ProcessedCommand { Command:CommandString.clone(), RequiresGpgLock, RequiresIndexLock }
 			})
 			.collect(),
 	);
@@ -134,9 +132,9 @@ pub async fn Fn(Option:ExecutionOption) {
 					// so the GPG agent is not shared concurrently.
 					let Result = if Cmd.RequiresGpgLock {
 						let _GpgLock = GPG_MUTEX.lock().await;
-						Process::Fn(&Cmd.Parts, &DirectoryString).await
+						Process::Fn(&Cmd.Command, &DirectoryString).await
 					} else {
-						Process::Fn(&Cmd.Parts, &DirectoryString).await
+						Process::Fn(&Cmd.Command, &DirectoryString).await
 					};
 
 					match Result {

@@ -1,26 +1,28 @@
 pub mod Lock;
 
-/// Determines if a given command is a Git operation that modifies the index.
+/// Determines if a given command string is a Git operation that modifies the
+/// index.
 ///
-/// Index-modifying operations require checking for an existing
-/// `.git/index.lock` file before execution, as concurrent or chained git
-/// commands on the same repository fail when the index is already locked.
+/// The command string is split on whitespace for classification only;
+/// execution always goes through `sh -c` so the original string is preserved.
 ///
 /// # Arguments
 ///
-/// * `CommandParts`: A slice of strings representing the parsed command.
+/// * `Command`: The full command string as provided by the user.
 ///
 /// # Returns
 ///
 /// `true` if the command is a git command that writes to the index,
 /// `false` otherwise.
-pub fn Fn(CommandParts:&[String]) -> bool {
-	if CommandParts.first().map(String::as_str) != Some("git") {
+pub fn Fn(Command:&str) -> bool {
+	let Parts:Vec<&str> = Command.split_whitespace().collect();
+
+	if Parts.first().copied() != Some("git") {
 		return false;
 	}
 
 	matches!(
-		CommandParts.get(1).map(String::as_str),
+		Parts.get(1).copied(),
 		Some(
 			"add"
 				| "apply"
@@ -42,74 +44,72 @@ pub fn Fn(CommandParts:&[String]) -> bool {
 mod Tests {
 	use super::Fn;
 
-	fn Parts(Cmd:&[&str]) -> Vec<String> { Cmd.iter().map(|S| S.to_string()).collect() }
+	#[test]
+	fn Add_Is_Index_Modifying() { assert!(Fn("git add .")); }
 
 	#[test]
-	fn Add_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "add", "."]))); }
+	fn Commit_Is_Index_Modifying() { assert!(Fn("git commit -m msg")); }
 
 	#[test]
-	fn Commit_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "commit", "-m", "msg"]))); }
+	fn Reset_Is_Index_Modifying() { assert!(Fn("git reset --hard")); }
 
 	#[test]
-	fn Reset_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "reset", "--hard"]))); }
+	fn Checkout_Is_Index_Modifying() { assert!(Fn("git checkout main")); }
 
 	#[test]
-	fn Checkout_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "checkout", "main"]))); }
+	fn Merge_Is_Index_Modifying() { assert!(Fn("git merge feature")); }
 
 	#[test]
-	fn Merge_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "merge", "feature"]))); }
+	fn Rebase_Is_Index_Modifying() { assert!(Fn("git rebase main")); }
 
 	#[test]
-	fn Rebase_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "rebase", "main"]))); }
+	fn Stash_Is_Index_Modifying() { assert!(Fn("git stash")); }
 
 	#[test]
-	fn Stash_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "stash"]))); }
+	fn Rm_Is_Index_Modifying() { assert!(Fn("git rm file.txt")); }
 
 	#[test]
-	fn Rm_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "rm", "file.txt"]))); }
+	fn Mv_Is_Index_Modifying() { assert!(Fn("git mv a b")); }
 
 	#[test]
-	fn Mv_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "mv", "a", "b"]))); }
+	fn Apply_Is_Index_Modifying() { assert!(Fn("git apply patch.diff")); }
 
 	#[test]
-	fn Apply_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "apply", "patch.diff"]))); }
-
-	#[test]
-	fn Restore_Is_Index_Modifying() { assert!(Fn(&Parts(&["git", "restore", "file.txt"]))); }
+	fn Restore_Is_Index_Modifying() { assert!(Fn("git restore file.txt")); }
 
 	#[test]
 	fn Cherry_Pick_Is_Index_Modifying() {
-		assert!(Fn(&Parts(&["git", "cherry-pick", "abc123"])));
+		assert!(Fn("git cherry-pick abc123"));
 	}
 
 	#[test]
-	fn Status_Is_Not_Index_Modifying() { assert!(!Fn(&Parts(&["git", "status"]))); }
+	fn Status_Is_Not_Index_Modifying() { assert!(!Fn("git status")); }
 
 	#[test]
-	fn Log_Is_Not_Index_Modifying() { assert!(!Fn(&Parts(&["git", "log"]))); }
+	fn Log_Is_Not_Index_Modifying() { assert!(!Fn("git log")); }
 
 	#[test]
-	fn Push_Is_Not_Index_Modifying() { assert!(!Fn(&Parts(&["git", "push"]))); }
+	fn Push_Is_Not_Index_Modifying() { assert!(!Fn("git push")); }
 
 	#[test]
-	fn Fetch_Is_Not_Index_Modifying() { assert!(!Fn(&Parts(&["git", "fetch"]))); }
+	fn Fetch_Is_Not_Index_Modifying() { assert!(!Fn("git fetch")); }
 
 	#[test]
-	fn Pull_Is_Not_Index_Modifying() { assert!(!Fn(&Parts(&["git", "pull"]))); }
+	fn Pull_Is_Not_Index_Modifying() { assert!(!Fn("git pull")); }
 
 	#[test]
-	fn Diff_Is_Not_Index_Modifying() { assert!(!Fn(&Parts(&["git", "diff"]))); }
+	fn Diff_Is_Not_Index_Modifying() { assert!(!Fn("git diff")); }
 
 	#[test]
 	fn Non_Git_Command_Is_Not_Index_Modifying() {
-		assert!(!Fn(&Parts(&["cargo", "build"])));
+		assert!(!Fn("cargo build"));
 	}
 
 	#[test]
-	fn Empty_Command_Is_Not_Index_Modifying() { assert!(!Fn(&Parts(&[]))); }
+	fn Empty_Command_Is_Not_Index_Modifying() { assert!(!Fn("")); }
 
 	#[test]
 	fn Bare_Git_With_No_Subcommand_Is_Not_Index_Modifying() {
-		assert!(!Fn(&Parts(&["git"])));
+		assert!(!Fn("git"));
 	}
 }

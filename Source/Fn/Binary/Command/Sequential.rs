@@ -12,24 +12,25 @@ use crate::{
 ///
 /// This function provides a non-parallel execution strategy. It iterates
 /// through each target directory and runs all specified commands within it
-/// before moving to the next. Before any index-modifying git command it waits
-/// for `.git/index.lock` to be released, handling both active locks held by
-/// other processes and stale locks left by previously killed processes.
+/// before moving to the next. Commands are executed via `sh -c` so shell
+/// features like `~`, `$HOME`, pipes, and redirects work. Before any
+/// index-modifying git command it waits for `.git/index.lock` to be released,
+/// handling both active locks held by other processes and stale locks left by
+/// previously killed processes.
 ///
 /// # Arguments
 ///
 /// * `Option`: An `ExecutionOption` struct containing the commands, paths, and
 ///   pattern.
 pub async fn Fn(Option:ExecutionOption) {
-	// Pre-parse command strings into their component parts once.
-	let ProcessedCommands:Vec<(Vec<String>, bool)> = Option
+	// Pre-classify commands for index-lock requirements once.
+	// Commands are kept as full strings so they can pass through `sh -c`.
+	let ProcessedCommands:Vec<(String, bool)> = Option
 		.Command
 		.iter()
 		.map(|CommandString| {
-			let Parts:Vec<String> =
-				CommandString.split_whitespace().map(String::from).collect();
-			let RequiresIndexLock = Index::Fn(&Parts);
-			(Parts, RequiresIndexLock)
+			let RequiresIndexLock = Index::Fn(CommandString);
+			(CommandString.clone(), RequiresIndexLock)
 		})
 		.collect();
 
@@ -49,8 +50,8 @@ pub async fn Fn(Option:ExecutionOption) {
 	'directories: for Directory in TargetDirs {
 		let DirectoryString = Directory.to_string_lossy();
 
-		for (CommandParts, RequiresIndexLock) in &ProcessedCommands {
-			if CommandParts.is_empty() {
+		for (CommandString, RequiresIndexLock) in &ProcessedCommands {
+			if CommandString.trim().is_empty() {
 				continue;
 			}
 
@@ -63,8 +64,10 @@ pub async fn Fn(Option:ExecutionOption) {
 				continue 'directories;
 			}
 
-			let mut Child = match TokioCommand::new(&CommandParts[0])
-				.args(&CommandParts[1..])
+			// Execute via `sh -c` so shell features ( ~ , $HOME , pipes ,
+			// redirects) work. `sh` is available on every Unix.
+			let mut Child = match TokioCommand::new("sh")
+				.args(["-c", CommandString])
 				.current_dir(DirectoryString.as_ref())
 				.stdout(std::process::Stdio::piped())
 				.stderr(std::process::Stdio::piped())
