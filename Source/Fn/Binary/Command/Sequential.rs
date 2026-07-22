@@ -2,29 +2,23 @@ use std::path::{Path, PathBuf};
 
 use tokio::io::AsyncBufReadExt;
 use tokio::process::Command as TokioCommand;
+use tokio::sync::mpsc::Sender;
 
 use crate::{
 	Fn::Binary::Command::Index,
-	Struct::Binary::Command::Entry::Struct as ExecutionOption,
+	Struct::{
+		Binary::Command::Entry::Struct as ExecutionOption,
+		Event::Struct as Event,
+	},
 };
 
 /// Executes commands sequentially, one directory at a time.
 ///
-/// This function provides a non-parallel execution strategy. It iterates
-/// through each target directory and runs all specified commands within it
-/// before moving to the next. Commands are executed via `sh -c` so shell
-/// features like `~`, `$HOME`, pipes, and redirects work. Before any
-/// index-modifying git command it waits for `.git/index.lock` to be released,
-/// handling both active locks held by other processes and stale locks left by
-/// previously killed processes.
-///
-/// # Arguments
-///
-/// * `Option`: An `ExecutionOption` struct containing the commands, paths, and
-///   pattern.
-pub async fn Fn(Option:ExecutionOption) {
-	// Pre-classify commands for index-lock requirements once.
-	// Commands are kept as full strings so they can pass through `sh -c`.
+/// All output is emitted through `Tx` as typed `Event` variants so the caller
+/// (CLI printer or TUI) can render it however it likes. No I/O happens here.
+pub async fn Fn(Option:ExecutionOption, Tx:Sender<Event>) {
+	let TotalCommands = Option.Command.len();
+
 	let ProcessedCommands:Vec<(String, bool)> = Option
 		.Command
 		.iter()
@@ -34,7 +28,6 @@ pub async fn Fn(Option:ExecutionOption) {
 		})
 		.collect();
 
-	// Identify target directories where commands will be executed.
 	let TargetDirs:Vec<PathBuf> = Option
 		.Entry
 		.into_iter()
@@ -48,50 +41,62 @@ pub async fn Fn(Option:ExecutionOption) {
 		.collect();
 
 	'directories: for Directory in TargetDirs {
-		let DirectoryString = Directory.to_string_lossy();
+		let DirectoryString = Directory.to_string_lossy().to_string();
 
-		for (CommandString, RequiresIndexLock) in &ProcessedCommands {
+		let _ = Tx.send(Event::JobStarted {
+			Directory:DirectoryString.clone(),
+			Total:TotalCommands,
+		}).await;
+
+		let mut AllSuccess = true;
+
+		for (CmdIdx, (CommandString, RequiresIndexLock)) in ProcessedCommands.iter().enumerate() {
 			if CommandString.trim().is_empty() {
 				continue;
 			}
 
-			// Wait for any in-flight index lock before writing to the index.
 			if *RequiresIndexLock && !Index::Lock::Fn(&DirectoryString).await {
-				eprintln!(
-					"Skipping remaining commands in '{}': git index lock timed out.",
-					DirectoryString
-				);
+				let _ = Tx.send(Event::IndexLockTimeout {
+					Directory:DirectoryString.clone(),
+				}).await;
 				continue 'directories;
 			}
 
-			// Execute via `sh -c` so shell features ( ~ , $HOME , pipes ,
-			// redirects) work. `sh` is available on every Unix.
 			let mut Child = match TokioCommand::new("sh")
 				.args(["-c", CommandString])
-				.current_dir(DirectoryString.as_ref())
+				.current_dir(&DirectoryString)
 				.stdout(std::process::Stdio::piped())
 				.stderr(std::process::Stdio::piped())
 				.spawn()
 			{
 				Ok(Child) => Child,
 				Err(Error) => {
-					eprintln!("Failed to spawn command in '{}': {}", DirectoryString, Error);
+					let _ = Tx.send(Event::Line {
+						Directory:DirectoryString.clone(),
+						Text:format!("Failed to spawn: {}", Error),
+						IsStderr:true,
+					}).await;
+					AllSuccess = false;
 					continue;
 				}
 			};
 
-			// Stream stdout to the terminal line by line as it's produced.
+			// Stream stdout line-by-line.
 			let StdoutReader = Child.stdout.take().unwrap();
 			{
 				let mut Lines = tokio::io::BufReader::new(StdoutReader).lines();
 				while let Ok(Some(Line)) = Lines.next_line().await {
 					if !Line.trim().is_empty() {
-						println!("{}", Line);
+						let _ = Tx.send(Event::Line {
+							Directory:DirectoryString.clone(),
+							Text:Line,
+							IsStderr:false,
+						}).await;
 					}
 				}
 			}
 
-			// Capture stderr for error reporting.
+			// Capture stderr.
 			let mut StderrBuf = String::new();
 			{
 				let StderrReader = Child.stderr.take().unwrap();
@@ -103,26 +108,38 @@ pub async fn Fn(Option:ExecutionOption) {
 				.unwrap_or(0);
 			}
 
-			let Status = Child.wait().await;
+			let ExitStatus = Child.wait().await;
+			let Success = matches!(ExitStatus, Ok(S) if S.success());
 
-			match Status {
-				Ok(ExitStatus) if !ExitStatus.success() => {
-					eprintln!(
-						"Command failed in '{}' with status {}. Stderr: {}",
-						DirectoryString,
-						ExitStatus,
-						StderrBuf.trim()
-					);
+			if !StderrBuf.trim().is_empty() {
+				for Line in StderrBuf.lines() {
+					if !Line.trim().is_empty() {
+						let _ = Tx.send(Event::Line {
+							Directory:DirectoryString.clone(),
+							Text:Line.to_owned(),
+							IsStderr:true,
+						}).await;
+					}
 				}
-				Err(Error) => {
-					eprintln!(
-						"Command in '{}' was terminated: {}",
-						DirectoryString,
-						Error
-					);
-				}
-				_ => {}
 			}
+
+			if !Success {
+				AllSuccess = false;
+			}
+
+			let _ = Tx.send(Event::JobProgress {
+				Directory:DirectoryString.clone(),
+				Done:CmdIdx + 1,
+				Total:TotalCommands,
+				Success,
+			}).await;
 		}
+
+		let _ = Tx.send(Event::JobFinished {
+			Directory:DirectoryString.clone(),
+			Success:AllSuccess,
+		}).await;
 	}
+
+	let _ = Tx.send(Event::AllDone).await;
 }

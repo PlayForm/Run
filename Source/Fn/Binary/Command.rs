@@ -7,17 +7,11 @@ pub mod Sequential;
 
 /// Defines and configures the command-line interface for the "Run" utility.
 ///
-/// This function uses the `clap` crate to specify all possible arguments,
-/// flags, and options, including their help messages, default values, and
-/// relationships.
-///
-/// # Returns
-///
-/// An `ArgMatches` object containing the parsed values from the command line.
+/// Adds `-T` / `--Tui` to launch the interactive TUI panel mode.
 pub fn Fn() -> ArgMatches {
 	ClapCommand::new("Run")
 		.version(env!("CARGO_PKG_VERSION"))
-		.author("Source ✍🏻 Open 👐🏻 <Source/Open@PlayForm.Cloud>")
+		.author("Source ✍🏻 Open 👐🏻 <Source/Open@PlayForm.Cloud>")
 		.about("A utility to run commands in directories matching a pattern.")
 		.arg(
 			Arg::new("File")
@@ -36,10 +30,18 @@ pub fn Fn() -> ArgMatches {
 				.help("Execute commands in parallel across all found directories."),
 		)
 		.arg(
+			Arg::new("Tui")
+				.short('T')
+				.long("Tui")
+				.action(ArgAction::SetTrue)
+				.display_order(3)
+				.help("Launch the interactive TUI panel dashboard."),
+		)
+		.arg(
 			Arg::new("Root")
 				.short('R')
 				.long("Root")
-				.display_order(3)
+				.display_order(4)
 				.value_name("DIRECTORY")
 				.help("The root directory to start the search from.")
 				.default_value("."),
@@ -49,14 +51,14 @@ pub fn Fn() -> ArgMatches {
 				.short('E')
 				.long("Exclude")
 				.action(ArgAction::Append)
-				.display_order(4)
+				.display_order(5)
 				.value_name("PATTERNS")
 				.help("A space-separated list of glob patterns to exclude from the search.")
 				.default_value("**/{node_modules,.git,target,dist,vendor}/**/*"),
 		)
 		.arg(
 			Arg::new("Pattern")
-				.display_order(5)
+				.display_order(6)
 				.value_name("PATTERN")
 				.required(true)
 				.help("The file or directory name that identifies a target directory."),
@@ -66,7 +68,7 @@ pub fn Fn() -> ArgMatches {
 				.short('C')
 				.long("Command")
 				.action(ArgAction::Append)
-				.display_order(6)
+				.display_order(7)
 				.value_name("COMMAND")
 				.required(true)
 				.allow_hyphen_values(true)
