@@ -20,7 +20,7 @@ jobs:
             github.event.pull_request.user.login == 'dependabot[bot]' }}
 
         steps:
-            - uses: dependabot/fetch-metadata@1cb8b1c3e03d6bb888197d79b219b33fb0c9e761 # v3.1.0
+            - uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
               with:
                   github-token: "${{ secrets.GITHUB_TOKEN }}"
 
@@ -38,7 +38,7 @@ jobs:
             github.event.pull_request.user.login == 'dependabot[bot]' }}
 
         steps:
-            - uses: dependabot/fetch-metadata@1cb8b1c3e03d6bb888197d79b219b33fb0c9e761 # v3.1.0
+            - uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
               with:
                   github-token: "${{ secrets.GITHUB_TOKEN }}"
 

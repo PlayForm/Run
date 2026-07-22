@@ -1,20 +1,22 @@
-name: Auto
+name: Rust
 
 concurrency:
-    group: Auto-${{ github.workflow }}-${{ github.ref }}
+    group: Rust-${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
 permissions:
-    contents: write
+    security-events: write
 
 on:
     workflow_dispatch:
-    schedule:
-        - cron: "0 0 * * *"
+    push:
+        branches: [Current]
+    pull_request:
+        branches: [Current]
     workflow_call:
 
 jobs:
-    Commit:
+    Build:
         runs-on: ubuntu-latest
 
         env:
@@ -50,19 +52,29 @@ jobs:
             TERRAFORM_TELEMETRY: 0
             VCPKG_DISABLE_METRICS: 1
 
+        strategy:
+            matrix:
+                toolchain: ["stable", "nightly"]
+
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-            - run: |
-                  echo "Update: $(date)" > .github/Update.md
-
-            - run: |
-                  git config user.name "Auto"
-                  git config user.email "Commit@PlayForm.Cloud"
-                  git add .
-                  git commit -a --allow-empty-message -m ""
-
-            - uses: ad-m/github-push-action@881a6320fdb16eb5318c5054f31c218aec2b324c # v1.3.0
+            - uses: actions-rs/toolchain@568dc894a7f9e32ffd9bb7d7a6cebb784cdaa2b0 # v1.0.7
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  branch: Current
+                  profile: minimal
+                  toolchain: ${{ matrix.toolchain }}
+
+            - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # undefined
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                      Target/
+                  key: ${{ runner.os }}-cargo-${{ hashFiles('./Cargo.toml') }}
+            - uses: actions-rs/cargo@4ff6ec2846f6e7217c1a9b0b503506665f134c4b # undefined
+              with:
+                command: build
+                args: --release --all-features --manifest-path ./Cargo.toml
