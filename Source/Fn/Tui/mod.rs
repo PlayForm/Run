@@ -14,7 +14,6 @@ use tokio::sync::mpsc::Receiver;
 
 use crate::Struct::{Event::Struct as Event, Tui::AppState};
 
-/// RAII guard that restores the terminal unconditionally on drop.
 struct TerminalGuard;
 
 impl Drop for TerminalGuard {
@@ -24,13 +23,7 @@ impl Drop for TerminalGuard {
 	}
 }
 
-/// Main TUI entry point. Owns the terminal and drives the event loop.
-///
-/// * `Rx` — receives execution events from the Sequential / Parallel engine.
-///
-/// The loop ticks at 100 ms so the spinner animates smoothly without burning
-/// CPU. Keyboard and mouse events are handled surgically between ticks.
-pub async fn Fn(mut Rx:Receiver<Event>) {
+pub async fn Fn(mut Rx:　Receiver<Event>) {
 	enable_raw_mode().expect("Failed to enable raw mode");
 	execute!(stdout(), EnterAlternateScreen, EnableMouseCapture)
 		.expect("Failed to enter alternate screen");
@@ -44,7 +37,6 @@ pub async fn Fn(mut Rx:Receiver<Event>) {
 	let TickRate = Duration::from_millis(100);
 
 	loop {
-		// 1. Drain all pending execution events (non-blocking).
 		loop {
 			match Rx.try_recv() {
 				Ok(Event::JobStarted { Directory, Total }) => {
@@ -80,33 +72,29 @@ pub async fn Fn(mut Rx:Receiver<Event>) {
 				Ok(Event::IndexLockTimeout { Directory }) => {
 					if let Some(DS) = State.Map.get_mut(&Directory) {
 						DS.Status = crate::Struct::Tui::Status::Timeout;
-						DS.Lines
-							.push(("⚠  git index lock timed out".to_owned(), true));
+						DS.Lines.push(("⚠  git index lock timed out".to_owned(), true));
 					}
 				}
 				Ok(Event::AllDone) => {
 					State.Done = true;
 				}
-				Err(_) => break, // channel empty or closed
+				Err(_) => break,
 			}
 		}
 
-		// 2. Render the current frame.
 		Term.draw(|Frame| Render::Fn(Frame, &State))
 			.expect("Failed to draw frame");
 
-		// 3. Poll for input with a timeout equal to the tick rate.
 		if event::poll(TickRate).unwrap_or(false) {
 			if let Ok(Ev) = event::read() {
 				if Input::Fn(&mut State, Ev) {
-					break; // quit requested
+					break;
 				}
 			}
 		}
 
 		State.Tick = State.Tick.wrapping_add(1);
 
-		// 4. If done and force-quit requested, exit.
 		if State.ForceQuit {
 			break;
 		}

@@ -8,18 +8,9 @@ use ratatui::{
 
 use crate::Struct::Tui::{AppState, SPINNER, Status};
 
-/// Top-level render function — called once per tick.
-///
-/// Layout (horizontal split):
-///   ┌────────────────┬──────────────────────────────────────┐
-///   │  Directories   │  Log                                  │
-///   │  (30 % width)  │  (70 % width)                        │
-///   └────────────────┴──────────────────────────────────────┘
-/// Status bar spans the full width at the bottom (1 line).
-pub fn Fn(Frame:&mut Frame, State:&AppState) {
+pub fn Fn(Frame:　&mut Frame, State:　&AppState) {
 	let Size = Frame.area();
 
-	// Reserve 1 row at the bottom for the status bar.
 	let Outer = Layout::default()
 		.direction(Direction::Vertical)
 		.constraints([Constraint::Min(3), Constraint::Length(1)])
@@ -35,12 +26,10 @@ pub fn Fn(Frame:&mut Frame, State:&AppState) {
 	render_status_bar(Frame, State, Outer[1]);
 }
 
-// ─── Left panel: directory list ──────────────────────────────────────────────
-
-fn render_dir_list(Frame:&mut Frame, State:&AppState, Area:Rect) {
+fn render_dir_list(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 	let Spinner = SPINNER[State.Tick % SPINNER.len()];
 
-	let Items:Vec<ListItem> = State
+	let Items:　Vec<ListItem> = State
 		.Order
 		.iter()
 		.enumerate()
@@ -58,7 +47,6 @@ fn render_dir_list(Frame:&mut Frame, State:&AppState, Area:Rect) {
 				Status::Timeout => ("⚠ ".to_owned(), Style::default().fg(Color::Magenta)),
 			};
 
-			// Shorten long paths: keep the last two path components only.
 			let Label = shorten(Key);
 
 			let Row = TLine::from(vec![
@@ -87,15 +75,13 @@ fn render_dir_list(Frame:&mut Frame, State:&AppState, Area:Rect) {
 	Frame.render_stateful_widget(List, Area, &mut ListSt);
 }
 
-// ─── Right panel: log viewer ─────────────────────────────────────────────────
-
-fn render_log(Frame:&mut Frame, State:&AppState, Area:Rect) {
+fn render_log(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 	let (Title, Lines, Scroll) = match State.selected_dir() {
 		None => (" ◈ Log ".to_owned(), vec![], 0usize),
 		Some(Key) => {
 			let DS = &State.Map[Key];
 			let Title = format!(" ◈ {} ", shorten(Key));
-			let Lines:Vec<TLine> = DS
+			let Lines:　Vec<TLine> = DS
 				.Lines
 				.iter()
 				.map(|(Text, IsStderr)| {
@@ -123,15 +109,13 @@ fn render_log(Frame:&mut Frame, State:&AppState, Area:Rect) {
 
 	let Para = Paragraph::new(Lines)
 		.block(Block)
-		.wrap(Wrap { trim:false })
+		.wrap(Wrap { trim:　false })
 		.scroll((Scroll as u16, 0));
 
 	Frame.render_widget(Para, Area);
 }
 
-// ─── Bottom status bar ────────────────────────────────────────────────────────
-
-fn render_status_bar(Frame:&mut Frame, State:&AppState, Area:Rect) {
+fn render_status_bar(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 	let Done = State.Order.iter().filter(|K| {
 		matches!(State.Map[*K].Status, Status::Done | Status::Failed | Status::Timeout)
 	}).count();
@@ -153,18 +137,15 @@ fn render_status_bar(Frame:&mut Frame, State:&AppState, Area:Rect) {
 	Frame.render_widget(Paragraph::new(Status).style(Style), Area);
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/// Keep at most the last two path components to fit narrow panels.
-fn shorten(Path:&str) -> String {
-	let Parts:Vec<&str> = Path.trim_end_matches('/').rsplit('/').take(2).collect();
+fn shorten(Path:　&str) -> String {
+	let Parts:　Vec<&str> = Path.trim_end_matches('/').rsplit('/').take(2).collect();
 	if Parts.is_empty() {
 		return Path.to_owned();
 	}
 	parts_join(Parts)
 }
 
-fn parts_join(mut Parts:Vec<&str>) -> String {
+fn parts_join(mut Parts:　Vec<&str>) -> String {
 	Parts.reverse();
 	Parts.join("/")
 }

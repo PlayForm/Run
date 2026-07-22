@@ -19,34 +19,30 @@ use crate::{
 pub mod GPG;
 pub mod Process;
 
-static GPG_MUTEX:Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
+static GPG_MUTEX:　Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
 struct ProcessedCommand {
-	Command:String,
-	RequiresGpgLock:bool,
-	RequiresIndexLock:bool,
+	Command:　String,
+	RequiresGpgLock:　bool,
+	RequiresIndexLock:　bool,
 }
 
-/// Executes commands in parallel across multiple directories.
-///
-/// Identical logic to the previous implementation; the only change is that all
-/// output is routed through `Tx` (typed `Event`) instead of `println!`.
-pub async fn Fn(Option:ExecutionOption, Tx:Sender<Event>) {
+pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 	let TotalCommands = Option.Command.len();
 
-	let ProcessedCommands:Arc<Vec<ProcessedCommand>> = Arc::new(
+	let ProcessedCommands:　Arc<Vec<ProcessedCommand>> = Arc::new(
 		Option
 			.Command
 			.par_iter()
 			.map(|CommandString| {
 				let RequiresGpgLock = GPG::Fn(CommandString);
 				let RequiresIndexLock = Index::Fn(CommandString);
-				ProcessedCommand { Command:CommandString.clone(), RequiresGpgLock, RequiresIndexLock }
+				ProcessedCommand { Command:　CommandString.clone(), RequiresGpgLock, RequiresIndexLock }
 			})
 			.collect(),
 	);
 
-	let TargetDirs:Vec<PathBuf> = Option
+	let TargetDirs:　Vec<PathBuf> = Option
 		.Entry
 		.into_par_iter()
 		.filter_map(|CandidatePath| {
@@ -81,8 +77,8 @@ pub async fn Fn(Option:ExecutionOption, Tx:Sender<Event>) {
 				let DirectoryString = Directory.to_string_lossy().to_string();
 
 				let _ = Producer.send(Event::JobStarted {
-					Directory:DirectoryString.clone(),
-					Total:TotalCommands,
+					Directory:　DirectoryString.clone(),
+					Total:　TotalCommands,
 				}).await;
 
 				let mut AllSuccess = true;
@@ -92,7 +88,7 @@ pub async fn Fn(Option:ExecutionOption, Tx:Sender<Event>) {
 						&& !Index::Lock::Fn(&DirectoryString).await
 					{
 						let _ = Producer.send(Event::IndexLockTimeout {
-							Directory:DirectoryString.clone(),
+							Directory:　DirectoryString.clone(),
 						}).await;
 						break 'commands;
 					}
@@ -109,34 +105,34 @@ pub async fn Fn(Option:ExecutionOption, Tx:Sender<Event>) {
 							for Line in Output.lines() {
 								if !Line.trim().is_empty() {
 									let _ = Producer.send(Event::Line {
-										Directory:DirectoryString.clone(),
-										Text:Line.to_owned(),
-										IsStderr:false,
+										Directory:　DirectoryString.clone(),
+										Text:　Line.to_owned(),
+										IsStderr:　false,
 									}).await;
 								}
 							}
 						}
 						Err(Error) => {
 							let _ = Producer.send(Event::Line {
-								Directory:DirectoryString.clone(),
-								Text:format!("Error: {}", Error),
-								IsStderr:true,
+								Directory:　DirectoryString.clone(),
+								Text:　format!("Error: {}", Error),
+								IsStderr:　true,
 							}).await;
 							AllSuccess = false;
 						}
 					}
 
 					let _ = Producer.send(Event::JobProgress {
-						Directory:DirectoryString.clone(),
-						Done:CmdIdx + 1,
-						Total:TotalCommands,
-						Success:AllSuccess,
+						Directory:　DirectoryString.clone(),
+						Done:　CmdIdx + 1,
+						Total:　TotalCommands,
+						Success:　AllSuccess,
 					}).await;
 				}
 
 				let _ = Producer.send(Event::JobFinished {
-					Directory:DirectoryString.clone(),
-					Success:AllSuccess,
+					Directory:　DirectoryString.clone(),
+					Success:　AllSuccess,
 				}).await;
 			}
 		});

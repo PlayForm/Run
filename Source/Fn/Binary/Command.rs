@@ -5,9 +5,6 @@ pub mod Index;
 pub mod Parallel;
 pub mod Sequential;
 
-/// Defines and configures the command-line interface for the "Run" utility.
-///
-/// Adds `-T` / `--Tui` to launch the interactive TUI panel mode.
 pub fn Fn() -> ArgMatches {
 	ClapCommand::new("Run")
 		.version(env!("CARGO_PKG_VERSION"))
