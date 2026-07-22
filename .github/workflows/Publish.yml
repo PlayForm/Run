@@ -1,0 +1,126 @@
+name: Publish
+
+concurrency:
+    group: Publish-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: write
+
+on:
+    push:
+        tags: ["Run/v*"]
+    workflow_dispatch:
+        inputs:
+            publish_crates:
+                description: "Publish prun to crates.io"
+                type: boolean
+                default: false
+
+env:
+    ADBLOCK: true
+    ASTRO_TELEMETRY_DISABLED: 1
+    AUTOMATEDLAB_TELEMETRY_OPTOUT: 1
+    AZURE_CORE_COLLECT_TELEMETRY: 0
+    CARGO_TERM_COLOR: always
+    CHOOSENIM_NO_ANALYTICS: 1
+    DIEZ_DO_NOT_TRACK: 1
+    DO_NOT_TRACK: 1
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    DOTNET_INTERACTIVE_CLI_TELEMETRY_OPTOUT: 1
+    ET_NO_TELEMETRY: 1
+    GATSBY_TELEMETRY_DISABLED: 1
+    GATSBY_TELEMETRY_OPT_OUT: 1
+    GATSBY_TELEMETRY_OPTOUT: 1
+    GRIT_TELEMETRY_DISABLED: 1
+    HASURA_GRAPHQL_ENABLE_TELEMETRY: false
+    HINT_TELEMETRY: off
+    HOMEBREW_NO_ANALYTICS: 1
+    INFLUXD_REPORTING_DISABLED: true
+    ITERATIVE_DO_NOT_TRACK: 1
+    NEXT_TELEMETRY_DEBUG: 1
+    NEXT_TELEMETRY_DISABLED: 1
+    NG_CLI_ANALYTICS: false
+    NUXT_TELEMETRY_DISABLED: 1
+    PIN_DO_NOT_TRACK: 1
+    POWERSHELL_TELEMETRY_OPTOUT: 1
+    SAM_CLI_TELEMETRY: 0
+    STNOUPGRADE: 1
+    STRIPE_CLI_TELEMETRY_OPTOUT: 1
+    TELEMETRY_DISABLED: 1
+    TERRAFORM_TELEMETRY: 0
+    VCPKG_DISABLE_METRICS: 1
+
+jobs:
+    Test:
+        name: Test
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+            - name: Setup Rust (stable)
+              uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+              with:
+                  toolchain: stable
+
+            - name: Cache cargo
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      ~/.cargo/registry/
+                      ~/.cargo/git/
+                      Target/
+                  key: cargo-publish-test-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+                  restore-keys: cargo-publish-test-${{ runner.os }}-
+
+            - name: cargo test
+              run: cargo test --release
+
+    Publish:
+        name: Publish prun
+        needs: [Test]
+        runs-on: ubuntu-latest
+        environment: Release
+        steps:
+            - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+            - name: Setup Rust (stable)
+              uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+              with:
+                  toolchain: stable
+
+            - name: Cache cargo
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      ~/.cargo/registry/
+                      ~/.cargo/git/
+                      Target/
+                  key: cargo-publish-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+                  restore-keys: cargo-publish-${{ runner.os }}-
+
+            - name: Build release
+              run: cargo build --release
+
+            # crates.io publishing is opt-in — only runs on an explicit
+            # `workflow_dispatch` with `publish_crates: true`, or when
+            # triggered by a tag push with the secret set.  This keeps
+            # tag-push-triggered releases from silently failing if the
+            # token isn't configured yet.
+            - name: Check if version is already published
+              if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_crates }}
+              id: check
+              run: |
+                  VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
+                  echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+                  if curl -sL "https://crates.io/api/v1/crates/prun/$VERSION" | grep -q '"num"'; then
+                      echo "published=true" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "published=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Publish to crates.io (opt-in)
+              if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_crates && steps.check.outputs.published == 'false' }}
+              run: cargo publish --no-verify
+              env:
+                  CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

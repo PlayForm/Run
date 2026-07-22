@@ -1,0 +1,182 @@
+name: Build
+
+concurrency:
+    group: Build-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: write
+
+on:
+    push:
+        tags: ["Run/v*"]
+    workflow_dispatch:
+
+env:
+    ADBLOCK: true
+    ASTRO_TELEMETRY_DISABLED: 1
+    AUTOMATEDLAB_TELEMETRY_OPTOUT: 1
+    AZURE_CORE_COLLECT_TELEMETRY: 0
+    CARGO_TERM_COLOR: always
+    CHOOSENIM_NO_ANALYTICS: 1
+    DIEZ_DO_NOT_TRACK: 1
+    DO_NOT_TRACK: 1
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    DOTNET_INTERACTIVE_CLI_TELEMETRY_OPTOUT: 1
+    ET_NO_TELEMETRY: 1
+    GATSBY_TELEMETRY_DISABLED: 1
+    GATSBY_TELEMETRY_OPT_OUT: 1
+    GATSBY_TELEMETRY_OPTOUT: 1
+    GRIT_TELEMETRY_DISABLED: 1
+    HASURA_GRAPHQL_ENABLE_TELEMETRY: false
+    HINT_TELEMETRY: off
+    HOMEBREW_NO_ANALYTICS: 1
+    INFLUXD_REPORTING_DISABLED: true
+    ITERATIVE_DO_NOT_TRACK: 1
+    NEXT_TELEMETRY_DEBUG: 1
+    NEXT_TELEMETRY_DISABLED: 1
+    NG_CLI_ANALYTICS: false
+    NUXT_TELEMETRY_DISABLED: 1
+    PIN_DO_NOT_TRACK: 1
+    POWERSHELL_TELEMETRY_OPTOUT: 1
+    SAM_CLI_TELEMETRY: 0
+    STNOUPGRADE: 1
+    STRIPE_CLI_TELEMETRY_OPTOUT: 1
+    TELEMETRY_DISABLED: 1
+    TERRAFORM_TELEMETRY: 0
+    VCPKG_DISABLE_METRICS: 1
+
+jobs:
+    Release:
+        name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/Run/v')
+        runs-on: ubuntu-latest
+        environment: Release
+        permissions:
+            contents: write
+            id-token: write
+
+        steps:
+            # Create the release first so the Build job can attach assets.
+            # Release notes are authored by the release process, not
+            # auto-generated here.
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    Build:
+        name: Build ${{ matrix.target }}
+        needs: Release
+        if: always() && (needs.Release.result == 'success' || needs.Release.result == 'skipped')
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - os: ubuntu-latest
+                      target: x86_64-unknown-linux-gnu
+                    - os: macos-latest
+                      target: aarch64-apple-darwin
+                    - os: macos-latest
+                      target: x86_64-apple-darwin
+                    - os: windows-latest
+                      target: x86_64-pc-windows-msvc
+
+        steps:
+            - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+            - name: Setup Rust (stable)
+              uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+              with:
+                  toolchain: stable
+                  targets: ${{ matrix.target }}
+
+            - name: Cache cargo
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      ~/.cargo/registry/
+                      ~/.cargo/git/
+                      Target/
+                  key: cargo-build-${{ runner.os }}-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
+                  restore-keys: cargo-build-${{ runner.os }}-${{ matrix.target }}-
+
+            - name: Build release
+              run: cargo build --release --target ${{ matrix.target }}
+
+            - name: Stage artifacts
+              shell: bash
+              run: |
+                  TARGET="${{ matrix.target }}"
+                  DIR="Target/${TARGET}/release"
+                  BIN=Run
+                  if [[ "$TARGET" == *windows* ]]; then
+                      cp "$DIR/$BIN.exe" "$BIN-${TARGET}.exe"
+                  else
+                      cp "$DIR/$BIN" "$BIN-${TARGET}"
+                  fi
+                  ls -lh "$BIN-${TARGET}"*
+
+            - name: Generate checksums (Windows)
+              if: contains(matrix.target, 'windows')
+              shell: pwsh
+              run: |
+                  $target = "${{ matrix.target }}"
+                  $hash = (Get-FileHash "Run-$target.exe" -Algorithm SHA256).Hash.ToLower()
+                  "$hash  Run-$target.exe" | Out-File -FilePath "SHA256SUMS-$target.txt" -Encoding ascii
+                  Get-Content "SHA256SUMS-$target.txt"
+
+            - name: Generate checksums
+              if: ${{ !contains(matrix.target, 'windows') }}
+              shell: bash
+              run: |
+                  TARGET="${{ matrix.target }}"
+                  shasum -a 256 "Run-${TARGET}"* > "SHA256SUMS-${TARGET}.txt"
+                  cat "SHA256SUMS-${TARGET}.txt"
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+              with:
+                  name: Run-${{ matrix.target }}
+                  path: |
+                      Run-${{ matrix.target }}*
+                      SHA256SUMS-${{ matrix.target }}.txt
+                  retention-days: 30
+
+            - name: Upload to release
+              if: startsWith(github.ref, 'refs/tags/Run/v')
+              uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3
+              with:
+                  files: |
+                      Run-${{ matrix.target }}*
+                      SHA256SUMS-${{ matrix.target }}.txt
+                  fail_on_unmatched_files: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    Finalize:
+        name: Finalize release assets
+        needs: [Build]
+        if: startsWith(github.ref, 'refs/tags/Run/v')
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - name: Verify every platform's assets are attached
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -euo pipefail
+                  assets=$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json assets -q '.assets[].name')
+                  echo "Attached assets:"; echo "$assets"
+                  missing=0
+                  for t in x86_64-unknown-linux-gnu aarch64-apple-darwin x86_64-apple-darwin x86_64-pc-windows-msvc; do
+                      echo "$assets" | grep -q "Run-$t"         || { echo "::error::missing binary for $t";    missing=1; }
+                      echo "$assets" | grep -q "SHA256SUMS-$t" || { echo "::error::missing checksums for $t"; missing=1; }
+                  done
+                  if [ "$missing" -ne 0 ]; then
+                      echo "::error::Release matrix is incomplete."
+                      exit 1
+                  fi
+                  echo "All 4 platforms present. Matrix complete."

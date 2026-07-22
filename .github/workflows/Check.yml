@@ -1,0 +1,107 @@
+name: Check
+
+concurrency:
+    group: Check-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+on:
+    push:
+        branches: [Current]
+        paths-ignore: [".github/Update.md"]
+    pull_request:
+        branches: [Current]
+    workflow_dispatch:
+    workflow_call:
+
+env:
+    ADBLOCK: true
+    ASTRO_TELEMETRY_DISABLED: 1
+    AUTOMATEDLAB_TELEMETRY_OPTOUT: 1
+    AZURE_CORE_COLLECT_TELEMETRY: 0
+    CARGO_TERM_COLOR: always
+    CHOOSENIM_NO_ANALYTICS: 1
+    DIEZ_DO_NOT_TRACK: 1
+    DO_NOT_TRACK: 1
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    DOTNET_INTERACTIVE_CLI_TELEMETRY_OPTOUT: 1
+    ET_NO_TELEMETRY: 1
+    GATSBY_TELEMETRY_DISABLED: 1
+    GATSBY_TELEMETRY_OPT_OUT: 1
+    GATSBY_TELEMETRY_OPTOUT: 1
+    GRIT_TELEMETRY_DISABLED: 1
+    HASURA_GRAPHQL_ENABLE_TELEMETRY: false
+    HINT_TELEMETRY: off
+    HOMEBREW_NO_ANALYTICS: 1
+    INFLUXD_REPORTING_DISABLED: true
+    ITERATIVE_DO_NOT_TRACK: 1
+    NEXT_TELEMETRY_DEBUG: 1
+    NEXT_TELEMETRY_DISABLED: 1
+    NG_CLI_ANALYTICS: false
+    NUXT_TELEMETRY_DISABLED: 1
+    PIN_DO_NOT_TRACK: 1
+    POWERSHELL_TELEMETRY_OPTOUT: 1
+    SAM_CLI_TELEMETRY: 0
+    STNOUPGRADE: 1
+    STRIPE_CLI_TELEMETRY_OPTOUT: 1
+    TELEMETRY_DISABLED: 1
+    TERRAFORM_TELEMETRY: 0
+    VCPKG_DISABLE_METRICS: 1
+
+jobs:
+    Lint:
+        name: cargo check + clippy + fmt
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+            - name: Setup Rust (stable)
+              uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+              with:
+                  toolchain: stable
+                  components: rustfmt, clippy
+
+            - name: Cache cargo
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      ~/.cargo/registry/
+                      ~/.cargo/git/
+                      Target/
+                  key: cargo-check-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+                  restore-keys: cargo-check-${{ runner.os }}-
+
+            - name: cargo check
+              run: cargo check --release
+
+            - name: cargo clippy
+              run: cargo clippy --release -- -D warnings
+
+            - name: cargo fmt --check
+              run: cargo fmt --all -- --check
+
+    Test:
+        name: cargo test
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+            - name: Setup Rust (stable)
+              uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+              with:
+                  toolchain: stable
+
+            - name: Cache cargo
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      ~/.cargo/registry/
+                      ~/.cargo/git/
+                      Target/
+                  key: cargo-test-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+                  restore-keys: cargo-test-${{ runner.os }}-
+
+            - name: cargo test
+              run: cargo test --release
