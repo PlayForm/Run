@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 
+use tokio::io::AsyncBufReadExt;
 use tokio::process::Command as TokioCommand;
 
 use crate::{
@@ -62,31 +63,62 @@ pub async fn Fn(Option:ExecutionOption) {
 				continue 'directories;
 			}
 
-			let OutputResult = TokioCommand::new(&CommandParts[0])
+			let mut Child = match TokioCommand::new(&CommandParts[0])
 				.args(&CommandParts[1..])
 				.current_dir(DirectoryString.as_ref())
-				.output()
-				.await;
-
-			match OutputResult {
-				Ok(Output) => {
-					let Stdout = String::from_utf8_lossy(&Output.stdout);
-					if !Stdout.trim().is_empty() {
-						println!("{}", Stdout);
-					}
-					if !Output.status.success() {
-						let Stderr = String::from_utf8_lossy(&Output.stderr);
-						eprintln!(
-							"Command failed in '{}' with status {}. Stderr: {}",
-							DirectoryString,
-							Output.status,
-							Stderr.trim()
-						);
-					}
-				},
+				.stdout(std::process::Stdio::piped())
+				.stderr(std::process::Stdio::piped())
+				.spawn()
+			{
+				Ok(Child) => Child,
 				Err(Error) => {
-					eprintln!("Failed to spawn command in '{}': {}", DirectoryString, Error)
-				},
+					eprintln!("Failed to spawn command in '{}': {}", DirectoryString, Error);
+					continue;
+				}
+			};
+
+			// Stream stdout to the terminal line by line as it's produced.
+			let StdoutReader = Child.stdout.take().unwrap();
+			{
+				let mut Lines = tokio::io::BufReader::new(StdoutReader).lines();
+				while let Ok(Some(Line)) = Lines.next_line().await {
+					if !Line.trim().is_empty() {
+						println!("{}", Line);
+					}
+				}
+			}
+
+			// Capture stderr for error reporting.
+			let mut StderrBuf = String::new();
+			{
+				let StderrReader = Child.stderr.take().unwrap();
+				tokio::io::AsyncReadExt::read_to_string(
+					&mut tokio::io::BufReader::new(StderrReader),
+					&mut StderrBuf,
+				)
+				.await
+				.unwrap_or(0);
+			}
+
+			let Status = Child.wait().await;
+
+			match Status {
+				Ok(ExitStatus) if !ExitStatus.success() => {
+					eprintln!(
+						"Command failed in '{}' with status {}. Stderr: {}",
+						DirectoryString,
+						ExitStatus,
+						StderrBuf.trim()
+					);
+				}
+				Err(Error) => {
+					eprintln!(
+						"Command in '{}' was terminated: {}",
+						DirectoryString,
+						Error
+					);
+				}
+				_ => {}
 			}
 		}
 	}

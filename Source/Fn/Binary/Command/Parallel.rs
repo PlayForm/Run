@@ -112,6 +112,12 @@ pub async fn Fn(Option:ExecutionOption) {
 				// This preserves the user-supplied order (e.g. `git add` before
 				// `git commit`) and ensures only one command at a time holds
 				// the git index lock for this repository.
+				//
+				// All output for this directory is collected into a single
+				// buffer and sent atomically through the channel so that
+				// results from different directories do not interleave.
+				let mut DirectoryOutput = String::new();
+
 				'commands: for Cmd in Commands.iter() {
 					// Wait for any in-flight index lock before writing to the index.
 					if Cmd.RequiresIndexLock
@@ -134,12 +140,7 @@ pub async fn Fn(Option:ExecutionOption) {
 					};
 
 					match Result {
-						Ok(Output) => {
-							if Producer.send(Output).is_err() {
-								// Receiver dropped - stop processing entirely.
-								break 'commands;
-							}
-						},
+						Ok(Output) => DirectoryOutput.push_str(&Output),
 						Err(Error) => {
 							eprintln!(
 								"Error executing command in '{}': {}",
@@ -147,6 +148,13 @@ pub async fn Fn(Option:ExecutionOption) {
 							)
 						},
 					}
+				}
+
+				if !DirectoryOutput.trim().is_empty()
+					&& Producer.send(DirectoryOutput).is_err()
+				{
+					// Receiver dropped - stop processing entirely.
+					break;
 				}
 			}
 		});

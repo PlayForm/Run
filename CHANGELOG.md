@@ -1,3 +1,15 @@
+## 0.2.1
+
+### Fixed
+
+- **Streaming output**: Replaced `TokioCommand::output()` (which buffers all
+  stdout/stderr in memory and only returns when the process exits) with
+  `.spawn()` + piped streams in both sequential and parallel modes. Sequential
+  mode now streams stdout line-by-line to the terminal as the command produces
+  it. Parallel mode buffers output per-directory and sends each directory's
+  results as an atomic block through the channel, preventing interleaved output
+  from concurrent workers while still feeling responsive.
+
 ## 0.2.0
 
 ### Fixed
