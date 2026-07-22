@@ -48,6 +48,7 @@ pub fn Fn() -> ArgMatches {
 			Arg::new("Exclude")
 				.short('E')
 				.long("Exclude")
+				.action(ArgAction::Append)
 				.display_order(4)
 				.value_name("PATTERNS")
 				.help("A space-separated list of glob patterns to exclude from the search.")

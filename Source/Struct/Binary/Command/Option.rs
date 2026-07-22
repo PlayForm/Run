@@ -38,9 +38,9 @@ impl Struct {
 			Parallel:ARGS.get_flag("Parallel"),
 			Root:ARGS.get_one::<String>("Root").expect("Root argument is required.").to_owned(),
 			Exclude:ARGS
-				.get_one::<String>("Exclude")
-				.unwrap_or(&String::new())
-				.split_whitespace()
+				.get_many::<String>("Exclude")
+				.unwrap_or_default()
+				.flat_map(|Value| Value.split_whitespace())
 				.map(String::from)
 				.collect::<Vec<_>>(),
 			Pattern:ARGS

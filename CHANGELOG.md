@@ -1,3 +1,13 @@
+## 0.2.2
+
+### Fixed
+
+- **Multiple `-E` / `--Exclude` flags now accumulate**: Changed the clap
+  argument action from `Set` to `Append` so multiple exclude flags are merged
+  together rather than the last one silently overwriting previous ones.
+  Space-separated patterns within a single flag value continue to work as
+  before.
+
 ## 0.2.1
 
 ### Fixed
