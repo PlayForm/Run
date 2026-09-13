@@ -32,7 +32,7 @@ impl Struct {
 					let IsTui = CommandLineOptions.Tui;
 					let IsParallel = ExecutionOptions.Parallel;
 
-					let (Tx, Rx) = mpsc::unbounded_channel::<crate::Struct::Event::Struct>();
+					let (Tx, Rx) = mpsc::channel::<crate::Struct::Event::Struct>(64);
 
 					if IsTui {
 						if IsParallel {

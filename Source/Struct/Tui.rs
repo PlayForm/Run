@@ -68,8 +68,8 @@ impl AppState {
 	}
 
 	pub fn scroll_up(&mut self) {
-		if let Some(Key) = self.selected_dir() {
-			if let Some(State) = self.Map.get_mut(Key) {
+		if let Some(Key) = self.selected_dir().map(str::to_owned) {
+			if let Some(State) = self.Map.get_mut(&Key) {
 				State.AutoScroll = false;
 				State.Scroll = State.Scroll.saturating_sub(3);
 			}
