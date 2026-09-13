@@ -45,7 +45,7 @@ autobins = false
 autoexamples = false
 autotests = false
 default-run = "Run"
-description = "Run 🍺"
+description = "Run 🍺"
 edition = "2024"
 include = [
 	"Source/**/*",
