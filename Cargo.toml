@@ -58,4 +58,4 @@ include = [
 license-file = "LICENSE"
 name = "prun"
 repository = "https://github.com/PlayForm/Run.git"
-version = "0.2.4"
+version = "0.3.0"

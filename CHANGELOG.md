@@ -1,3 +1,20 @@
+## 0.3.0
+
+### Added
+
+- **Interactive TUI dashboard** (`-T` / `--Tui`): ratatui-based panel showing
+  per-directory status (spinner, progress, done/failed/timeout), output lines,
+  and scroll/auto-scroll navigation.
+- **Event channel**: tokio `mpsc` bounded channel (buffer 64) carrying typed
+  `Event` structs from workers to the TUI or streaming printer.
+
+### Improved
+
+- **Event architecture**: crossbeam-queue-based communication replaced by the
+  tokio mpsc event channel.
+- **Dependencies**: ratatui 0.30.2 + crossterm 0.29.0 added; clap 4.6.6,
+  futures 0.3.34, globset 0.4.20, toml 1.1.6.
+
 ## 0.2.4
 
 ### Added
