@@ -12,8 +12,8 @@
 
 - **Event architecture**: crossbeam-queue-based communication replaced by the
   tokio mpsc event channel.
-- **Dependencies**: ratatui 0.30.2 + crossterm 0.29.0 added; clap 4.6.6,
-  futures 0.3.34, globset 0.4.20, toml 1.1.6.
+- **Dependencies**: ratatui 0.30.2 + crossterm 0.29.0 added; clap 4.6.6, futures
+  0.3.34, globset 0.4.20, toml 1.1.6.
 
 ## 0.2.4
 
@@ -22,20 +22,19 @@
 - **Shell expansion support**: Commands are now executed via `sh -c` instead of
   direct process spawn. Shell features like `~`, `$HOME`, pipes (`|`), and
   redirects (`>`, `<`) now work as expected. The `Index` and `GPG`
-  classification functions split on whitespace internally for analysis only;
-  the original command string is preserved for execution.
+  classification functions split on whitespace internally for analysis only; the
+  original command string is preserved for execution.
 
 ## 0.2.3
 
 ### Improved
 
 - **Halved glob matching overhead**: Removed redundant interior glob patterns
-  (`pattern/**`) that were added alongside each exclude pattern. The
-  `/**/*` suffix already present in exclude patterns like
-  `**/node_modules/**/*` matches content at *all* depths inside the excluded
-  directory (because `**` matches zero or more directory levels), making the
-  interior variant a strict subset that only doubled the `GlobSet` size without
-  adding any new matches.
+  (`pattern/**`) that were added alongside each exclude pattern. The `/**/*`
+  suffix already present in exclude patterns like `**/node_modules/**/*` matches
+  content at _all_ depths inside the excluded directory (because `**` matches
+  zero or more directory levels), making the interior variant a strict subset
+  that only doubled the `GlobSet` size without adding any new matches.
 
 ## 0.2.2
 
@@ -66,11 +65,11 @@
 - **Git index lock conflicts in parallel mode**: Commands within a single
   directory were previously executed concurrently via `join_all`, causing
   chained git commands (e.g. `git add` → `git commit`) to race for
-  `.git/index.lock` and fail. Commands are now executed sequentially within
-  each directory while directories themselves continue to run in parallel.
+  `.git/index.lock` and fail. Commands are now executed sequentially within each
+  directory while directories themselves continue to run in parallel.
 - **GPG mutex scope**: The GPG mutex guard was dropped before the subprocess
-  launched, providing no actual exclusion. It now spans the full duration of
-  the process call.
+  launched, providing no actual exclusion. It now spans the full duration of the
+  process call.
 
 ### Added
 
@@ -79,10 +78,9 @@
   `cherry-pick`, `commit`, `merge`, `mv`, `rebase`, `reset`, `restore`, `rm`,
   `stash`).
 - **`Index::Lock` module** (`Source/Fn/Binary/Command/Index/Lock`): async
-  pre-flight check for `.git/index.lock` with exponential-backoff polling
-  (50 ms → 500 ms cap), a 30-second timeout, and automatic removal of stale
-  locks left by killed processes. Applied in both parallel and sequential
-  execution modes.
+  pre-flight check for `.git/index.lock` with exponential-backoff polling (50 ms
+  → 500 ms cap), a 30-second timeout, and automatic removal of stale locks left
+  by killed processes. Applied in both parallel and sequential execution modes.
 
 ## 0.1.9
 
