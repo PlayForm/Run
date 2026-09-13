@@ -3,7 +3,7 @@ use std::collections::HashMap;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Status {
 	Pending,
-	Running { Done:　usize, Total:　usize },
+	Running { Done:usize, Total:usize },
 	Done,
 	Failed,
 	Timeout,
@@ -11,51 +11,49 @@ pub enum Status {
 
 #[derive(Debug, Clone)]
 pub struct DirState {
-	pub Directory:　String,
-	pub Status:　Status,
-	pub Lines:　Vec<(String, bool)>,
-	pub AutoScroll:　bool,
-	pub Scroll:　usize,
+	pub Directory:String,
+	pub Status:Status,
+	pub Lines:Vec<(String, bool)>,
+	pub AutoScroll:bool,
+	pub Scroll:usize,
 }
 
 impl DirState {
-	pub fn new(Directory:　String, Total:　usize) -> Self {
+	pub fn new(Directory:String, Total:usize) -> Self {
 		Self {
 			Directory,
-			Status:　Status::Running { Done:　0, Total },
-			Lines:　Vec::new(),
-			AutoScroll:　true,
-			Scroll:　0,
+			Status:Status::Running { Done:0, Total },
+			Lines:Vec::new(),
+			AutoScroll:true,
+			Scroll:0,
 		}
 	}
 }
 
-pub const SPINNER:　&[&str] = &["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+pub const SPINNER:&[&str] = &["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
 pub struct AppState {
-	pub Order:　Vec<String>,
-	pub Map:　HashMap<String, DirState>,
-	pub Selected:　usize,
-	pub Done:　bool,
-	pub Tick:　usize,
-	pub ForceQuit:　bool,
+	pub Order:Vec<String>,
+	pub Map:HashMap<String, DirState>,
+	pub Selected:usize,
+	pub Done:bool,
+	pub Tick:usize,
+	pub ForceQuit:bool,
 }
 
 impl AppState {
 	pub fn new() -> Self {
 		Self {
-			Order:　Vec::new(),
-			Map:　HashMap::new(),
-			Selected:　0,
-			Done:　false,
-			Tick:　0,
-			ForceQuit:　false,
+			Order:Vec::new(),
+			Map:HashMap::new(),
+			Selected:0,
+			Done:false,
+			Tick:0,
+			ForceQuit:false,
 		}
 	}
 
-	pub fn selected_dir(&self) -> Option<&str> {
-		self.Order.get(self.Selected).map(String::as_str)
-	}
+	pub fn selected_dir(&self) -> Option<&str> { self.Order.get(self.Selected).map(String::as_str) }
 
 	pub fn select_up(&mut self) {
 		if self.Selected > 0 {
@@ -98,7 +96,7 @@ impl AppState {
 		}
 	}
 
-	pub fn click_row(&mut self, Row:　usize) {
+	pub fn click_row(&mut self, Row:usize) {
 		if Row < self.Order.len() {
 			self.Selected = Row;
 		}

@@ -8,7 +8,7 @@ use ratatui::{
 
 use crate::Struct::Tui::{AppState, SPINNER, Status};
 
-pub fn Fn(Frame:　&mut Frame, State:　&AppState) {
+pub fn Fn(Frame:&mut Frame, State:&AppState) {
 	let Size = Frame.area();
 
 	let Outer = Layout::default()
@@ -26,10 +26,10 @@ pub fn Fn(Frame:　&mut Frame, State:　&AppState) {
 	render_status_bar(Frame, State, Outer[1]);
 }
 
-fn render_dir_list(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
+fn render_dir_list(Frame:&mut Frame, State:&AppState, Area:Rect) {
 	let Spinner = SPINNER[State.Tick % SPINNER.len()];
 
-	let Items:　Vec<ListItem> = State
+	let Items:Vec<ListItem> = State
 		.Order
 		.iter()
 		.enumerate()
@@ -38,10 +38,9 @@ fn render_dir_list(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 
 			let (Icon, IconStyle) = match &DS.Status {
 				Status::Pending => ("○ ".to_owned(), Style::default().fg(Color::DarkGray)),
-				Status::Running { Done, Total } => (
-					format!("{} {}/{} ", Spinner, Done, Total),
-					Style::default().fg(Color::Yellow),
-				),
+				Status::Running { Done, Total } => {
+					(format!("{} {}/{} ", Spinner, Done, Total), Style::default().fg(Color::Yellow))
+				},
 				Status::Done => ("✓ ".to_owned(), Style::default().fg(Color::Green)),
 				Status::Failed => ("✗ ".to_owned(), Style::default().fg(Color::Red)),
 				Status::Timeout => ("⚠ ".to_owned(), Style::default().fg(Color::Magenta)),
@@ -49,10 +48,7 @@ fn render_dir_list(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 
 			let Label = shorten(Key);
 
-			let Row = TLine::from(vec![
-				Span::styled(Icon, IconStyle),
-				Span::raw(Label),
-			]);
+			let Row = TLine::from(vec![Span::styled(Icon, IconStyle), Span::raw(Label)]);
 
 			let Style = if I == State.Selected {
 				Style::default().bg(Color::DarkGray).add_modifier(Modifier::BOLD)
@@ -75,21 +71,17 @@ fn render_dir_list(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 	Frame.render_stateful_widget(List, Area, &mut ListSt);
 }
 
-fn render_log(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
+fn render_log(Frame:&mut Frame, State:&AppState, Area:Rect) {
 	let (Title, Lines, Scroll) = match State.selected_dir() {
 		None => (" ◈ Log ".to_owned(), vec![], 0usize),
 		Some(Key) => {
 			let DS = &State.Map[Key];
 			let Title = format!(" ◈ {} ", shorten(Key));
-			let Lines:　Vec<TLine> = DS
+			let Lines:Vec<TLine> = DS
 				.Lines
 				.iter()
 				.map(|(Text, IsStderr)| {
-					let Style = if *IsStderr {
-						Style::default().fg(Color::Red)
-					} else {
-						Style::default()
-					};
+					let Style = if *IsStderr { Style::default().fg(Color::Red) } else { Style::default() };
 					TLine::from(Span::styled(Text.clone(), Style))
 				})
 				.collect();
@@ -99,7 +91,7 @@ fn render_log(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 				DS.Scroll
 			};
 			(Title, Lines, Scroll)
-		}
+		},
 	};
 
 	let Block = Block::default()
@@ -109,23 +101,29 @@ fn render_log(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 
 	let Para = Paragraph::new(Lines)
 		.block(Block)
-		.wrap(Wrap { trim:　false })
+		.wrap(Wrap { trim:false })
 		.scroll((Scroll as u16, 0));
 
 	Frame.render_widget(Para, Area);
 }
 
-fn render_status_bar(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
-	let Done = State.Order.iter().filter(|K| {
-		matches!(State.Map[*K].Status, Status::Done | Status::Failed | Status::Timeout)
-	}).count();
+fn render_status_bar(Frame:&mut Frame, State:&AppState, Area:Rect) {
+	let Done = State
+		.Order
+		.iter()
+		.filter(|K| matches!(State.Map[*K].Status, Status::Done | Status::Failed | Status::Timeout))
+		.count();
 	let Total = State.Order.len();
 
 	let Status = if State.Done {
 		format!(" ✓ All done ({}/{}) — q quit", Done, Total)
 	} else {
-		format!(" {} Running {}/{} — ↑↓ select  PgUp/PgDn scroll  s auto-scroll  q quit",
-			SPINNER[State.Tick % SPINNER.len()], Done, Total)
+		format!(
+			" {} Running {}/{} — ↑↓ select  PgUp/PgDn scroll  s auto-scroll  q quit",
+			SPINNER[State.Tick % SPINNER.len()],
+			Done,
+			Total
+		)
 	};
 
 	let Style = if State.Done {
@@ -137,15 +135,15 @@ fn render_status_bar(Frame:　&mut Frame, State:　&AppState, Area:　Rect) {
 	Frame.render_widget(Paragraph::new(Status).style(Style), Area);
 }
 
-fn shorten(Path:　&str) -> String {
-	let Parts:　Vec<&str> = Path.trim_end_matches('/').rsplit('/').take(2).collect();
+fn shorten(Path:&str) -> String {
+	let Parts:Vec<&str> = Path.trim_end_matches('/').rsplit('/').take(2).collect();
 	if Parts.is_empty() {
 		return Path.to_owned();
 	}
 	parts_join(Parts)
 }
 
-fn parts_join(mut Parts:　Vec<&str>) -> String {
+fn parts_join(mut Parts:Vec<&str>) -> String {
 	Parts.reverse();
 	Parts.join("/")
 }

@@ -1,8 +1,7 @@
 pub mod Input;
 pub mod Render;
 
-use std::io::stdout;
-use std::time::Duration;
+use std::{io::stdout, time::Duration};
 
 use crossterm::{
 	event::{self, DisableMouseCapture, EnableMouseCapture},
@@ -23,10 +22,9 @@ impl Drop for TerminalGuard {
 	}
 }
 
-pub async fn Fn(mut Rx:　Receiver<Event>) {
+pub async fn Fn(mut Rx:Receiver<Event>) {
 	enable_raw_mode().expect("Failed to enable raw mode");
-	execute!(stdout(), EnterAlternateScreen, EnableMouseCapture)
-		.expect("Failed to enter alternate screen");
+	execute!(stdout(), EnterAlternateScreen, EnableMouseCapture).expect("Failed to enter alternate screen");
 
 	let _Guard = TerminalGuard;
 
@@ -46,7 +44,7 @@ pub async fn Fn(mut Rx:　Receiver<Event>) {
 							.Map
 							.insert(Directory.clone(), crate::Struct::Tui::DirState::new(Directory, Total));
 					}
-				}
+				},
 				Ok(Event::Line { Directory, Text, IsStderr }) => {
 					if let Some(DS) = State.Map.get_mut(&Directory) {
 						DS.Lines.push((Text, IsStderr));
@@ -54,12 +52,12 @@ pub async fn Fn(mut Rx:　Receiver<Event>) {
 							DS.Scroll = DS.Lines.len().saturating_sub(1);
 						}
 					}
-				}
+				},
 				Ok(Event::JobProgress { Directory, Done, Total, .. }) => {
 					if let Some(DS) = State.Map.get_mut(&Directory) {
 						DS.Status = crate::Struct::Tui::Status::Running { Done, Total };
 					}
-				}
+				},
 				Ok(Event::JobFinished { Directory, Success }) => {
 					if let Some(DS) = State.Map.get_mut(&Directory) {
 						DS.Status = if Success {
@@ -68,22 +66,21 @@ pub async fn Fn(mut Rx:　Receiver<Event>) {
 							crate::Struct::Tui::Status::Failed
 						};
 					}
-				}
+				},
 				Ok(Event::IndexLockTimeout { Directory }) => {
 					if let Some(DS) = State.Map.get_mut(&Directory) {
 						DS.Status = crate::Struct::Tui::Status::Timeout;
 						DS.Lines.push(("⚠  git index lock timed out".to_owned(), true));
 					}
-				}
+				},
 				Ok(Event::AllDone) => {
 					State.Done = true;
-				}
+				},
 				Err(_) => break,
 			}
 		}
 
-		Term.draw(|Frame| Render::Fn(Frame, &State))
-			.expect("Failed to draw frame");
+		Term.draw(|Frame| Render::Fn(Frame, &State)).expect("Failed to draw frame");
 
 		if event::poll(TickRate).unwrap_or(false) {
 			if let Ok(Ev) = event::read() {

@@ -28,16 +28,9 @@ const STALE_AGE_SECS:u64 = 30;
 /// # Returns
 ///
 /// `true` if the index is free before the timeout elapses, `false` on timeout.
-pub async fn Fn(Directory:&str) -> bool {
-	Inner(Directory, TIMEOUT_MS, POLL_INITIAL_MS, STALE_AGE_SECS).await
-}
+pub async fn Fn(Directory:&str) -> bool { Inner(Directory, TIMEOUT_MS, POLL_INITIAL_MS, STALE_AGE_SECS).await }
 
-async fn Inner(
-	Directory:&str,
-	TimeoutMs:u64,
-	PollInitialMs:u64,
-	StaleAgeSecs:u64,
-) -> bool {
+async fn Inner(Directory:&str, TimeoutMs:u64, PollInitialMs:u64, StaleAgeSecs:u64) -> bool {
 	let LockPath = Path::new(Directory).join(".git").join("index.lock");
 
 	if !LockPath.exists() {
@@ -50,11 +43,7 @@ async fn Inner(
 		&& let Ok(Age) = Modified.elapsed()
 		&& Age.as_secs() >= StaleAgeSecs
 	{
-		eprintln!(
-			"Removing stale git index lock in '{}' (age: {}s).",
-			Directory,
-			Age.as_secs()
-		);
+		eprintln!("Removing stale git index lock in '{}' (age: {}s).", Directory, Age.as_secs());
 		if let Err(Error) = std::fs::remove_file(&LockPath) {
 			eprintln!("Failed to remove stale index lock in '{}': {}", Directory, Error);
 		}
@@ -66,10 +55,7 @@ async fn Inner(
 
 	loop {
 		if Elapsed >= TimeoutMs {
-			eprintln!(
-				"Timed out waiting {}ms for git index lock in '{}'.",
-				TimeoutMs, Directory
-			);
+			eprintln!("Timed out waiting {}ms for git index lock in '{}'.", TimeoutMs, Directory);
 			return false;
 		}
 
@@ -89,10 +75,10 @@ mod Tests {
 
 	use super::Inner;
 
-	/// Creates a temporary directory with a `.git/` subdirectory and returns the root path.
+	/// Creates a temporary directory with a `.git/` subdirectory and returns
+	/// the root path.
 	fn TempGitDir(Label:&str) -> PathBuf {
-		let Dir = std::env::temp_dir()
-			.join(format!("prun_index_lock_test_{}_{}", Label, std::process::id()));
+		let Dir = std::env::temp_dir().join(format!("prun_index_lock_test_{}_{}", Label, std::process::id()));
 		fs::create_dir_all(Dir.join(".git")).expect("create temp .git dir");
 		Dir
 	}
@@ -146,7 +132,8 @@ mod Tests {
 
 		// StaleAgeSecs = 0 so any existing lock is immediately treated as stale.
 		let Result = Inner(&Dir.to_string_lossy(), 500, 10, 0).await;
-		// Assert before Cleanup so the check is not trivially true from directory removal.
+		// Assert before Cleanup so the check is not trivially true from directory
+		// removal.
 		assert!(Result);
 		assert!(!LockFile.exists(), "stale lock should have been removed by Inner");
 		Cleanup(&Dir);
@@ -154,8 +141,7 @@ mod Tests {
 
 	#[tokio::test]
 	async fn Returns_True_For_Missing_Git_Dir() {
-		let Dir = std::env::temp_dir()
-			.join(format!("prun_index_lock_test_no_git_{}", std::process::id()));
+		let Dir = std::env::temp_dir().join(format!("prun_index_lock_test_no_git_{}", std::process::id()));
 		// Deliberately do NOT create the .git subdirectory.
 		fs::create_dir_all(&Dir).expect("create dir");
 

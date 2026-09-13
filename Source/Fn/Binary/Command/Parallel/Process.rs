@@ -1,7 +1,6 @@
 use std::io;
 
-use tokio::io::AsyncBufReadExt;
-use tokio::process::Command as TokioCommand;
+use tokio::{io::AsyncBufReadExt, process::Command as TokioCommand};
 
 /// Executes a command asynchronously in a specified directory via `sh -c`.
 ///
@@ -47,12 +46,9 @@ pub async fn Fn(CommandString:&str, EntryDirectory:&str) -> io::Result<String> {
 	let mut StderrBuf = String::new();
 	{
 		let StderrReader = Child.stderr.take().unwrap();
-		tokio::io::AsyncReadExt::read_to_string(
-			&mut tokio::io::BufReader::new(StderrReader),
-			&mut StderrBuf,
-		)
-		.await
-		.unwrap_or(0);
+		tokio::io::AsyncReadExt::read_to_string(&mut tokio::io::BufReader::new(StderrReader), &mut StderrBuf)
+			.await
+			.unwrap_or(0);
 	}
 
 	let Status = Child.wait().await?;
@@ -60,7 +56,8 @@ pub async fn Fn(CommandString:&str, EntryDirectory:&str) -> io::Result<String> {
 	if !Status.success() {
 		Err(io::Error::other(format!(
 			"Command failed with status {}. Stderr: {}",
-			Status, StderrBuf.trim()
+			Status,
+			StderrBuf.trim()
 		)))
 	} else {
 		Ok(StdoutBuf)

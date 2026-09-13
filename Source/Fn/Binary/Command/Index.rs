@@ -25,17 +25,12 @@ pub fn Fn(Command:&str) -> bool {
 		Parts.get(1).copied(),
 		Some(
 			"add"
-				| "apply"
-				| "checkout"
+				| "apply" | "checkout"
 				| "cherry-pick"
-				| "commit"
-				| "merge"
-				| "mv"
-				| "rebase"
-				| "reset"
-				| "restore"
-				| "rm"
-				| "stash"
+				| "commit" | "merge"
+				| "mv" | "rebase"
+				| "reset" | "restore"
+				| "rm" | "stash"
 		)
 	)
 }
@@ -45,37 +40,59 @@ mod Tests {
 	use super::Fn;
 
 	#[test]
-	fn Add_Is_Index_Modifying() { assert!(Fn("git add .")); }
+	fn Add_Is_Index_Modifying() {
+		assert!(Fn("git add ."));
+	}
 
 	#[test]
-	fn Commit_Is_Index_Modifying() { assert!(Fn("git commit -m msg")); }
+	fn Commit_Is_Index_Modifying() {
+		assert!(Fn("git commit -m msg"));
+	}
 
 	#[test]
-	fn Reset_Is_Index_Modifying() { assert!(Fn("git reset --hard")); }
+	fn Reset_Is_Index_Modifying() {
+		assert!(Fn("git reset --hard"));
+	}
 
 	#[test]
-	fn Checkout_Is_Index_Modifying() { assert!(Fn("git checkout main")); }
+	fn Checkout_Is_Index_Modifying() {
+		assert!(Fn("git checkout main"));
+	}
 
 	#[test]
-	fn Merge_Is_Index_Modifying() { assert!(Fn("git merge feature")); }
+	fn Merge_Is_Index_Modifying() {
+		assert!(Fn("git merge feature"));
+	}
 
 	#[test]
-	fn Rebase_Is_Index_Modifying() { assert!(Fn("git rebase main")); }
+	fn Rebase_Is_Index_Modifying() {
+		assert!(Fn("git rebase main"));
+	}
 
 	#[test]
-	fn Stash_Is_Index_Modifying() { assert!(Fn("git stash")); }
+	fn Stash_Is_Index_Modifying() {
+		assert!(Fn("git stash"));
+	}
 
 	#[test]
-	fn Rm_Is_Index_Modifying() { assert!(Fn("git rm file.txt")); }
+	fn Rm_Is_Index_Modifying() {
+		assert!(Fn("git rm file.txt"));
+	}
 
 	#[test]
-	fn Mv_Is_Index_Modifying() { assert!(Fn("git mv a b")); }
+	fn Mv_Is_Index_Modifying() {
+		assert!(Fn("git mv a b"));
+	}
 
 	#[test]
-	fn Apply_Is_Index_Modifying() { assert!(Fn("git apply patch.diff")); }
+	fn Apply_Is_Index_Modifying() {
+		assert!(Fn("git apply patch.diff"));
+	}
 
 	#[test]
-	fn Restore_Is_Index_Modifying() { assert!(Fn("git restore file.txt")); }
+	fn Restore_Is_Index_Modifying() {
+		assert!(Fn("git restore file.txt"));
+	}
 
 	#[test]
 	fn Cherry_Pick_Is_Index_Modifying() {
@@ -83,22 +100,34 @@ mod Tests {
 	}
 
 	#[test]
-	fn Status_Is_Not_Index_Modifying() { assert!(!Fn("git status")); }
+	fn Status_Is_Not_Index_Modifying() {
+		assert!(!Fn("git status"));
+	}
 
 	#[test]
-	fn Log_Is_Not_Index_Modifying() { assert!(!Fn("git log")); }
+	fn Log_Is_Not_Index_Modifying() {
+		assert!(!Fn("git log"));
+	}
 
 	#[test]
-	fn Push_Is_Not_Index_Modifying() { assert!(!Fn("git push")); }
+	fn Push_Is_Not_Index_Modifying() {
+		assert!(!Fn("git push"));
+	}
 
 	#[test]
-	fn Fetch_Is_Not_Index_Modifying() { assert!(!Fn("git fetch")); }
+	fn Fetch_Is_Not_Index_Modifying() {
+		assert!(!Fn("git fetch"));
+	}
 
 	#[test]
-	fn Pull_Is_Not_Index_Modifying() { assert!(!Fn("git pull")); }
+	fn Pull_Is_Not_Index_Modifying() {
+		assert!(!Fn("git pull"));
+	}
 
 	#[test]
-	fn Diff_Is_Not_Index_Modifying() { assert!(!Fn("git diff")); }
+	fn Diff_Is_Not_Index_Modifying() {
+		assert!(!Fn("git diff"));
+	}
 
 	#[test]
 	fn Non_Git_Command_Is_Not_Index_Modifying() {
@@ -106,7 +135,9 @@ mod Tests {
 	}
 
 	#[test]
-	fn Empty_Command_Is_Not_Index_Modifying() { assert!(!Fn("")); }
+	fn Empty_Command_Is_Not_Index_Modifying() {
+		assert!(!Fn(""));
+	}
 
 	#[test]
 	fn Bare_Git_With_No_Subcommand_Is_Not_Index_Modifying() {

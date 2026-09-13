@@ -8,8 +8,8 @@ use tokio::sync::mpsc;
 /// This struct's primary role is to create and hold a boxed closure (`Fn`) that
 /// encapsulates the entire application workflow.
 pub struct Struct {
-	pub Separator:　Option::Separator,
-	pub Fn:　Box<dyn Fn() -> std::pin::Pin<Box<dyn futures::Future<Output = ()> + Send + 'static>> + Send + 'static>,
+	pub Separator:Option::Separator,
+	pub Fn:Box<dyn Fn() -> std::pin::Pin<Box<dyn futures::Future<Output = ()> + Send + 'static>> + Send + 'static>,
 }
 
 impl Struct {
@@ -20,8 +20,8 @@ impl Struct {
 	/// strategy.
 	pub fn Fn() -> Self {
 		Self {
-			Separator:　std::path::MAIN_SEPARATOR,
-			Fn:　Box::new(|| {
+			Separator:std::path::MAIN_SEPARATOR,
+			Fn:Box::new(|| {
 				Box::pin(async move {
 					// This initialization pattern allows `Option::Fn` to access the `Separator`
 					// from the `options_config` while still using the static `ARGS` for CLI
@@ -36,13 +36,9 @@ impl Struct {
 
 					if IsTui {
 						if IsParallel {
-							tokio::spawn(
-								crate::Fn::Binary::Command::Parallel::Fn(ExecutionOptions, Tx),
-							);
+							tokio::spawn(crate::Fn::Binary::Command::Parallel::Fn(ExecutionOptions, Tx));
 						} else {
-							tokio::spawn(
-								crate::Fn::Binary::Command::Sequential::Fn(ExecutionOptions, Tx),
-							);
+							tokio::spawn(crate::Fn::Binary::Command::Sequential::Fn(ExecutionOptions, Tx));
 						}
 						crate::Fn::Tui::Fn(Rx).await;
 					} else {
@@ -57,14 +53,14 @@ impl Struct {
 										} else {
 											println!("{}", Text);
 										}
-									}
+									},
 									Event::IndexLockTimeout { Directory } => {
 										eprintln!("Skipping '{}': git index lock timed out.", Directory);
-									}
+									},
 									Event::JobFinished { Directory, Success } if !Success => {
 										eprintln!("✗ Failed: {}", Directory);
-									}
-									_ => {}
+									},
+									_ => {},
 								}
 							}
 						});

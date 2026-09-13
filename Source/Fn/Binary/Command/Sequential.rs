@@ -1,25 +1,20 @@
 use std::path::{Path, PathBuf};
 
-use tokio::io::AsyncBufReadExt;
-use tokio::process::Command as TokioCommand;
-use tokio::sync::mpsc::Sender;
+use tokio::{io::AsyncBufReadExt, process::Command as TokioCommand, sync::mpsc::Sender};
 
 use crate::{
 	Fn::Binary::Command::Index,
-	Struct::{
-		Binary::Command::Entry::Struct as ExecutionOption,
-		Event::Struct as Event,
-	},
+	Struct::{Binary::Command::Entry::Struct as ExecutionOption, Event::Struct as Event},
 };
 
 /// Executes commands sequentially, one directory at a time.
 ///
 /// All output is emitted through `Tx` as typed `Event` variants so the caller
 /// (CLI printer or TUI) can render it however it likes. No I/O happens here.
-pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
+pub async fn Fn(Option:ExecutionOption, Tx:Sender<Event>) {
 	let TotalCommands = Option.Command.len();
 
-	let ProcessedCommands:　Vec<(String, bool)> = Option
+	let ProcessedCommands:Vec<(String, bool)> = Option
 		.Command
 		.iter()
 		.map(|CommandString| {
@@ -28,7 +23,7 @@ pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 		})
 		.collect();
 
-	let TargetDirs:　Vec<PathBuf> = Option
+	let TargetDirs:Vec<PathBuf> = Option
 		.Entry
 		.into_iter()
 		.filter_map(|CandidatePath| {
@@ -43,10 +38,9 @@ pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 	'directories: for Directory in TargetDirs {
 		let DirectoryString = Directory.to_string_lossy().to_string();
 
-		let _ = Tx.send(Event::JobStarted {
-			Directory:　DirectoryString.clone(),
-			Total:　TotalCommands,
-		}).await;
+		let _ = Tx
+			.send(Event::JobStarted { Directory:DirectoryString.clone(), Total:TotalCommands })
+			.await;
 
 		let mut AllSuccess = true;
 
@@ -56,9 +50,7 @@ pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 			}
 
 			if *RequiresIndexLock && !Index::Lock::Fn(&DirectoryString).await {
-				let _ = Tx.send(Event::IndexLockTimeout {
-					Directory:　DirectoryString.clone(),
-				}).await;
+				let _ = Tx.send(Event::IndexLockTimeout { Directory:DirectoryString.clone() }).await;
 				continue 'directories;
 			}
 
@@ -71,14 +63,16 @@ pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 			{
 				Ok(Child) => Child,
 				Err(Error) => {
-					let _ = Tx.send(Event::Line {
-						Directory:　DirectoryString.clone(),
-						Text:　format!("Failed to spawn: {}", Error),
-						IsStderr:　true,
-					}).await;
+					let _ = Tx
+						.send(Event::Line {
+							Directory:DirectoryString.clone(),
+							Text:format!("Failed to spawn: {}", Error),
+							IsStderr:true,
+						})
+						.await;
 					AllSuccess = false;
 					continue;
-				}
+				},
 			};
 
 			let StdoutReader = Child.stdout.take().unwrap();
@@ -86,11 +80,9 @@ pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 				let mut Lines = tokio::io::BufReader::new(StdoutReader).lines();
 				while let Ok(Some(Line)) = Lines.next_line().await {
 					if !Line.trim().is_empty() {
-						let _ = Tx.send(Event::Line {
-							Directory:　DirectoryString.clone(),
-							Text:　Line,
-							IsStderr:　false,
-						}).await;
+						let _ = Tx
+							.send(Event::Line { Directory:DirectoryString.clone(), Text:Line, IsStderr:false })
+							.await;
 					}
 				}
 			}
@@ -98,12 +90,9 @@ pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 			let mut StderrBuf = String::new();
 			{
 				let StderrReader = Child.stderr.take().unwrap();
-				tokio::io::AsyncReadExt::read_to_string(
-					&mut tokio::io::BufReader::new(StderrReader),
-					&mut StderrBuf,
-				)
-				.await
-				.unwrap_or(0);
+				tokio::io::AsyncReadExt::read_to_string(&mut tokio::io::BufReader::new(StderrReader), &mut StderrBuf)
+					.await
+					.unwrap_or(0);
 			}
 
 			let ExitStatus = Child.wait().await;
@@ -112,11 +101,13 @@ pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 			if !StderrBuf.trim().is_empty() {
 				for Line in StderrBuf.lines() {
 					if !Line.trim().is_empty() {
-						let _ = Tx.send(Event::Line {
-							Directory:　DirectoryString.clone(),
-							Text:　Line.to_owned(),
-							IsStderr:　true,
-						}).await;
+						let _ = Tx
+							.send(Event::Line {
+								Directory:DirectoryString.clone(),
+								Text:Line.to_owned(),
+								IsStderr:true,
+							})
+							.await;
 					}
 				}
 			}
@@ -125,18 +116,19 @@ pub async fn Fn(Option:　ExecutionOption, Tx:　Sender<Event>) {
 				AllSuccess = false;
 			}
 
-			let _ = Tx.send(Event::JobProgress {
-				Directory:　DirectoryString.clone(),
-				Done:　CmdIdx + 1,
-				Total:　TotalCommands,
-				Success:　Success,
-			}).await;
+			let _ = Tx
+				.send(Event::JobProgress {
+					Directory:DirectoryString.clone(),
+					Done:CmdIdx + 1,
+					Total:TotalCommands,
+					Success,
+				})
+				.await;
 		}
 
-		let _ = Tx.send(Event::JobFinished {
-			Directory:　DirectoryString.clone(),
-			Success:　AllSuccess,
-		}).await;
+		let _ = Tx
+			.send(Event::JobFinished { Directory:DirectoryString.clone(), Success:AllSuccess })
+			.await;
 	}
 
 	let _ = Tx.send(Event::AllDone).await;
