@@ -8,7 +8,7 @@ pub mod Sequential;
 pub fn Fn() -> ArgMatches {
 	ClapCommand::new("Run")
 		.version(env!("CARGO_PKG_VERSION"))
-		.author("Source ✍🏻 Open 👐🏻 <Source/Open@PlayForm.Cloud>")
+		.author("Source ✍🏻 Open 👐🏻 <Source/Open@PlayForm.Cloud>")
 		.about("A utility to run commands in directories matching a pattern.")
 		.arg(
 			Arg::new("File")
